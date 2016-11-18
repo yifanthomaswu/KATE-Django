@@ -1,0 +1,54 @@
+{% load staticfiles %}
+<html>
+    <head>
+        <title>KATe</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="{% static '../../static/kateapp/css/style.css' %}">
+    </head>
+    <body>
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="#">
+                <img alt="Brand" src="../../static/kateapp/images/ilogo.png">
+                KATe
+              </a>
+            </div>
+            <div>
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">About</a></li>
+                <li><a href="#">Links</a></li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+        <div class ="container-fluid container-image">
+            <div class ="text">Departmenf of Computing<br>
+                <button type="button" class="btn btn-primary btn-lg">SIGN IN</button>
+            </div>
+        </div>
+
+        <div class ="container-fluid">
+            <h3>About</h3>
+        </div>
+
+        <div class ="container-fluid">
+          <div class="row">
+             <div class="col-md-6"><h3>Twitter</h3>
+                <a class="twitter-timeline" data-width="550" data-height="500" data-theme="light" href="https://twitter.com/DoCThirdYear">Tweets by DoCThirdYear</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+            </div>
+            <div class="col-md-6"><h3>Links</h3></div>
+          </div>
+        </div>
+
+        {% for post in posts %}
+            <div>
+                <p>published: {{ post.published_date }}</p>
+                <h1><a href="">{{ post.title }}</a></h1>
+                <p>{{ post.text|linebreaksbr }}</p>
+            </div>
+        {% endfor %}
+    </body>
+</html>

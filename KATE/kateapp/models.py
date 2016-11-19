@@ -39,14 +39,14 @@ class Courses_Term(models.Model):
     code = models.ForeignKey(Courses, on_delete=models.PROTECT)
     term = models.ForeignKey(Term, on_delete=models.PROTECT)
     def __str__(self):
-        return self.code + " " + self.term.__str__()
+        return self.code.__str__() + " " + self.term.__str__()
 
 @python_2_unicode_compatible
 class Courses_Classes(models.Model):
     code = models.ForeignKey(Courses, on_delete=models.PROTECT)
     letter_yr = models.ForeignKey(Classes, on_delete=models.PROTECT)
     def __str__(self):
-        return self.code + " " + self.letter_yr
+        return self.code.__str__() + " " + self.letter_yr.__str__()
 
 @python_2_unicode_compatible
 class Exercises(models.Model):

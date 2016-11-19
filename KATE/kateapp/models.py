@@ -1,6 +1,62 @@
 from __future__ import unicode_literals
+from django.utils.encoding import python_2_unicode_compatible
 
 from django.db import models
 
-#class People(models.Model):
-#    login = models.C
+@python_2_unicode_compatible
+class Classes(models.Model):
+    letter_yr = models.CharField(max_length=2, primary_key=True)
+    def __str__(self):
+        return self.letter_yr
+
+@python_2_unicode_compatible
+class People(models.Model):
+    login = models.CharField(max_length=200, primary_key=True)
+    firstname = models.CharField(max_length=200)
+    lastname = models.CharField(max_length=200)
+    student_letter_yr = models.ForeignKey(Classes, on_delete=models.PROTECT, null=True)
+    tutor = models.ForeignKey('self', on_delete=models.PROTECT, null=True)
+    def __str__(self):
+        return self.login
+
+@python_2_unicode_compatible
+class Courses(models.Model):
+    code = models.CharField(max_length=200, primary_key=True)
+    title = models.CharField(max_length=200)
+    lecturer = models.ForeignKey(People, on_delete=models.PROTECT)
+    def __str__(self):
+        return self.title
+
+@python_2_unicode_compatible
+class Term(models.Model):
+    term = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=200)
+    def __str__(self):
+        return self.name
+
+@python_2_unicode_compatible
+class Courses_Term(object):
+    code = models.ForeignKey(Courses, on_delete=models.PROTECT)
+    term = models.ForeignKey(Term, on_delete=models.PROTECT)
+    def __str__(self):
+        return self.code + self.term
+
+@python_2_unicode_compatible
+class Courses_Classes(object):
+    code = models.ForeignKey(Courses, on_delete=models.PROTECT)
+    letter_yr = models.ForeignKey(Classes, on_delete=models.PROTECT)
+    def __str__(self):
+        return self.code + self.letter_yr
+
+@python_2_unicode_compatible
+class Exercises(object):
+    code = models.ForeignKey(Courses, on_delete=models.PROTECT)
+    number = models.IntegerField()
+    title = models.CharField(max_length=200)
+    start_date = models.TimeField()
+    deadline = models.TimeField()
+    class Meta:
+        unique_together = (("code", "number"),)
+    def __str__(self):
+        return self.title
+

@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, get_list_or_404, render
 from django.http import HttpResponse
 from django.template import loader
 
@@ -23,6 +23,14 @@ def timetable(request, period_id, letter_yr, login):
     period = get_object_or_404(Period, pk=period_id)
     classes = get_object_or_404(Classes, pk=letter_yr)
     people = get_object_or_404(People, pk=login)
+    courses = get_list_or_404(Courses_Classes, letter_yr=people.student_letter_yr)
+    term_id = 0
+    if period_id == 1:
+        term_id = 1
+    elif period_id == 3:
+        term_id = 2
+    elif period_id == 5:
+        term_id = 3
     months = []
     d_count = 0
     current_d = period.start_date + timedelta(0)

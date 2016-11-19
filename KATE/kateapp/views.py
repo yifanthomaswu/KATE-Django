@@ -5,6 +5,7 @@ from django.template import loader
 from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period
 
 import datetime, calendar
+from datetime import timedelta
 
 def index(request):
     return render(request, 'kateapp/home.html')
@@ -21,16 +22,52 @@ def timetable(request, period_id, letter_yr, login):
     period = get_object_or_404(Period, pk=period_id)
     classes = get_object_or_404(Classes, pk=letter_yr)
     people = get_object_or_404(People, pk=login)
+    courses = get_list_or_404(Courses_Classes, letter_yr=people.student_letter_yr)
+    term_id = 0
+    if period_id == 1:
+        term_id = 1
+    elif period_id == 3:
+        term_id = 2
+    elif period_id == 5:
+        term_id = 3
     months = []
     d_count = 0
     current_d = period.start_date + timedelta(0)
     current_m = current_d.month
-    # while (current_d <= period.end_date):
-
-    # for m in range(period.start_date.month, period.end_date.month):
-    #     d = calendar.monthrange(year, month)
-    #     months.append((calendar.month_name[m], ))
-    return render(request, 'kateapp/timetable.html', {'period': period, 'classes': classes, 'people': people})
+    while (current_d <= period.end_date):
+        if (current_m != current_d.month):
+            months.append((calendar.month_name[current_m], d_count))
+            d_count = 0
+            current_m = current_d.month
+        d_count += 1
+        current_d = current_d + timedelta(1)
+    months.append((calendar.month_name[period.end_date.month], period.end_date.day))
+    weeks = []
+    d_count = 0
+    current_d = period.start_date + timedelta(0)
+    while (current_d <= period.end_date):
+        d_count += 1
+        if (current_d.weekday() == 4):
+            weeks.append(d_count)
+            d_count = 0
+        current_d = current_d + timedelta(1)
+    days = []
+    current_d = period.start_date + timedelta(0)
+    while (current_d <= period.end_date):
+        weekday = True
+        if (5 <= current_d.weekday() <= 6):
+            weekday = False
+        days.append((current_d.day, weekday))
+        current_d = current_d + timedelta(1)
+    context = {
+        'period' : period,
+        'classes' : classes,
+        'people' : people,
+        'months' : months,
+        'weeks' : weeks,
+        'days' : days,
+    }
+    return render(request, 'kateapp/timetable.html', context)
 
 def course_list(request, letter_yr):
     courses_term1 = get_list_or_404(Courses, courses_classes__letter_yr=letter_yr, courses_term__term=1)
@@ -44,10 +81,9 @@ def course_list(request, letter_yr):
     }
     return render(request, 'kateapp/course_list.html', context)
 
-
 def course(request, letter_yr, code):
     course = get_object_or_404(Courses, courses_classes__letter_yr=letter_yr, pk=str(code))
     context = {
         'course' : course,
     }
-    return render(request, 'kateapp/course.html', context)
+    return render(request, 'kateapp/course.html', context)   

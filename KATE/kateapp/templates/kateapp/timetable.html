@@ -23,9 +23,18 @@
             </div>
           </div>
         </nav>
-        <table border="0">
+        <table border=0>
             <tr>
-                <th colspan="4"></th>
+                <th colspan="4"></th>{% for month in months %}
+                <th bgcolor="white" colspan={{ month.1 }}>{{ month.0 }}</th>{% endfor %}
+            </tr>
+            <tr>
+                <th colspan="4"></th>{% for week in weeks %}
+                <th bgcolor="white" colspan={{ week }}>Week {{ forloop.counter }}</th>{% endfor %}
+            </tr>
+            <tr>
+                <th colspan="4"></th>{% for day in days %}
+                {% if day.1 %}<th bgcolor="white">{{ day.0 }}</th>{% else %}<th></th>{% endif %}{% endfor %}
             </tr>
         </table>
     </body>

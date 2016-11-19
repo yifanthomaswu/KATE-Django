@@ -1,0 +1,30 @@
+{% load staticfiles %}
+<html>
+    <head>
+        <title>KATe</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="{% static '../../static/kateapp/css/style.css' %}">
+    </head>
+    <body>
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="{% url 'index' %}">
+                <img alt="Brand" src="../../static/kateapp/images/ilogo.png">
+                KATe
+              </a>
+            </div>
+          </div>
+        </nav>
+        <p>
+            {{person.firstname}} {{person.lastname}}
+            <br/>
+            Login: {{person.login}}
+            <br/>
+            Class: {{person.student_letter_yr}}
+            <br/>
+            Tutor: {{person.tutor}}
+        </p>
+    </body>
+</html>

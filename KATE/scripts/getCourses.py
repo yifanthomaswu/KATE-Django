@@ -8,7 +8,7 @@ for i in range(len(data)):
   course = data[i]
   code = course["code"]
 
-  c = Courses(code, title = course["title"], lecturer = People.objects.get(login="test01"))
+  c = Courses(code, title = course["title"], lecturer = People.objects.get(login="test02"))
   c.save()
 
   terms = course["term"].split(',')
@@ -16,5 +16,5 @@ for i in range(len(data)):
 	course_term = Courses_Term(code=c, term=Term.objects.get(term=int(t)))
 	course_term.save()
 
-  course_class = Courses_Classes(code=c, letter_yr=Classes.objects.get(letter_yr="c1"))
+  course_class = Courses_Classes(code=c, letter_yr=Classes.objects.get(letter_yr="c2"))
   course_class.save()

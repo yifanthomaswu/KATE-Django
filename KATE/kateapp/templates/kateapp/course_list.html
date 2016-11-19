@@ -1,0 +1,53 @@
+{% load staticfiles %}
+<html>
+    <head>
+        <title>KATe</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/style.css' %}">
+    </head>
+    <body>
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="{% url 'index' %}">
+                <img alt="Brand" src="{% static 'kateapp/images/ilogo.png' %}">
+                KATe
+              </a>
+            </div>
+            <div>
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">About</a></li>
+                <li><a href="#">Links</a></li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+        <h3>Course List</h3>
+        {% if courses_term1 %}
+        <h4>Autumn Term:</h4>
+        <ul>
+            {% for course in courses_term1 %}
+            <li><a href="{% url 'course' letter_yr course.code %}">CO{{course.code}}: {{ course.title }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if courses_term2 %}
+        <h4>Spring Term:</h4>
+        <ul>
+            {% for course in courses_term2 %}
+            <li><a href="{% url 'course' letter_yr course.code %}">CO{{course.code}}: {{ course.title }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if courses_term3 %}
+        <h4>Summer Term:</h4>
+        <ul>
+            {% for course in courses_term3 %}
+            <li><a href="{% url 'course' letter_yr course.code %}">CO{{course.code}}: {{ course.title }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+    </body>
+</html>

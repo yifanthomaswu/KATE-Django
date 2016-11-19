@@ -57,7 +57,21 @@
 	padding-top: 20px;
 }
 
-.twitter-timeline {
+.profile-pic {
+	padding-left: 20%;
+}
 
+.profile-pic img {
+	border-radius: 50%;
+	width: 150px;
+}
+
+.personal-info {
+	padding-top: 40px;
+}
+
+.personal-info-text {
+	padding-top: 60px;
+	padding-left: 40px;
 }
 

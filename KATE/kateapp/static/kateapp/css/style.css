@@ -1,0 +1,63 @@
+.navbar-brand {
+	padding: 10px 100px;
+}
+
+.navbar {
+	min-height: 60;
+	margin-bottom: 0;
+}
+
+.navbar-brand img {
+	height: 40;
+	padding-right: 20px;
+}
+
+.container-image {
+	background-size: cover;
+	width: 100%;
+	height: 550px;
+	background-image: url("../images/bgimperial.jpg");
+	position: relative;
+	background-position: 50%,50%
+}
+
+.container-image .text {
+	color: white;
+	width: 100%;
+	left: 0;
+	top: 40%;
+	font-size: 56px;
+	text-align: center;
+	position: absolute;
+	font-weight: 500;
+}
+
+.text .btn-lg {
+	background-image: none;
+	background-color: white;
+	color: black;
+	font-size: 12px;
+	font-weight: 400;
+	border-color: white;
+	border-radius: 0;
+	padding: 8px 20px;
+	transition-duration: 0.4s;
+}
+
+.text .btn-lg:hover {
+	background-color: transparent;
+} 
+
+.navbar-nav {
+	padding-right: 50px;
+	font-size: 16px;
+}
+
+.navbar-nav li a {
+	padding-top: 20px;
+}
+
+.twitter-timeline {
+	
+}
+

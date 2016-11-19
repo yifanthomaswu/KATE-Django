@@ -25,28 +25,28 @@ class Courses(models.Model):
     title = models.CharField(max_length=200)
     lecturer = models.ForeignKey(People, on_delete=models.PROTECT)
     def __str__(self):
-        return self.title
+        return self.code + " " + self.title
 
 @python_2_unicode_compatible
 class Term(models.Model):
     term = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=200)
     def __str__(self):
-        return self.name
+        return self.term.__str__() + ": " + self.name
 
 @python_2_unicode_compatible
 class Courses_Term(models.Model):
     code = models.ForeignKey(Courses, on_delete=models.PROTECT)
     term = models.ForeignKey(Term, on_delete=models.PROTECT)
     def __str__(self):
-        return self.code + self.term
+        return self.code + " " + self.term.__str__()
 
 @python_2_unicode_compatible
 class Courses_Classes(models.Model):
     code = models.ForeignKey(Courses, on_delete=models.PROTECT)
     letter_yr = models.ForeignKey(Classes, on_delete=models.PROTECT)
     def __str__(self):
-        return self.code + self.letter_yr
+        return self.code + " " + self.letter_yr
 
 @python_2_unicode_compatible
 class Exercises(models.Model):
@@ -58,7 +58,7 @@ class Exercises(models.Model):
     class Meta:
         unique_together = (("code", "number"),)
     def __str__(self):
-        return self.title
+        return self.title + ": " + self.start_date.__str__() + " ~ " + self.deadline.__str__()
 
 @python_2_unicode_compatible
 class Period(models.Model):
@@ -66,4 +66,4 @@ class Period(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     def __str__(self):
-        return self.start_date + self.end_date
+        return self.period.__str__() + ": " + self.start_date.__str__() + " ~ " + self.end_date.__str__()

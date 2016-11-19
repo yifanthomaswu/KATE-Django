@@ -35,28 +35,35 @@ class Term(models.Model):
         return self.name
 
 @python_2_unicode_compatible
-class Courses_Term(object):
+class Courses_Term(models.Model):
     code = models.ForeignKey(Courses, on_delete=models.PROTECT)
     term = models.ForeignKey(Term, on_delete=models.PROTECT)
     def __str__(self):
         return self.code + self.term
 
 @python_2_unicode_compatible
-class Courses_Classes(object):
+class Courses_Classes(models.Model):
     code = models.ForeignKey(Courses, on_delete=models.PROTECT)
     letter_yr = models.ForeignKey(Classes, on_delete=models.PROTECT)
     def __str__(self):
         return self.code + self.letter_yr
 
 @python_2_unicode_compatible
-class Exercises(object):
+class Exercises(models.Model):
     code = models.ForeignKey(Courses, on_delete=models.PROTECT)
     number = models.IntegerField()
     title = models.CharField(max_length=200)
-    start_date = models.TimeField()
-    deadline = models.TimeField()
+    start_date = models.DateTimeField()
+    deadline = models.DateTimeField()
     class Meta:
         unique_together = (("code", "number"),)
     def __str__(self):
         return self.title
 
+@python_2_unicode_compatible
+class Period(models.Model):
+    period = models.IntegerField(primary_key=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    def __str__(self):
+        return self.start_date + self.end_date

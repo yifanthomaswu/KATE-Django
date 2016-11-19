@@ -5,6 +5,7 @@ from django.template import loader
 from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period
 
 import datetime, calendar
+from datetime import timedelta
 
 def index(request):
     return render(request, 'kateapp/home.html')
@@ -26,9 +27,37 @@ def timetable(request, period_id, letter_yr, login):
     d_count = 0
     current_d = period.start_date + timedelta(0)
     current_m = current_d.month
-    # while (current_d <= period.end_date):
-
-    # for m in range(period.start_date.month, period.end_date.month):
-    #     d = calendar.monthrange(year, month)
-    #     months.append((calendar.month_name[m], ))
-    return render(request, 'kateapp/timetable.html', {'period': period, 'classes': classes, 'people': people})
+    while (current_d <= period.end_date):
+        if (current_m != current_d.month):
+            months.append((calendar.month_name[current_m], d_count))
+            d_count = 0
+            current_m = current_d.month
+        d_count += 1
+        current_d = current_d + timedelta(1)
+    months.append((calendar.month_name[period.end_date.month], period.end_date.day))
+    weeks = []
+    d_count = 0
+    current_d = period.start_date + timedelta(0)
+    while (current_d <= period.end_date):
+        d_count += 1
+        if (current_d.weekday() == 4):
+            weeks.append(d_count)
+            d_count = 0
+        current_d = current_d + timedelta(1)
+    days = []
+    current_d = period.start_date + timedelta(0)
+    while (current_d <= period.end_date):
+        weekday = True
+        if (5 <= current_d.weekday() <= 6):
+            weekday = False
+        days.append((current_d.day, weekday))
+        current_d = current_d + timedelta(1)
+    context = {
+        'period' : period,
+        'classes' : classes,
+        'people' : people,
+        'months' : months,
+        'weeks' : weeks,
+        'days' : days,
+    }
+    return render(request, 'kateapp/timetable.html', context)

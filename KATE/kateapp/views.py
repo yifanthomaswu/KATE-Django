@@ -83,7 +83,14 @@ def course_list(request, letter_yr):
 
 def course(request, letter_yr, code):
     course = get_object_or_404(Courses, courses_classes__letter_yr=letter_yr, pk=str(code))
+    terms = get_list_or_404(Term, courses_term__code=str(code))
+    terms.sort(key=lambda x: x.term)
+    #exercises = get_list_or_404(Exercises, code=str(code))
+    #exercises.sort(key=lambda x: x.number)
     context = {
         'course' : course,
+        'letter_yr' : letter_yr,
+        'terms' : terms,
+        #'exercises' : exercises,
     }
-    return render(request, 'kateapp/course.html', context)   
+    return render(request, 'kateapp/course.html', context)

@@ -1,32 +1,102 @@
 {% load staticfiles %}
 <html>
-    <head>
-        <title>KATe</title>
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-        <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/style.css' %}">
-    </head>
-    <body>
-        <nav class="navbar navbar-default">
-          <div class="container-fluid">
-            <div class="navbar-header">
-              <a class="navbar-brand" href="{% url 'index' %}">
-                <img alt="Brand" src="{% static 'kateapp/images/ilogo.png' %}">
-                KATe
-              </a>
-            </div>
-            <div>
-              <ul class="nav navbar-nav navbar-right">
+<head>
+  <title>KATe</title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/style.css' %}">
+</head>
+
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="{% url 'index' %}">
+          <img alt="Brand" src="{% static 'kateapp/images/ilogo.png' %}"> KATe
+        </a>
+      </div>
+      <div>
+        <ul class="nav navbar-nav navbar-right">
                 <li><a href="{% url 'personal_page' %}">Home</a></li>
                 <li><a href="{% url 'index' %}">Timetable</a></li>
                 <li><a href="{% url 'index' %}">Module List</a></li>
               </ul>
-            </div>
-          </div>
-        </nav>
+      </div>
+    </div>
+  </nav>
 
-        <h3>Module CO{{course.code}}: {{course.title}}</h3>
-        <p>Lecturer: {{course.lecturer}}</p>
-        
-    </body>
+  <h3>Module CO{{course.code}}: {{course.title}}</h3>
+  <p>
+    <table>
+      <tr>
+        <th>Lecturer:</th>
+        <td>{{course.lecturer}}</td>
+      </tr>
+      <tr>
+        <th>Year:</th>
+        <td>{{letter_yr}}</td>
+      </tr>
+      <tr>
+        {% if terms|length == 1 %}
+        <th>Term:</th>
+        {% else %}
+        <th>Terms:</th>
+        {% endif %}
+        {% for term in terms %}
+        <td>{{term.name}}</td>
+        {% endfor %}
+      </tr>
+    </table>
+  </p>
+  <p>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Topic</th>
+          <th>Notes</th>
+          <th>Other Resources</th>
+          <th>Panopto Recording</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>[A Date]</td>
+          <td>[A Topic]</td>
+          <td><a href="">[A document link]</a></td>
+          <td><a href="">[A resource link]</a></td>
+          <td><a href="">[A panopto link]</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </p>
+  {% if exercises %}
+  <p>
+    <table>
+      <caption>Exercises</caption>
+      <thead>
+        <tr>
+          <th>Start Date</th>
+          <th>Deadline</th>
+          <th>Title</th>
+          <th>File</th>
+          <th>Submission</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for exercise in exercises %}
+        <tr>
+          <td>exercise.start_date</td>
+          <td>exercise.deadline</td>
+          <td>exercise.title</td>
+          <td><a href="">[A document link]</a></td>
+          <td><a href="">[A Submission link]</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </p>
+  {% endif %}
+</body>
+
 </html>

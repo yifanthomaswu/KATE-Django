@@ -25,9 +25,10 @@
     </div>
   </nav>
 
+  <div class="container-fluid module-content">
   <h3>Module CO{{course.code}}: {{course.title}}</h3>
   <p>
-    <table>
+    <table class="table-responsive table-padding">
       <tr>
         <th>Lecturer:</th>
         <td>{{course.lecturer}}</td>
@@ -48,8 +49,9 @@
       </tr>
     </table>
   </p>
+
   <p>
-    <table>
+    <table class="table-striped table-responsive table-padding">
       <thead>
         <tr>
           <th>Date</th>
@@ -70,6 +72,7 @@
       </tbody>
     </table>
   </p>
+
   {% if exercises %}
   <p>
     <table>
@@ -97,6 +100,7 @@
     </table>
   </p>
   {% endif %}
+  </div>
 </body>
 
 </html>

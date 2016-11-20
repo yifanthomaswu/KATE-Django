@@ -68,13 +68,12 @@
 }
 
 .personal-info-text {
-	padding-top: 40px;
-	padding-left :0px;
+	padding-left: 80px;
 	font-size: 16px;
 }
 
 .container-link {
-	padding: 20px 30% 60px 30%;
+	padding: 20px 25% 100px 25%;
 }
 
 .container-link h3 {
@@ -95,11 +94,11 @@
 }
 
 .task-notification {
-	padding: 20px 30% 60px 30%;
+	padding: 20px 25% 60px 25%;
 }
 
 .twitter-feed {
-	padding: 20px 30% 60px 30%;
+	padding: 20px 25% 60px 25%;
 }
 
 .timetable h3{
@@ -110,5 +109,23 @@
 .timetable table {
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.module-content h3{
+	text-align: center;
+	padding-bottom: 30px;
+}
+
+.module-content table {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.table-padding th {
+	padding-right: 20px
+}
+
+.table-padding td {
+	padding-right: 20px;
 }
 

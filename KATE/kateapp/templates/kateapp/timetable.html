@@ -17,25 +17,36 @@
             </div>
             <div>
               <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">About</a></li>
-                <li><a href="#">Links</a></li>
+                <li><a href="{% url 'personal_page' %}">Home</a></li>
+                <li><a href="{% url 'index' %}">Timetable</a></li>
+                <li><a href="{% url 'index' %}">Module List</a></li>
               </ul>
             </div>
           </div>
         </nav>
-        <table border=0>
-            <tr>
-                <th colspan="4"></th>{% for month in months %}
-                <th bgcolor="white" colspan={{ month.1 }}>{{ month.0 }}</th>{% endfor %}
-            </tr>
-            <tr>
-                <th colspan="4"></th>{% for week in weeks %}
-                <th bgcolor="white" colspan={{ week }}>Week {{ forloop.counter }}</th>{% endfor %}
-            </tr>
-            <tr>
-                <th colspan="4"></th>{% for day in days %}
-                {% if day.1 %}<th bgcolor="white">{{ day.0 }}</th>{% else %}<th></th>{% endif %}{% endfor %}
-            </tr>
-        </table>
+
+        <div class = "container-fluid timetable">
+          <div class = "table-header">
+            <h3>Timetable<br>
+            Computing {{person.student_letter_yr}}<br>
+            Term</h3>
+          </div>
+        
+
+            <table border=0 class="table-striped table-responsive">
+                <tr>
+                    <th colspan="4"></th>{% for month in months %}
+                    <th bgcolor="white" colspan={{ month.1 }}>{{ month.0 }}</th>{% endfor %}
+                </tr>
+                <tr>
+                    <th colspan="4"></th>{% for week in weeks %}
+                    <th bgcolor="white" colspan={{ week }}>Week {{ forloop.counter }}</th>{% endfor %}
+                </tr>
+                <tr>
+                    <th colspan="4"></th>{% for day in days %}
+                    {% if day.1 %}<th bgcolor="white">{{ day.0 }}</th>{% else %}<th></th>{% endif %}{% endfor %}
+                </tr>
+            </table>
+        </div>
     </body>
 </html>

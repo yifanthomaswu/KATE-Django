@@ -57,9 +57,6 @@
 	padding-top: 20px;
 }
 
-.profile-pic {
-	padding-left: 20%;
-}
 
 .profile-pic img {
 	border-radius: 50%;
@@ -67,11 +64,51 @@
 }
 
 .personal-info {
-	padding-top: 40px;
+	padding: 40px 30% 60px 30%;
 }
 
 .personal-info-text {
-	padding-top: 60px;
-	padding-left: 40px;
+	padding-top: 40px;
+	padding-left :0px;
+	font-size: 16px;
+}
+
+.container-link {
+	padding: 20px 30% 60px 30%;
+}
+
+.container-link h3 {
+	padding-bottom: 20px;
+}
+
+.container-link .col-md-2  img {
+	display: block;
+	margin: auto;
+}
+.container-link .col-md-2  img:hover {
+	opacity: 0.5;	
+}
+
+.container-link .col-md-2 h4 {
+	text-align: center;
+	color: #003E74;
+}
+
+.task-notification {
+	padding: 20px 30% 60px 30%;
+}
+
+.twitter-feed {
+	padding: 20px 30% 60px 30%;
+}
+
+.timetable h3{
+	text-align: center;
+	padding-bottom: 30px;
+}
+
+.timetable table {
+	margin-left: auto;
+	margin-right: auto;
 }
 

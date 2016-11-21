@@ -19,12 +19,12 @@
               <ul class="nav navbar-nav navbar-right">
                 <li><a href="{% url 'personal_page' %}">Home</a></li>
                 <li><a href="{% url 'index' %}">Timetable</a></li>
-                <li><a href="{% url 'index' %}">Module List</a></li>
+                <li><a href="{% url 'course_list' letter_yr %}">Module List</a></li>
               </ul>
             </div>
           </div>
         </nav>
-        <h3>Course List</h3>
+        <h3>Module List</h3>
         {% if courses_term1 %}
         <h4>Autumn Term:</h4>
         <ul>

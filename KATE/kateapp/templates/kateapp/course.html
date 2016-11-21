@@ -72,6 +72,47 @@
       </tbody>
     </table>
   </p>
+  
+  </br>
+
+  <p>
+    <table class="table-striped table-responsive table-padding">
+      <caption>Exercises</caption>
+      <thead>
+        <tr>
+          <th>Date Due</th>
+          <th>Date Set</th>
+          <th>Title</th>
+          <th>Recources</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if teacher %}
+          <tr>
+            <td><button href="{% url 'excercise_setup' letter_yr course.code %}" type="button">Set New</button</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        {% endif %}
+        {% for exercise in exercises %}
+        <tr>
+          <td>[Due Date]</td>
+          <td>[Set Date]</td>
+          <td>[A Title]</td>
+          <td><a href="">[A resource link]</a></td>
+          {% if teacher %}
+            <td><button type="button">Edit</button></td>
+          {% else %}
+            <td><button type="button">Sumbit!</button></td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </p>
 
   {% if exercises %}
   <p>

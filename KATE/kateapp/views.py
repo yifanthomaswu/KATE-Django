@@ -21,22 +21,23 @@ def personal_page(request):
 
 def timetable(request, period_id, letter_yr, login):
     period = get_object_or_404(Period, pk=period_id)
-    classes = get_object_or_404(Classes, pk=letter_yr)
     person = get_object_or_404(People, pk=login)
-    courses = get_list_or_404(Courses_Classes, letter_yr=person.student_letter_yr)
     term_id = 0
-    if period_id == 1:
+    if period.period == 1:
         term_id = 1
-    elif period_id == 3:
+    elif period.period == 3:
         term_id = 2
-    elif period_id == 5:
+    elif period.period == 5:
         term_id = 3
+    courses = []
+    if term_id != 0:
+        courses = get_list_or_404(Courses.objects.order_by('code'), courses_classes__letter_yr=letter_yr, courses_term__term=term_id)
     months = []
     d_count = 0
     current_d = period.start_date + timedelta(0)
     current_m = current_d.month
-    while (current_d <= period.end_date):
-        if (current_m != current_d.month):
+    while current_d <= period.end_date:
+        if current_m != current_d.month:
             months.append((calendar.month_name[current_m], d_count))
             d_count = 0
             current_m = current_d.month
@@ -46,24 +47,24 @@ def timetable(request, period_id, letter_yr, login):
     weeks = []
     d_count = 0
     current_d = period.start_date + timedelta(0)
-    while (current_d <= period.end_date):
+    while current_d <= period.end_date:
         d_count += 1
-        if (current_d.weekday() == 4):
+        if current_d.weekday() == 4:
             weeks.append(d_count)
             d_count = 0
         current_d = current_d + timedelta(1)
     days = []
     current_d = period.start_date + timedelta(0)
-    while (current_d <= period.end_date):
+    while current_d <= period.end_date:
         weekday = True
-        if (5 <= current_d.weekday() <= 6):
+        if 5 <= current_d.weekday() <= 6:
             weekday = False
         days.append((current_d.day, weekday))
         current_d = current_d + timedelta(1)
     context = {
         'period' : period,
-        'classes' : classes,
         'person' : person,
+        'courses' : courses,
         'months' : months,
         'weeks' : weeks,
         'days' : days,

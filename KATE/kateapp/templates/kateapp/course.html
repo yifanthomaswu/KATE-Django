@@ -90,7 +90,7 @@
       <tbody>
         {% if teacher %}
           <tr>
-            <td><button href="{% url 'excercise_setup' letter_yr course.code %}" type="button">Set New</button</td>
+            <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' letter_yr course.code %}" role="button">Set New</a></td>
             <td></td>
             <td></td>
             <td></td>
@@ -99,9 +99,9 @@
         {% endif %}
         {% for exercise in exercises %}
         <tr>
-          <td>[Due Date]</td>
-          <td>[Set Date]</td>
-          <td>[A Title]</td>
+          <td>{{exercise.deadline}}</td>
+          <td>{{exercise.start_date}}</td>
+          <td>{{exercise.title}}</td>
           <td><a href="">[A resource link]</a></td>
           {% if teacher %}
             <td><button type="button">Edit</button></td>
@@ -114,33 +114,6 @@
     </table>
   </p>
 
-  {% if exercises %}
-  <p>
-    <table>
-      <caption>Exercises</caption>
-      <thead>
-        <tr>
-          <th>Start Date</th>
-          <th>Deadline</th>
-          <th>Title</th>
-          <th>File</th>
-          <th>Submission</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for exercise in exercises %}
-        <tr>
-          <td>exercise.start_date</td>
-          <td>exercise.deadline</td>
-          <td>exercise.title</td>
-          <td><a href="">[A document link]</a></td>
-          <td><a href="">[A Submission link]</a></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </p>
-  {% endif %}
   </div>
 </body>
 

@@ -1,8 +1,9 @@
 from django.shortcuts import get_object_or_404, get_list_or_404, render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 
 from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period
+from .forms import NewExerciseForm
 
 import datetime, calendar
 from datetime import timedelta
@@ -87,16 +88,33 @@ def course(request, letter_yr, code):
     terms.sort(key=lambda x: x.term)
     login = "test01"
     teacher = People.objects.get(login=login).student_letter_yr == None
-    #exercises = get_list_or_404(Exercises, code=str(code))
+    exercises = Exercises.objects.filter(code=str(code))
     #exercises.sort(key=lambda x: x.number)
     context = {
         'course' : course,
         'letter_yr' : letter_yr,
         'terms' : terms,
         'teacher' : teacher,
-        #'exercises' : exercises,
+        'exercises' : exercises,
     }
     return render(request, 'kateapp/course.html', context)
 
-def exercise_setup(request):
-    return render(request, 'kateapp/exercise_setup.html')
+def exercise_setup(request, letter_yr, code):
+        if request.method == 'POST':
+            form = NewExerciseForm(request.POST)
+            if form.is_valid():
+                e = Exercises(code=Courses.objects.get(code=code), 
+                title=form.cleaned_data["exercise"], 
+                start_date=form.cleaned_data["start_date"], 
+                deadline=form.cleaned_data["end_date"], 
+                number=form.cleaned_data["number"])
+                e.save()
+                return HttpResponseRedirect('/course/2016/' + letter_yr + '/' + code + '/')
+        else:
+            form = NewExerciseForm()
+        context = {
+            'form': form, 
+            'letter_yr' : letter_yr, 
+            'code' : code,
+            }
+        return render(request, 'kateapp/exercise_setup.html', context)

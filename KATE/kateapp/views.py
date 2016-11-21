@@ -95,3 +95,6 @@ def course(request, letter_yr, code):
         #'exercises' : exercises,
     }
     return render(request, 'kateapp/course.html', context)
+
+def exercise_setup(request):
+    return render(request, 'kateapp/exercise_setup.html')

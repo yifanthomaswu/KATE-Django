@@ -64,12 +64,16 @@
 }
 
 .personal-info {
-	padding: 40px 30% 60px 30%;
+	padding: 40px 25% 60px 25%;
 }
 
 .personal-info-text {
-	padding-left: 80px;
+	padding-left: 5%;
 	font-size: 16px;
+}
+
+.personal-info-text col-md-4 {
+	margin-right: 20%;
 }
 
 .container-link {
@@ -122,10 +126,18 @@
 }
 
 .table-padding th {
-	padding-right: 20px
+	padding-right: auto;
 }
 
 .table-padding td {
-	padding-right: 20px;
+	padding-right: auto;
 }
 
+.course-list h3 {
+	text-align: center;
+	padding-bottom: 30px;
+}
+
+.course-container {
+	padding: 20px 15% 60px 15%;
+}

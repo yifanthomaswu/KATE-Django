@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['146.169.46.229', '127.0.0.1', '146.169.46.94']
 
+# File save location
+MEDIA_ROOT = os.path.join(BASE_DIR, 'files')
+MEDIA_URL = '/files/'
 
 # Application definition
 

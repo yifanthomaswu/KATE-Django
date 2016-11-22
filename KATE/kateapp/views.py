@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, get_list_or_404, render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import loader
+from django.db.models import Max
 
 from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period
 from .forms import NewExerciseForm
@@ -120,6 +121,11 @@ def course_list(request, letter_yr):
     }
     return render(request, 'kateapp/course_list.html', context)
 
+def get_next_exercise_number(exercises):
+    nextNumber = exercises.aggregate(Max('number'))['number__max']
+    nextNumber = 1 if nextNumber is None else nextNumber + 1 
+    return nextNumber   
+
 def course(request, letter_yr, code):
     course = get_object_or_404(Courses, courses_classes__letter_yr=letter_yr, pk=str(code))
     terms = get_list_or_404(Term, courses_term__code=str(code))
@@ -127,6 +133,7 @@ def course(request, letter_yr, code):
     login = "test01"
     teacher = People.objects.get(login=login).student_letter_yr == None
     exercises = Exercises.objects.filter(code=str(code))
+    next_number = get_next_exercise_number(exercises)
     #exercises.sort(key=lambda x: x.number)
     context = {
         'course' : course,
@@ -134,25 +141,60 @@ def course(request, letter_yr, code):
         'terms' : terms,
         'teacher' : teacher,
         'exercises' : exercises,
+        'next_number' : next_number,
     }
     return render(request, 'kateapp/course.html', context)
 
-def exercise_setup(request, letter_yr, code):
-        if request.method == 'POST':
-            form = NewExerciseForm(request.POST)
-            if form.is_valid():
-                e = Exercises(code=Courses.objects.get(code=code),
-                title=form.cleaned_data["exercise"],
-                start_date=form.cleaned_data["start_date"],
-                deadline=form.cleaned_data["end_date"],
-                number=form.cleaned_data["number"])
+def exercise_setup(request, letter_yr, code, number):
+    newNumber = get_next_exercise_number(Exercises.objects.filter(code=code))
+    if int(number) > newNumber:
+        raise Http404("Exercise doesn't exists1")
+    if request.method == 'POST':
+        form = NewExerciseForm(request.POST)
+        if form.is_valid():
+            if Exercises.objects.filter(code=code, number = number).exists():
+                Exercises.objects.filter(code=code, number = number).update(
+                    title=form.cleaned_data["exercise"], 
+                    start_date=form.cleaned_data["start_date"], 
+                    deadline=form.cleaned_data["end_date"], 
+                    exercise_type=form.cleaned_data["exercise_type"],
+                    assessment=form.cleaned_data["assessment"],
+                    submission=form.cleaned_data["submission"],
+                    )
+            else:
+                e = Exercises(
+                    code=Courses.objects.get(code=code),
+                    number=newNumber,
+                    title=form.cleaned_data["exercise"], 
+                    start_date=form.cleaned_data["start_date"], 
+                    deadline=form.cleaned_data["end_date"], 
+                    exercise_type=form.cleaned_data["exercise_type"],
+                    assessment=form.cleaned_data["assessment"],
+                    submission=form.cleaned_data["submission"],
+                )
                 e.save()
-                return HttpResponseRedirect('/course/2016/' + letter_yr + '/' + code + '/')
-        else:
+            return HttpResponseRedirect('/course/2016/' + letter_yr + '/' + code + '/')
+    else:
+        if (int(number) == newNumber):
             form = NewExerciseForm()
+        else:
+            if Exercises.objects.filter(code=code, number = number).exists():
+                exercise = Exercises.objects.get(code=code, number = number)
+                data = {
+                    'exercise' : exercise.title,
+                    'start_date' : exercise.start_date,
+                    'end_date' : exercise.deadline,
+                    'exercise_type' : exercise.exercise_type,
+                    'assessment' : exercise.assessment,
+                    'submission' : exercise.submission,
+                    }
+                form = NewExerciseForm(data)
+            else:
+                raise Http404("Exercise doesn't exists2")
         context = {
             'form': form,
             'letter_yr' : letter_yr,
             'code' : code,
+            'number' : number,
             }
         return render(request, 'kateapp/exercise_setup.html', context)

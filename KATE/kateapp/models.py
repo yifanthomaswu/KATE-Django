@@ -55,6 +55,53 @@ class Exercises(models.Model):
     title = models.CharField(max_length=200)
     start_date = models.DateTimeField()
     deadline = models.DateTimeField()
+
+    COURSEWORK = 'CW'
+    PROJECT = 'PROJ'
+    REPORT = 'REP'
+    TEST = 'T'
+    EXAM = 'WES'
+    TUTORIAL = 'TUT'
+    TYPE_CHOICES = (
+        (COURSEWORK, 'Coursework'),
+        (PROJECT, 'Project'),
+        (REPORT, 'Report'),
+        (TEST, 'Test'),
+        (EXAM, 'Exam'),
+        (TUTORIAL, 'Tutorial'),
+    )
+
+    INDIVIDUAL = 'INDIVIDUAL'
+    GROUP = 'GROUP'
+    ASSESSMENT_CHOICES = (
+        (None, 'No Assessment'),
+        (INDIVIDUAL, 'Individual'),
+        (GROUP, 'Group'),
+    )
+
+    HARDCOPY = 'HARDCOPY'
+    ELECTRONIC = 'ELECTRONIC'
+    SUBMISSION_CHOICES = (
+        (None, 'No submission'),
+        (HARDCOPY, 'Hardcopy'),
+        (ELECTRONIC, 'Electronic'),
+    )
+
+    exercise_type = models.CharField(
+        max_length=15,
+        choices=TYPE_CHOICES,
+    )
+    assessment = models.CharField(
+        max_length=15,
+        choices=ASSESSMENT_CHOICES,
+        null=True,
+    )
+    submission = models.CharField(
+        max_length=15,
+        choices=SUBMISSION_CHOICES,
+        null=True
+    )
+    
     class Meta:
         unique_together = (("code", "number"),)
     def __str__(self):

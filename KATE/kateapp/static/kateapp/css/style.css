@@ -46,7 +46,7 @@
 
 .text .btn-lg:hover {
 	background-color: transparent;
-} 
+}
 
 .navbar-nav {
 	padding-right: 50px;
@@ -89,7 +89,7 @@
 	margin: auto;
 }
 .container-link .col-md-2  img:hover {
-	opacity: 0.5;	
+	opacity: 0.5;
 }
 
 .container-link .col-md-2 h4 {
@@ -140,4 +140,8 @@
 
 .course-container {
 	padding: 20px 15% 60px 15%;
+}
+
+.coursework {
+	background-color: green;
 }

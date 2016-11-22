@@ -34,11 +34,41 @@ def timetable(request, period_id, letter_yr, login):
         courses = get_list_or_404(Courses.objects.order_by('code'), courses_classes__letter_yr=letter_yr, courses_term__term=term_id)
     courses_exercises = []
     for course in courses:
-        exercises = list(Exercises.objects.filter(code=course.code).order_by('number'))
-        exercises_date = []
+        exercises = list(Exercises.objects.filter(code=course.code).order_by('start_date', 'deadline'))
+        bins = []
         for exercise in exercises:
-            exercises_date.append(((exercise.start_date.date() - period.start_date).days, (exercise.deadline.date() - period.start_date).days))
-        courses_exercises.append((course, exercises, exercises_date))
+            exercise_start = exercise.start_date.date()
+            exercise_end = exercise.deadline.date()
+            if period.start_date <= exercise_start <= period.end_date or period.start_date <= exercise_end <= period.end_date or (exercise_start < period.start_date and exercise_end > period.end_date):
+                placed = False
+                if bins:
+                    for bin in bins:
+                        can_place = True
+                        for item in bin:
+                            if item.start_date.date() <= exercise_start <= item.deadline.date() or item.start_date.date() <= exercise_end <= item.deadline.date() or (exercise_start < item.start_date.date() and  exercise_end > item.deadline.date()):
+                                can_place = False
+                                break
+                        if can_place:
+                            bin.append(exercise)
+                            placed = True
+                            break
+                if not placed:
+                    bin = [exercise]
+                    bins.append(bin)
+        rows = []
+        for bin in bins:
+            row = []
+            last_end = period.start_date
+            for item in bin:
+                item_start = item.start_date.date()
+                item_end = item.deadline.date()
+                row.append((None, (item_start - last_end).days))
+                row.append((item, (item_end - item_start).days + 1))
+                last_end = item_end
+            rows.append(row)
+        if not rows:
+            rows.append([])
+        courses_exercises.append((course, rows))
     months = []
     d_count = 0
     current_d = period.start_date + timedelta(0)

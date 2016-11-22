@@ -11,7 +11,6 @@ class NewExerciseForm(forms.Form):
                                 {
                                     'class':'datepicker'
                                 }))
-    number = forms.IntegerField()
     exercise_type = forms.ChoiceField(choices=Exercises.TYPE_CHOICES)
     assessment = forms.ChoiceField(choices=Exercises.ASSESSMENT_CHOICES)
     submission = forms.ChoiceField(choices=Exercises.SUBMISSION_CHOICES)

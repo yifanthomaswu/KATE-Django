@@ -41,7 +41,7 @@
   });
   </script>
         
-        <form action="{% url 'exercise_setup' letter_yr code %}" method="post">
+        <form action="{% url 'exercise_setup' letter_yr code number %}" method="post">
         {% csrf_token %}
         {{ form }}
         <input type="submit" value="Submit" />

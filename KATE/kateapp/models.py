@@ -53,9 +53,57 @@ class Exercises(models.Model):
     code = models.ForeignKey(Courses, on_delete=models.PROTECT)
     number = models.IntegerField()
     title = models.CharField(max_length=200)
-    #document = models.FileField(upload_to='files/')
     start_date = models.DateTimeField()
     deadline = models.DateTimeField()
+
+    COURSEWORK = 'CW'
+    PROJECT = 'PROJ'
+    REPORT = 'REP'
+    TEST = 'T'
+    EXAM = 'WES'
+    TUTORIAL = 'TUT'
+    TYPE_CHOICES = (
+        (COURSEWORK, 'Coursework'),
+        (PROJECT, 'Project'),
+        (REPORT, 'Report'),
+        (TEST, 'Test'),
+        (EXAM, 'Exam'),
+        (TUTORIAL, 'Tutorial'),
+    )
+
+    NO = 'NO'
+
+    INDIVIDUAL = 'INDIVIDUAL'
+    GROUP = 'GROUP'
+    ASSESSMENT_CHOICES = (
+        (NO, 'No Assessment'),
+        (INDIVIDUAL, 'Individual'),
+        (GROUP, 'Group'),
+    )
+
+    HARDCOPY = 'HARDCOPY'
+    ELECTRONIC = 'ELECTRONIC'
+    SUBMISSION_CHOICES = (
+        (NO, 'No submission'),
+        (HARDCOPY, 'Hardcopy'),
+        (ELECTRONIC, 'Electronic'),
+    )
+
+    exercise_type = models.CharField(
+        max_length=15,
+        choices=TYPE_CHOICES,
+    )
+    assessment = models.CharField(
+        max_length=15,
+        choices=ASSESSMENT_CHOICES,
+        default=NO,
+    )
+    submission = models.CharField(
+        max_length=15,
+        choices=SUBMISSION_CHOICES,
+        default=NO,
+    )
+
     class Meta:
         unique_together = (("code", "number"),)
     def __str__(self):
@@ -69,3 +117,25 @@ class Period(models.Model):
     end_date = models.DateField()
     def __str__(self):
         return self.period.__str__() + ": " + self.start_date.__str__() + " ~ " + self.end_date.__str__()
+
+@python_2_unicode_compatible
+class Resource(models.Model):
+    file = models.FileField(upload_to='path/')
+    title = models.CharField(max_length=200)
+    timestamp = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.title + " " + self.timestamp.__str__()
+
+@python_2_unicode_compatible
+class Courses_Resource(models.Model):
+    code = models.ForeignKey(Courses, on_delete=models.PROTECT)
+    resource = models.ForeignKey(Resource, on_delete=models.PROTECT)
+    def __str__(self):
+        return self.code.__str__() + " " + self.resource.__str__()
+
+@python_2_unicode_compatible
+class Exercises_Resource(models.Model):
+    exercise = models.ForeignKey(Exercises, on_delete=models.PROTECT)
+    resource = models.ForeignKey(Resource, on_delete=models.PROTECT)
+    def __str__(self):
+        return self.exercise.__str__() + " " + self.resource.__str__()

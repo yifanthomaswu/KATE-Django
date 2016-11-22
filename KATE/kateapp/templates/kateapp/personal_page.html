@@ -18,8 +18,8 @@
             <div>
               <ul class="nav navbar-nav navbar-right">
                 <li><a href="{% url 'personal_page' %}">Home</a></li>
-                <li><a href="{% url 'index' %}">Timetable</a></li>
-                <li><a href="{% url 'course_list' "c1" %}">Module List</a></li>
+                <li><a href="{% url 'timetable' 1 person.student_letter_yr person.login %}">Timetable</a></li>
+                <li><a href="{% url 'course_list' person.student_letter_yr %}">Module List</a></li>
               </ul>
             </div>
           </div>
@@ -86,7 +86,7 @@
                 <h4>Individual Record</h4>
               </div>
               <div class ="col-md-2">
-                <h4>Email and Module Subscription</h4>
+                <h4>Email and Module</h4>
               </div>
               <div class ="col-md-2">
                 <h4>Teaching Database</h4>
@@ -114,7 +114,7 @@
                 </a>
               </div>
               <div class ="col-md-2">
-                <a href="https://dbc.doc.ic.ac.uk/internalreg/">
+                <a href="#">
                 <img src="{% static 'kateapp/images/icon/png/mail.png' %}">
                 </a>
               </div>

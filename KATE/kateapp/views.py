@@ -32,6 +32,13 @@ def timetable(request, period_id, letter_yr, login):
     courses = []
     if term_id != 0:
         courses = get_list_or_404(Courses.objects.order_by('code'), courses_classes__letter_yr=letter_yr, courses_term__term=term_id)
+    courses_exercises = []
+    for course in courses:
+        exercises = list(Exercises.objects.filter(code=course.code).order_by('number'))
+        exercises_date = []
+        for exercise in exercises:
+            exercises_date.append(((exercise.start_date.date() - period.start_date).days, (exercise.deadline.date() - period.start_date).days))
+        courses_exercises.append((course, exercises, exercises_date))
     months = []
     d_count = 0
     current_d = period.start_date + timedelta(0)
@@ -64,7 +71,7 @@ def timetable(request, period_id, letter_yr, login):
     context = {
         'period' : period,
         'person' : person,
-        'courses' : courses,
+        'courses' : courses_exercises,
         'months' : months,
         'weeks' : weeks,
         'days' : days,
@@ -106,7 +113,6 @@ def exercise_setup(request, letter_yr, code):
             if form.is_valid():
                 e = Exercises(code=Courses.objects.get(code=code),
                 title=form.cleaned_data["title"],
-                #document=request.FILES["document"],
                 start_date=form.cleaned_data["start_date"],
                 deadline=form.cleaned_data["end_date"],
                 number=form.cleaned_data["number"])

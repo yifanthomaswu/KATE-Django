@@ -102,20 +102,21 @@ def course(request, letter_yr, code):
 
 def exercise_setup(request, letter_yr, code):
         if request.method == 'POST':
-            form = NewExerciseForm(request.POST)
+            form = NewExerciseForm(request.POST, request.FILES)
             if form.is_valid():
-                e = Exercises(code=Courses.objects.get(code=code), 
-                title=form.cleaned_data["exercise"], 
-                start_date=form.cleaned_data["start_date"], 
-                deadline=form.cleaned_data["end_date"], 
+                e = Exercises(code=Courses.objects.get(code=code),
+                title=form.cleaned_data["title"],
+                #document=request.FILES["document"],
+                start_date=form.cleaned_data["start_date"],
+                deadline=form.cleaned_data["end_date"],
                 number=form.cleaned_data["number"])
                 e.save()
                 return HttpResponseRedirect('/course/2016/' + letter_yr + '/' + code + '/')
         else:
             form = NewExerciseForm()
         context = {
-            'form': form, 
-            'letter_yr' : letter_yr, 
+            'form': form,
+            'letter_yr' : letter_yr,
             'code' : code,
             }
         return render(request, 'kateapp/exercise_setup.html', context)

@@ -53,6 +53,7 @@ class Exercises(models.Model):
     code = models.ForeignKey(Courses, on_delete=models.PROTECT)
     number = models.IntegerField()
     title = models.CharField(max_length=200)
+    #document = models.FileField(upload_to='files/')
     start_date = models.DateTimeField()
     deadline = models.DateTimeField()
     class Meta:

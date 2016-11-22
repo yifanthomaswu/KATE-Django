@@ -5,11 +5,11 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/style.css' %}">
-        
+
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    
+
     </head>
     <body>
         <nav class="navbar navbar-default">
@@ -41,12 +41,37 @@
   });
   </script>
         
-        <form action="{% url 'exercise_setup' letter_yr code number %}" method="post">
+
+    <div class ="container-fluid exercise-form">
+      <form action="{% url 'exercise_setup' letter_yr code number%}" method="post" enctype="multipart/form-data" 
+      class = "form-horizontal">
         {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Submit" />
-        </form>
-        
+        {{ form.non_field_errors }}
+        <div class="fieldWrapper form-group">
+            {{ form.exercise.errors }}
+            <label for="{{ form.exercise.id_for_label }}" class="col-sm-2 control-label">Title:</label>
+            <div class="col-sm-8">
+            {{ form.title }}
+            </div>
+        </div>
+        <div class="fieldWrapper form-group">
+            {{ form.start_date.errors }}
+            <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 control-label">Start Date:</label>
+            <div class="col-sm-8">
+            {{ form.start_date }}
+            </div>
+        </div>
+        <div class="fieldWrapper form-group">
+            {{ form.end_date.errors }}
+            <label for="{{ form.end_date.id_for_label }}" class="col-sm-2 control-label">Deadline:</label>
+            <div class="col-sm-8">
+            {{ form.end_date }}
+            </div>
+        </div>
+        <div>
+          <input type="submit" value="Submit" />
+        </div>
+      </form>
+    </div>
     </body>
 </html>
- 

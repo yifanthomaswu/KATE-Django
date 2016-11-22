@@ -71,10 +71,12 @@ class Exercises(models.Model):
         (TUTORIAL, 'Tutorial'),
     )
 
+    NO = 'NO'
+
     INDIVIDUAL = 'INDIVIDUAL'
     GROUP = 'GROUP'
     ASSESSMENT_CHOICES = (
-        (None, 'No Assessment'),
+        (NO, 'No Assessment'),
         (INDIVIDUAL, 'Individual'),
         (GROUP, 'Group'),
     )
@@ -82,7 +84,7 @@ class Exercises(models.Model):
     HARDCOPY = 'HARDCOPY'
     ELECTRONIC = 'ELECTRONIC'
     SUBMISSION_CHOICES = (
-        (None, 'No submission'),
+        (NO, 'No submission'),
         (HARDCOPY, 'Hardcopy'),
         (ELECTRONIC, 'Electronic'),
     )
@@ -94,14 +96,14 @@ class Exercises(models.Model):
     assessment = models.CharField(
         max_length=15,
         choices=ASSESSMENT_CHOICES,
-        null=True,
+        default=NO,
     )
     submission = models.CharField(
         max_length=15,
         choices=SUBMISSION_CHOICES,
-        null=True
+        default=NO,
     )
-    
+
     class Meta:
         unique_together = (("code", "number"),)
     def __str__(self):
@@ -115,3 +117,25 @@ class Period(models.Model):
     end_date = models.DateField()
     def __str__(self):
         return self.period.__str__() + ": " + self.start_date.__str__() + " ~ " + self.end_date.__str__()
+
+@python_2_unicode_compatible
+class Resource(models.Model):
+    file = models.FileField(upload_to='path/')
+    title = models.CharField(max_length=200)
+    timestamp = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.title + " " + self.timestamp.__str__()
+
+@python_2_unicode_compatible
+class Courses_Resource(models.Model):
+    code = models.ForeignKey(Courses, on_delete=models.PROTECT)
+    resource = models.ForeignKey(Resource, on_delete=models.PROTECT)
+    def __str__(self):
+        return self.code.__str__() + " " + self.resource.__str__()
+
+@python_2_unicode_compatible
+class Exercises_Resource(models.Model):
+    exercise = models.ForeignKey(Exercises, on_delete=models.PROTECT)
+    resource = models.ForeignKey(Resource, on_delete=models.PROTECT)
+    def __str__(self):
+        return self.exercise.__str__() + " " + self.resource.__str__()

@@ -5,11 +5,11 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/style.css' %}">
-        
+
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    
+
     </head>
     <body>
         <nav class="navbar navbar-default">
@@ -40,7 +40,6 @@
     });
   });
   </script>
-        
         <!-- <form action="{% url 'exercise_setup' letter_yr code %}" method="post"> -->
         <!-- <div class="form-group"> -->
           <!-- {% csrf_token %} -->
@@ -49,7 +48,8 @@
         <!-- </div> -->
         <!-- </form> -->
     <div class ="container-fluid exercise-form">
-      <form class = "form-horizontal">
+      <form action="{% url 'exercise_setup' letter_yr code %}" method="post" enctype="multipart/form-data" 
+      class = "form-horizontal">
         {{ form.non_field_errors }}
         <div class="fieldWrapper form-group">
             {{ form.exercise.errors }}
@@ -78,10 +78,9 @@
             <div class="col-sm-8">
             {{ form.number }}
             </div>
+          <input type="submit" value="Submit" />
         </div>
       </form>
     </div>
-        
     </body>
 </html>
- 

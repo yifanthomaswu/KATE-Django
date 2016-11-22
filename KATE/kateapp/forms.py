@@ -2,7 +2,9 @@ from django import forms
 from .models import Exercises
 
 class NewExerciseForm(forms.Form):
-    exercise = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control'}) )
+<<<<<<< HEAD
+    title = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control'}) )
+    #document = forms.FileField()
     start_date = forms.DateTimeField(widget=forms.TextInput(attrs=
                                 {
                                     'class':'datepicker form-control'

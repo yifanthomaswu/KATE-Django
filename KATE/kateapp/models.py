@@ -71,10 +71,12 @@ class Exercises(models.Model):
         (TUTORIAL, 'Tutorial'),
     )
 
+    NO = 'NO'
+
     INDIVIDUAL = 'INDIVIDUAL'
     GROUP = 'GROUP'
     ASSESSMENT_CHOICES = (
-        (None, 'No Assessment'),
+        (NO, 'No Assessment'),
         (INDIVIDUAL, 'Individual'),
         (GROUP, 'Group'),
     )
@@ -82,7 +84,7 @@ class Exercises(models.Model):
     HARDCOPY = 'HARDCOPY'
     ELECTRONIC = 'ELECTRONIC'
     SUBMISSION_CHOICES = (
-        (None, 'No submission'),
+        (NO, 'No submission'),
         (HARDCOPY, 'Hardcopy'),
         (ELECTRONIC, 'Electronic'),
     )
@@ -94,12 +96,12 @@ class Exercises(models.Model):
     assessment = models.CharField(
         max_length=15,
         choices=ASSESSMENT_CHOICES,
-        null=True,
+        default=NO,
     )
     submission = models.CharField(
         max_length=15,
         choices=SUBMISSION_CHOICES,
-        null=True
+        default=NO,
     )
     
     class Meta:

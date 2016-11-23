@@ -3,7 +3,7 @@ from .models import Exercises
 
 class NewExerciseForm(forms.Form):
     title = forms.CharField(label='Exercise Title', max_length=200)
-    #document = forms.FileField()
+    file = forms.FileField(label='Document')
     start_date = forms.DateTimeField(widget=forms.TextInput(attrs=
                                 {
                                     'class':'datepicker'

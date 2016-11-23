@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 from django.utils.encoding import python_2_unicode_compatible
-
 from django.db import models
 
 @python_2_unicode_compatible
@@ -120,11 +119,10 @@ class Period(models.Model):
 
 @python_2_unicode_compatible
 class Resource(models.Model):
-    file = models.FileField(upload_to='path/')
-    title = models.CharField(max_length=200)
+    file = models.FileField(upload_to='')
     timestamp = models.DateTimeField(auto_now=True)
     def __str__(self):
-        return self.title + " " + self.timestamp.__str__()
+        return self.file.name + " " + self.timestamp.__str__()
 
 @python_2_unicode_compatible
 class Courses_Resource(models.Model):

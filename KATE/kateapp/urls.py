@@ -8,5 +8,5 @@ urlpatterns = [
     url(r'^timetable/2016/(?P<period_id>[1-7])/(?P<letter_yr>[a-z][0-9])/(?P<login>[a-z0-9]+)/$', views.timetable, name='timetable'),
     url(r'^course/2016/(?P<letter_yr>[a-z][0-9])/$', views.course_list, name='course_list'),
     url(r'^course/2016/(?P<letter_yr>[a-z][0-9])/(?P<code>[.0-9]+)/$', views.course, name='course'),
-    url(r'^exercise_setup/2016/(?P<letter_yr>[a-z][0-9])/(?P<code>[.0-9]+)/$', views.exercise_setup, name='exercise_setup'),
+    url(r'^exercise_setup/2016/(?P<letter_yr>[a-z][0-9])/(?P<code>[.0-9]+)/(?P<number>[1-9]+)/$', views.exercise_setup, name='exercise_setup'),
 ]

@@ -90,7 +90,7 @@
       <tbody>
         {% if teacher %}
           <tr>
-            <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' letter_yr course.code %}" role="button">Set New</a></td>
+            <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' letter_yr course.code next_number %}" role="button">Set New</a></td>
             <td></td>
             <td></td>
             <td></td>
@@ -104,7 +104,7 @@
           <td><a href="{{ MEDIA_URL }}{{ er.1.0.file.url }}">{{er.0.title}}</a></td>
           <td></td>
           {% if teacher %}
-            <td><button type="button">Edit</button></td>
+            <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' letter_yr course.code er.0.number %}" role="button">Edit</a></td>
           {% else %}
             <td><button type="button">Submit!</button></td>
           {% endif %}

@@ -133,7 +133,7 @@ def course(request, letter_yr, code):
     course = get_object_or_404(Courses, courses_classes__letter_yr=letter_yr, pk=str(code))
     terms = get_list_or_404(Term, courses_term__code=str(code))
     terms.sort(key=lambda x: x.term)
-    login = "yw8012"
+    login = "test01"
     teacher = People.objects.get(login=login).student_letter_yr == None
     exercises = Exercises.objects.filter(code=str(code))
     next_number = get_next_exercise_number(exercises)
@@ -257,4 +257,3 @@ def submission(request, letter_yr, code, number):
             'exercise' : exercise,
             }
         return render(request, 'kateapp/submission.html', context)
-    

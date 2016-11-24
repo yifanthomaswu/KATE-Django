@@ -4,6 +4,11 @@ from .models import Exercises
 class NewExerciseForm(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control'}) )
     file = forms.FileField(label='Document')
+    resources = forms.FileField(label='Other resources',
+                                widget=forms.ClearableFileInput(attrs=
+                                {
+                                    'multiple': True
+                                }))
     start_date = forms.DateTimeField(widget=forms.TextInput(attrs=
                                 {
                                     'class':'datepicker form-control'

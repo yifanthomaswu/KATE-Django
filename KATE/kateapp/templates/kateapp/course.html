@@ -72,7 +72,7 @@
       </tbody>
     </table>
   </p>
-  
+
   </br>
 
   <p>
@@ -90,23 +90,23 @@
       <tbody>
         {% if teacher %}
           <tr>
-            <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' letter_yr course.code %}" role="button">Set New</a></td>
+            <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' letter_yr course.code next_number %}" role="button">Set New</a></td>
             <td></td>
             <td></td>
             <td></td>
             <td></td>
           </tr>
         {% endif %}
-        {% for exercise in exercises %}
+        {% for er in exercises_resources %}
         <tr>
-          <td>{{exercise.deadline}}</td>
-          <td>{{exercise.start_date}}</td>
-          <td>{{exercise.title}}</td>
-          <td><a href="">[A resource link]</a></td>
+          <td>{{er.0.deadline|date:"D, d M Y h:iA"}}</td>
+          <td>{{er.0.start_date|date:"D, d M Y h:iA"}}</td>
+          <td><a href="{{ MEDIA_URL }}{{ er.1.0.file.url }}">{{er.0.title}}</a></td>
+          <td></td>
           {% if teacher %}
-            <td><button type="button">Edit</button></td>
+            <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' letter_yr course.code er.0.number %}" role="button">Edit</a></td>
           {% else %}
-            <td><button type="button">Sumbit!</button></td>
+            <td><a class="btn btn-primary btn-sm active" href="{% url 'submission' letter_yr course.code er.0.number %}" role="button">Submit</a></td>
           {% endif %}
         </tr>
         {% endfor %}

@@ -105,7 +105,9 @@
           {% if teacher %}
             <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' course.code er.0.number %}" role="button">Edit</a></td>
           {% else %}
-            <td><a class="btn btn-primary btn-sm active" href="{% url 'submission' course.code er.0.number %}" role="button">Submit</a></td>
+            {% if er.0.submission != NO %}
+              <td><a class="btn btn-primary btn-sm active" href="{% url 'submission' course.code er.0.number %}" role="button">Submit</a></td>
+            {% endif %}
           {% endif %}
         </tr>
         {% endfor %}

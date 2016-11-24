@@ -82,7 +82,6 @@
           <th>Date Due</th>
           <th>Date Set</th>
           <th>Title</th>
-          <th>Recources</th>
           <th></th>
         </tr>
       </thead>
@@ -93,7 +92,6 @@
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
           </tr>
         {% endif %}
         {% for er in exercises_resources %}
@@ -101,7 +99,6 @@
           <td>{{er.0.deadline|date:"D, d M Y h:iA"}}</td>
           <td>{{er.0.start_date|date:"D, d M Y h:iA"}}</td>
           <td><a href="{{ MEDIA_URL }}{{ er.1.0.file.url }}">{{er.0.title}}</a></td>
-          <td></td>
           {% if teacher %}
             <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' course.code er.0.number %}" role="button">Edit</a></td>
           {% else %}

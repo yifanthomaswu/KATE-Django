@@ -157,11 +157,11 @@ def exercise_setup(request, code, number):
     if int(number) > newNumber:
         raise Http404("Exercise doesn't exist")
     if request.method == 'POST':
-        form = NewExerciseForm(request.POST)
+        form = NewExerciseForm(request.POST, request.FILES)
         if form.is_valid():
             if Exercises.objects.filter(code=code, number = number).exists():
                 Exercises.objects.filter(code=code, number = number).update(
-                    title=form.cleaned_data["exercise"],
+                    title=form.cleaned_data["title"],
                     start_date=form.cleaned_data["start_date"],
                     deadline=form.cleaned_data["end_date"],
                     exercise_type=form.cleaned_data["exercise_type"],
@@ -188,6 +188,8 @@ def exercise_setup(request, code, number):
                 resource=r)
                 er.save()
             return HttpResponseRedirect('/course/2016/' + code + '/')
+        else:
+            raise Http404("Form Validation failed")
     else:
         if (int(number) == newNumber):
             form = NewExerciseForm()
@@ -257,4 +259,3 @@ def submission(request, code, number):
             'exercise' : exercise,
             }
         return render(request, 'kateapp/submission.html', context)
-

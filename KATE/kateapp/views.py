@@ -133,7 +133,7 @@ def course(request, letter_yr, code):
     course = get_object_or_404(Courses, courses_classes__letter_yr=letter_yr, pk=str(code))
     terms = get_list_or_404(Term, courses_term__code=str(code))
     terms.sort(key=lambda x: x.term)
-    login = "yw8012"
+    login = "test01"
     teacher = People.objects.get(login=login).student_letter_yr == None
     exercises = Exercises.objects.filter(code=str(code))
     next_number = get_next_exercise_number(exercises)
@@ -153,6 +153,7 @@ def course(request, letter_yr, code):
 
 def exercise_setup(request, letter_yr, code, number):
     newNumber = get_next_exercise_number(Exercises.objects.filter(code=code))
+    course = get_object_or_404(Courses, courses_classes__letter_yr=letter_yr, pk=str(code))
     if int(number) > newNumber:
         raise Http404("Exercise doesn't exist")
     if request.method == 'POST':
@@ -209,6 +210,7 @@ def exercise_setup(request, letter_yr, code, number):
             'letter_yr' : letter_yr,
             'code' : code,
             'number' : number,
+            'course' : course,
             }
         return render(request, 'kateapp/exercise_setup.html', context)
 

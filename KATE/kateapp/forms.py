@@ -15,3 +15,10 @@ class NewExerciseForm(forms.Form):
     exercise_type = forms.ChoiceField(choices=Exercises.TYPE_CHOICES)
     assessment = forms.ChoiceField(choices=Exercises.ASSESSMENT_CHOICES)
     submission = forms.ChoiceField(choices=Exercises.SUBMISSION_CHOICES)
+
+class SubmissionForm(forms.Form):
+    #Is it Electronic submission?
+    file = forms.FileField(label='Document')
+    # How many files to upload?
+    #Add group members?
+    #Generate smt else if not electronic?...

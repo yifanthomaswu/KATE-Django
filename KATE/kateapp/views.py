@@ -5,7 +5,7 @@ from django.template import loader
 from django.db.models import Max
 
 from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource
-from .forms import NewExerciseForm
+from .forms import NewExerciseForm, SubmissionForm
 
 import datetime, calendar
 from datetime import timedelta
@@ -133,7 +133,7 @@ def course(request, letter_yr, code):
     course = get_object_or_404(Courses, courses_classes__letter_yr=letter_yr, pk=str(code))
     terms = get_list_or_404(Term, courses_term__code=str(code))
     terms.sort(key=lambda x: x.term)
-    login = "test01"
+    login = "yw8012"
     teacher = People.objects.get(login=login).student_letter_yr == None
     exercises = Exercises.objects.filter(code=str(code))
     next_number = get_next_exercise_number(exercises)
@@ -211,3 +211,50 @@ def exercise_setup(request, letter_yr, code, number):
             'number' : number,
             }
         return render(request, 'kateapp/exercise_setup.html', context)
+
+def submission(request, letter_yr, code, number):
+    #Check that exercise exists
+    if not Exercises.objects.filter(code=code, number=number).exists():
+        raise Http404("Exercise doesn't exist")
+    exercise = Exercises.objects.get(code=code, number=number)
+    #Split, either form is being produced, or submitted
+    if request.method == 'POST':
+        ############ Form Submitted ############
+        form = SubmissionForm(request.POST)
+        if form.is_valid():
+            #check if submitted already
+            if Exercises_Resource.objects.filter(exercise=exercise).exitsts():
+                #update submission with new
+                Resource.objects.filter(Exercises_Resource__exercise=exercise).update(file=request.FILES["file"])
+                r = Resource.objects.get(Exercises_Resource__exercise=exercise)
+                Exercises_Resource.objects.filter(exercise=exercise).update(resource=r)
+            else:
+                #create new submission
+                #setup resource
+                r = Resource(file=request.FILES["file"])
+                r.save()
+                #setup exercise-resource link
+                er = Exercises_Resource(exercise=exercise,
+                resource=r)
+                er.save()
+            return HttpResponseRedirect('/submission/2016/' + letter_yr + '/' + code + '/' + number + '/')
+    else:
+        ############ Form generated ############
+        #check if submitted already
+        if not Exercises_Resource.objects.filter(exercise=exercise).exists():
+            #create new unbound form
+            form = SubmissionForm()
+        else:
+            #create bound form
+            data = {
+                }
+            form = SubmissionForm(data)
+        context = {
+            'form': form,
+            'letter_yr' : letter_yr,
+            'code' : code,
+            'number' : number,
+            'exercise' : exercise,
+            }
+        return render(request, 'kateapp/submission.html', context)
+    

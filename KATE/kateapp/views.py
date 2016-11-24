@@ -108,21 +108,23 @@ def course(request, letter_yr, code):
     return render(request, 'kateapp/course.html', context)
 
 def exercise_setup(request, letter_yr, code):
-        if request.method == 'POST':
-            form = NewExerciseForm(request.POST, request.FILES)
-            if form.is_valid():
-                e = Exercises(code=Courses.objects.get(code=code),
-                title=form.cleaned_data["title"],
-                start_date=form.cleaned_data["start_date"],
-                deadline=form.cleaned_data["end_date"],
-                number=form.cleaned_data["number"])
-                e.save()
-                return HttpResponseRedirect('/course/2016/' + letter_yr + '/' + code + '/')
-        else:
-            form = NewExerciseForm()
-        context = {
-            'form': form,
-            'letter_yr' : letter_yr,
-            'code' : code,
-            }
-        return render(request, 'kateapp/exercise_setup.html', context)
+    course = get_object_or_404(Courses, courses_classes__letter_yr=letter_yr, pk=str(code))
+    if request.method == 'POST':
+        form = NewExerciseForm(request.POST, request.FILES)
+        if form.is_valid():
+            e = Exercises(code=Courses.objects.get(code=code),
+            title=form.cleaned_data["title"],
+            start_date=form.cleaned_data["start_date"],
+            deadline=form.cleaned_data["end_date"],
+            number=form.cleaned_data["number"])
+            e.save()
+            return HttpResponseRedirect('/course/2016/' + letter_yr + '/' + code + '/')
+    else:
+        form = NewExerciseForm()
+    context = {
+        'form': form,
+        'letter_yr' : letter_yr,
+        'code' : code,
+        'course' : course,
+        }
+    return render(request, 'kateapp/exercise_setup.html', context)

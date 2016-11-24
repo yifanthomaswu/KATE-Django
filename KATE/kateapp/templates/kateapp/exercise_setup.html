@@ -40,22 +40,19 @@
     });
   });
   </script>
-        <!-- <form action="{% url 'exercise_setup' letter_yr code %}" method="post"> -->
-        <!-- <div class="form-group"> -->
-          <!-- {% csrf_token %} -->
-          <!-- {{ form }} -->
-          <!-- <input type="submit" value="Submit" /> -->
-        <!-- </div> -->
-        <!-- </form> -->
+
     <div class ="container-fluid exercise-form">
+      <h3>Exercise Setup<br>
+      Module CO{{course.code}}: {{course.title}}
+      </h3>
       <form action="{% url 'exercise_setup' letter_yr code %}" method="post" enctype="multipart/form-data" 
       class = "form-horizontal">
         {{ form.non_field_errors }}
         <div class="fieldWrapper form-group">
-            {{ form.exercise.errors }}
-            <label for="{{ form.exercise.id_for_label }}" class="col-sm-2 control-label">Title:</label>
+            {{ form.title.errors }}
+            <label for="{{ form.title.id_for_label }}" class="col-sm-2 control-label">Title:</label>
             <div class="col-sm-8">
-            {{ form.exercise }}
+            {{ form.title }}
             </div>
         </div>
         <div class="fieldWrapper form-group">
@@ -74,12 +71,34 @@
         </div>
         <div class="fieldWrapper form-group">
             {{ form.number.errors }}
-            <label for="{{ form.number.id_for_label }}" class="col-sm-2 control-label">CW Number</label>
+            <label for="{{ form.number.id_for_label }}" class="col-sm-2 control-label">CW Number:</label>
             <div class="col-sm-8">
             {{ form.number }}
             </div>
-          <input type="submit" value="Submit" />
         </div>
+        <div class="fieldWrapper form-group">
+            {{ form.exercise_type.errors }}
+            <label for="{{ form.exercise_type.id_for_label }}" class="col-sm-2 control-label">Exercise Type:</label>
+            <div class="col-sm-8">
+            {{ form.exercise_type }}
+            </div>
+        </div>
+        <div class="fieldWrapper form-group">
+            {{ form.assessment.errors }}
+            <label for="{{ form.assessment.id_for_label }}" class="col-sm-2 control-label">Assessment:</label>
+            <div class="col-sm-8">
+            {{ form.assessment }}
+            </div>
+        </div>
+        <div class="fieldWrapper form-group">
+            {{ form.submission.errors }}
+            <label for="{{ form.submission.id_for_label }}" class="col-sm-2 control-label">Submission:</label>
+            <div class="col-sm-8">
+            {{ form.submission }}
+            </div>
+        </div>
+        <dicv class="col-sm-offset-8 col-sm-2">
+        <input class="btn btn-primary" type="submit" value="Submit" />
       </form>
     </div>
     </body>

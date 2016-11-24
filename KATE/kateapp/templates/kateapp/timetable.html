@@ -65,7 +65,7 @@
                         <b><a href="{% url 'course' course.code %}">{{ course.title }}</a></b><br>
                     </td>{% endif %}{% for exercise, days in row %}
                     {% if exercise is None %}<td colspan="{{ days }}"></td>{% else %}
-                    <td class="coursework" colspan="{{ days }}">
+                    <td class="{% if exercise.assessment != "NO" %}{{ exercise.assessment }}{% elif exercise.submission != "NO" %}SUBMISSION{% elif exercise.exercise_type != "EXAM" %}NOSUBMISSION{% else %}EXAM{% endif %}" colspan="{{ days }}">
                         <b><a href="{% url 'submission' course.code exercise.number %}">{{ exercise.title }}</a></b><br>
                     </td>{% endif %}{% endfor %}
                 </tr>

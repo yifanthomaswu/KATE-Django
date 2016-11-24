@@ -148,8 +148,24 @@
 	padding: 20px 15% 60px 15%;
 }
 
-.coursework {
+.INDIVIDUAL {
 	background-color: #ccffcc;
+}
+
+.GROUP {
+	background-color: #f0ccf0;
+}
+
+.NOSUBMISSION {
+	background-color: #cdcdcd;
+}
+
+.SUBMISSION {
+	background-color: #cdcdcd;
+}
+
+.EXAM {
+	background-color: #ff9999;
 }
 
 .exercise-form {

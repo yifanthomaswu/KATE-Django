@@ -62,11 +62,11 @@
                 {% for row in rows %}
                 <tr>{% if forloop.first %}
                     <td rowspan="{{ rows|length }}">
-                        <b><a href="{% url 'course' person.student_letter_yr course.code %}">{{ course.title }}</a></b><br>
+                        <b><a href="{% url 'course' course.code %}">{{ course.title }}</a></b><br>
                     </td>{% endif %}{% for exercise, days in row %}
                     {% if exercise is None %}<td colspan="{{ days }}"></td>{% else %}
                     <td class="coursework" colspan="{{ days }}">
-                        <b><a href="#">{{ exercise.title }}</a></b><br>
+                        <b><a href="{% url 'submission' course.code exercise.number %}">{{ exercise.title }}</a></b><br>
                     </td>{% endif %}{% endfor %}
                 </tr>
                 {% endfor %}{% endfor %}

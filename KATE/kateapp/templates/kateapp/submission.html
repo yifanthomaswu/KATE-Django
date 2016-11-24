@@ -40,10 +40,10 @@
     });
   });
   </script>
-        
+
 
     <div class ="container-fluid exercise-form">
-      <form action="{% url 'submission' letter_yr code number%}" method="post" enctype="multipart/form-data" 
+      <form action="{% url 'submission' code number%}" method="post" enctype="multipart/form-data"
       class = "form-horizontal">
         {% csrf_token %}
         {{ form }}

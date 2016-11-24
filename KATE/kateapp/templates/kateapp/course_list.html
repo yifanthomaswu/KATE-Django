@@ -24,7 +24,7 @@
             </div>
           </div>
         </nav>
-        
+
         <div class="container-fluid course-list">
           <h3>Course List</h3>
           <div class="course-container">
@@ -32,7 +32,7 @@
             <h4>Autumn Term:</h4>
             <ul>
                 {% for course in courses_term1 %}
-                <li><a href="{% url 'course' letter_yr course.code %}">CO{{course.code}}: {{ course.title }}</a></li>
+                <li><a href="{% url 'course' course.code %}">CO{{course.code}}: {{ course.title }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
@@ -40,7 +40,7 @@
             <h4>Spring Term:</h4>
             <ul>
                 {% for course in courses_term2 %}
-                <li><a href="{% url 'course' letter_yr course.code %}">CO{{course.code}}: {{ course.title }}</a></li>
+                <li><a href="{% url 'course' course.code %}">CO{{course.code}}: {{ course.title }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
@@ -48,7 +48,7 @@
             <h4>Summer Term:</h4>
             <ul>
                 {% for course in courses_term3 %}
-                <li><a href="{% url 'course' letter_yr course.code %}">CO{{course.code}}: {{ course.title }}</a></li>
+                <li><a href="{% url 'course' course.code %}">CO{{course.code}}: {{ course.title }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}

@@ -40,12 +40,12 @@
     });
   });
   </script>
+
     <div class ="container-fluid exercise-form">
       <h3>Exercise Setup<br>
       Module CO{{course.code}}: {{course.title}}
       </h3>
-      <form action="{% url 'exercise_setup' letter_yr code number%}" method="post" enctype="multipart/form-data" 
-      class = "form-horizontal">
+      <form action="{% url 'exercise_setup' code number%}" method="post" enctype="multipart/form-data" class = "form-horizontal">
         {% csrf_token %}
         {{ form.non_field_errors }}
         <div class="fieldWrapper form-group">

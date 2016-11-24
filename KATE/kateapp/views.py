@@ -129,8 +129,8 @@ def get_next_exercise_number(exercises):
     nextNumber = 1 if nextNumber is None else nextNumber + 1
     return nextNumber
 
-def course(request, letter_yr, code):
-    course = get_object_or_404(Courses, courses_classes__letter_yr=letter_yr, pk=str(code))
+def course(request, code):
+    course = get_object_or_404(Courses, pk=str(code))
     terms = get_list_or_404(Term, courses_term__code=str(code))
     terms.sort(key=lambda x: x.term)
     login = "test01"
@@ -143,7 +143,6 @@ def course(request, letter_yr, code):
         exercises_resources.append((exercise, resources))
     context = {
         'course' : course,
-        'letter_yr' : letter_yr,
         'terms' : terms,
         'teacher' : teacher,
         'exercises_resources' : exercises_resources,
@@ -151,17 +150,17 @@ def course(request, letter_yr, code):
     }
     return render(request, 'kateapp/course.html', context)
 
-def exercise_setup(request, letter_yr, code, number):
+def exercise_setup(request, code, number):
     newNumber = get_next_exercise_number(Exercises.objects.filter(code=code))
-    course = get_object_or_404(Courses, courses_classes__letter_yr=letter_yr, pk=str(code))
+    course = get_object_or_404(Courses, pk=str(code))
     if int(number) > newNumber:
         raise Http404("Exercise doesn't exist")
     if request.method == 'POST':
-        form = NewExerciseForm(request.POST)
+        form = NewExerciseForm(request.POST, request.FILES)
         if form.is_valid():
             if Exercises.objects.filter(code=code, number = number).exists():
                 Exercises.objects.filter(code=code, number = number).update(
-                    title=form.cleaned_data["exercise"],
+                    title=form.cleaned_data["title"],
                     start_date=form.cleaned_data["start_date"],
                     deadline=form.cleaned_data["end_date"],
                     exercise_type=form.cleaned_data["exercise_type"],
@@ -187,7 +186,7 @@ def exercise_setup(request, letter_yr, code, number):
                 er = Exercises_Resource(exercise=e,
                 resource=r)
                 er.save()
-            return HttpResponseRedirect('/course/2016/' + letter_yr + '/' + code + '/')
+            return HttpResponseRedirect('/course/2016/' + code + '/')
         else:
             raise Http404("Form Validation failed")
     else:
@@ -209,14 +208,13 @@ def exercise_setup(request, letter_yr, code, number):
                 raise Http404("Exercise doesn't exists")
         context = {
             'form': form,
-            'letter_yr' : letter_yr,
             'code' : code,
             'number' : number,
             'course' : course,
             }
         return render(request, 'kateapp/exercise_setup.html', context)
 
-def submission(request, letter_yr, code, number):
+def submission(request, code, number):
     #Check that exercise exists
     if not Exercises.objects.filter(code=code, number=number).exists():
         raise Http404("Exercise doesn't exist")
@@ -241,7 +239,7 @@ def submission(request, letter_yr, code, number):
                 er = Exercises_Resource(exercise=exercise,
                 resource=r)
                 er.save()
-            return HttpResponseRedirect('/submission/2016/' + letter_yr + '/' + code + '/' + number + '/')
+            return HttpResponseRedirect('/submission/2016/' + code + '/' + number + '/')
     else:
         ############ Form generated ############
         #check if submitted already
@@ -255,7 +253,6 @@ def submission(request, letter_yr, code, number):
             form = SubmissionForm(data)
         context = {
             'form': form,
-            'letter_yr' : letter_yr,
             'code' : code,
             'number' : number,
             'exercise' : exercise,

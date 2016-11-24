@@ -19,7 +19,6 @@
         <ul class="nav navbar-nav navbar-right">
                 <li><a href="{% url 'personal_page' %}">Home</a></li>
                 <li><a href="{% url 'index' %}">Timetable</a></li>
-                <li><a href="{% url 'course_list' letter_yr %}">Module List</a></li>
               </ul>
       </div>
     </div>
@@ -35,7 +34,7 @@
       </tr>
       <tr>
         <th>Year:</th>
-        <td>{{letter_yr}}</td>
+        <td></td>
       </tr>
       <tr>
         {% if terms|length == 1 %}
@@ -89,7 +88,7 @@
       <tbody>
         {% if teacher %}
           <tr>
-            <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' letter_yr course.code next_number %}" role="button">Set New</a></td>
+            <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' course.code next_number %}" role="button">Set New</a></td>
             <td></td>
             <td></td>
             <td></td>
@@ -101,9 +100,9 @@
           <td>{{er.0.start_date|date:"D, d M Y h:iA"}}</td>
           <td><a href="{{ MEDIA_URL }}{{ er.1.0.file.url }}">{{er.0.title}}</a></td>
           {% if teacher %}
-            <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' letter_yr course.code er.0.number %}" role="button">Edit</a></td>
+            <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' course.code er.0.number %}" role="button">Edit</a></td>
           {% else %}
-            <td><a class="btn btn-primary btn-sm active" href="{% url 'submission' letter_yr course.code er.0.number %}" role="button">Submit</a></td>
+            <td><a class="btn btn-primary btn-sm active" href="{% url 'submission' course.code er.0.number %}" role="button">Submit</a></td>
           {% endif %}
         </tr>
         {% endfor %}

@@ -16,7 +16,7 @@ def index(request):
     return render(request, 'kateapp/home.html')
 
 def personal_page(request):
-    login = "test01"
+    login = "yw8012"
     person = get_object_or_404(People, login=login)
     context = {
         'person' : person,

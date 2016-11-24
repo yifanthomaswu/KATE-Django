@@ -125,12 +125,18 @@
 	margin-right: auto;
 }
 
+.table-padding caption {
+	font-size: 18px;
+	padding-bottom: 20px;
+	font-weight: 600;
+}
+
 .table-padding th {
-	padding-right: auto;
+	padding-right: 25px;
 }
 
 .table-padding td {
-	padding-right: auto;
+	padding-right: 25px;
 }
 
 .course-list h3 {
@@ -148,4 +154,9 @@
 
 .exercise-form {
 	padding: 30px 20% 0 20%;
+}
+
+.exercise-form h3 {
+	text-align: center;
+	padding-bottom: 20px;
 }

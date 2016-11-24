@@ -153,6 +153,7 @@ def course(request, letter_yr, code):
 
 def exercise_setup(request, letter_yr, code, number):
     newNumber = get_next_exercise_number(Exercises.objects.filter(code=code))
+    course = get_object_or_404(Courses, courses_classes__letter_yr=letter_yr, pk=str(code))
     if int(number) > newNumber:
         raise Http404("Exercise doesn't exist")
     if request.method == 'POST':
@@ -187,6 +188,8 @@ def exercise_setup(request, letter_yr, code, number):
                 resource=r)
                 er.save()
             return HttpResponseRedirect('/course/2016/' + letter_yr + '/' + code + '/')
+        else:
+            raise Http404("Form Validation failed")
     else:
         if (int(number) == newNumber):
             form = NewExerciseForm()
@@ -209,6 +212,7 @@ def exercise_setup(request, letter_yr, code, number):
             'letter_yr' : letter_yr,
             'code' : code,
             'number' : number,
+            'course' : course,
             }
         return render(request, 'kateapp/exercise_setup.html', context)
 

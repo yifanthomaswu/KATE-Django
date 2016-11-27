@@ -178,15 +178,19 @@ def exercise_setup(request, code, number):
                 exercise_type=form.cleaned_data["exercise_type"],
                 assessment=form.cleaned_data["assessment"],
                 submission=form.cleaned_data["submission"])
-                #setup resource
-                r = Resource(file=request.FILES["file"])
-                #save exercise and resource
-                e.save()
-                r.save()
+                #setup resource if required
+
+                #check if file given
+
+                #r = Resource(file=request.FILES["file"])
+                #save resource
+                #r.save()
                 #setup exercise-resource link
-                er = Exercises_Resource(exercise=e,
-                resource=r)
-                er.save()
+                #er = Exercises_Resource(exercise=e,
+                #resource=r)
+                #er.save()
+
+                e.save()
             return HttpResponseRedirect('/course/2016/' + code + '/')
         else:
             raise Http404("Form Validation failed")
@@ -212,6 +216,7 @@ def exercise_setup(request, code, number):
             'code' : code,
             'number' : number,
             'course' : course,
+            'types' : Exercises,
             }
         return render(request, 'kateapp/exercise_setup.html', context)
 

@@ -8,13 +8,14 @@ class NewExerciseForm(forms.Form):
     #                            {
     #                                'multiple': True
     #                            }))
-    file = forms.FileField(widget=forms.ClearableFileInput(attrs={'class':'form-control'}))
+    file = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class':'form-control'}))
     start_date = forms.DateTimeField(widget=forms.TextInput(attrs={'class':'datepicker form-control'}))
     end_date = forms.DateTimeField(widget=forms.TextInput(attrs={'class':'datepicker form-control'}))
     #number = forms.IntegerField(widget=forms.NumberInput(attrs={'class' : 'form-control'}))
     exercise_type = forms.ChoiceField(choices=Exercises.TYPE_CHOICES, widget=forms.Select(attrs={'class':'form-control'}))
     assessment = forms.ChoiceField(choices=Exercises.ASSESSMENT_CHOICES, widget=forms.Select(attrs={'class':'form-control'}))
     submission = forms.ChoiceField(choices=Exercises.SUBMISSION_CHOICES, widget=forms.Select(attrs={'class':'form-control'}))
+    file_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'class' : 'form-control'}) )
 
 
 class SubmissionForm(forms.Form):

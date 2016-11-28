@@ -1,0 +1,74 @@
+{% load staticfiles %}
+<html>
+<head>
+  <title>KATe</title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+      <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+      <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/style.css' %}">
+</head>
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="{% url 'index' %}">
+          <img alt="Brand" src="{% static 'kateapp/images/ilogo.png' %}">
+          KATe
+        </a>
+      </div>
+      <div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="{% url 'personal_page' %}">Home</a></li>
+          <li><a href="{% url 'index' %}">Timetable</a></li>
+          <li><a href="{% url 'course_list' "c1" %}">Module List</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <h3>Departmental Grading Scheme</h3>
+  <ul>
+    <li>Established by the Academic Committee Meeting of 9 January 2001.</li>
+    <li>The grades below are to be used in the marking of coursework and labwork.</li>
+  </ul>
+  <table>
+    <thead>
+      <th>Mark Range (%)</th>
+      <th>Grade</th>
+    </thead>
+    <tbody>
+      <tr>
+        <td>[90-100]</td>
+        <td>A*</td>
+      </tr>
+      <tr>
+        <td>[80-89]</td>
+        <td>A+</td>
+      </tr>
+      <tr>
+        <td>[70-79]</td>
+        <td>A</td>
+      </tr>
+      <tr>
+        <td>[60-69]</td>
+        <td>B</td>
+      </tr>
+      <tr>
+        <td>[50-59]</td>
+        <td>C</td>
+      </tr>
+      <tr>
+        <td>[40-49]</td>
+        <td>D</td>
+      </tr>
+      <tr>
+        <td>[30-39]</td>
+        <td>E</td>
+      </tr>
+      <tr>
+        <td>[0-29]</td>
+        <td>F</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

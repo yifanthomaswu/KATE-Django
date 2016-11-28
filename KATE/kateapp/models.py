@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from django.utils.encoding import python_2_unicode_compatible
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 @python_2_unicode_compatible
 class Classes(models.Model):
@@ -102,6 +103,8 @@ class Exercises(models.Model):
         choices=SUBMISSION_CHOICES,
         default=NO,
     )
+
+    esubmission_files_names = ArrayField(models.CharField(max_length=50), default=[])
 
     class Meta:
         unique_together = (("code", "number"),)

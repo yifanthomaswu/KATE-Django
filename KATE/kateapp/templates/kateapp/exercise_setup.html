@@ -90,16 +90,23 @@
             {{ form.submission }}
             </div>
         </div>
+        <div hidden id="file_name" class="fieldWrapper form-group">
+            {{ form.file_name.errors }}
+            <label for="{{ form.file_name.id_for_label }}" class="col-sm-2 control-label">File Name:</label>
+            <div class="col-sm-8">
+            {{ form.file_name }}
+            </div>
+        </div>
          <div class="fieldWrapper form-group">
             {{ form.file.errors }}
-            <label for="{{ form.r.id_for_label }}" class="col-sm-2 control-label">File Upload:</label>
+            <label for="{{ form.r.id_for_label }}" class="col-sm-2 control-label">Main File Upload:</label>
             <div class="col-sm-8">
             {{ form.file }}
             </div>
         </div>
         <div class="fieldWrapper form-group">
            {{ form.resources.errors }}
-           <label for="{{ form.r.id_for_label }}" class="col-sm-2 control-label">Other Files:</label>
+           <label for="{{ form.r.id_for_label }}" class="col-sm-2 control-label">Other Resources:</label>
            <div class="col-sm-8">
            {{ form.resources }}
            </div>
@@ -108,5 +115,29 @@
         <input class="btn btn-primary" type="submit" value="Submit" />
       </form>
     </div>
+
+    <script>
+      id_submission.onchange=function(){
+        if(id_submission.value=="{{types.ELECTRONIC}}"){
+          file_name.removeAttribute("hidden");
+        }
+        else {
+          file_name.setAttribute("hidden", true);
+        }
+      }
+
+      id_exercise_type.onchange=function(){
+        if(id_exercise_type.value=="{{types.TUTORIAL}}"){
+          id_assessment.options[0].selected = true;
+          id_assessment.setAttribute("disabled", true);
+        }
+        else {
+          id_assessment.removeAttribute("disabled");
+        }
+      }
+    </script>
+
+
+
     </body>
 </html>

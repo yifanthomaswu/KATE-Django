@@ -32,21 +32,26 @@
                 {{ period.name }}</h3>
             </div>
 
+            <div class = "col-md-6">
             <form action="{% if period.period|add:"-2" < 1 %}#{% else %}{% url 'timetable' period.period|add:"-2" person.student_letter_yr person.login %}{% endif %}">
-                <input type="submit" value="-2 period" {% if period.period|add:"-2" < 1 %}disabled=true{% endif %}>
+                <input class="btn btn-default" type="submit" value="-2 period" {% if period.period|add:"-2" < 1 %}disabled=true{% endif %}>
             </form>
             <form action="{% if period.period|add:"-1" < 1 %}#{% else %}{% url 'timetable' period.period|add:"-1" person.student_letter_yr person.login %}{% endif %}">
-                <input type="submit" value="-1 period" {% if period.period|add:"-1" < 1 %}disabled=true{% endif %}>
+                <input class="btn btn-default" type="submit" value="-1 period" {% if period.period|add:"-1" < 1 %}disabled=true{% endif %}>
             </form>
+            </div>
+
+            <div class = "col-md-6 right-navigation">
             <form action="{% if period.period|add:"1" > 7 %}#{% else %}{% url 'timetable' period.period|add:"1" person.student_letter_yr person.login %}{% endif %}">
-                <input type="submit" value="+1 period" {% if period.period|add:"1" > 7 %}disabled=true{% endif %}>
+                <input class="btn btn-default" type="submit" value="+1 period" {% if period.period|add:"1" > 7 %}disabled=true{% endif %}>
             </form>
             <form action="{% if period.period|add:"2" > 7 %}#{% else %}{% url 'timetable' period.period|add:"2" person.student_letter_yr person.login %}{% endif %}">
-                <input type="submit" value="+2 period" {% if period.period|add:"2" > 7 %}disabled=true{% endif %}>
+                <input class="btn btn-default" type="submit" value="+2 period" {% if period.period|add:"2" > 7 %}disabled=true{% endif %}>
             </form>
+            </div>
 
 
-            <table border=0 class="table-responsive table-padding">
+            <table border=0 class="table-responsive table-auto">
                 <tr>
                     <th></th>{% for month in months %}
                     <th bgcolor="white" colspan={{ month.1 }}>{{ month.0 }}</th>{% endfor %}
@@ -61,7 +66,7 @@
                 </tr>{% for course, rows in courses %}
                 {% for row in rows %}
                 <tr>{% if forloop.first %}
-                    <td rowspan="{{ rows|length }}">
+                    <td rowspan="{{ rows|length }}" bgcolor="white">
                         <b><a href="{% url 'course' course.code %}">{{ course.title }}</a></b><br>
                     </td>{% endif %}{% for exercise, days in row %}
                     {% if exercise is None %}<td colspan="{{ days }}"></td>{% else %}

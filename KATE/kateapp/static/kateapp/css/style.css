@@ -110,9 +110,22 @@
 	padding-bottom: 30px;
 }
 
-.timetable table {
-	margin-left: auto;
-	margin-right: auto;
+.timetable .table-auto{
+	background-color: #ccffff;
+}
+
+.timetable table{
+	border-collapse: separate;
+	border-spacing: 1px;
+	font-size: 1vw;
+}
+
+.table-auto th{
+	text-align: center;
+}
+
+.right-navigation{
+    text-align: right;
 }
 
 .module-content h3{

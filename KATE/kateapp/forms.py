@@ -3,11 +3,8 @@ from .models import Exercises
 
 class NewExerciseForm(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control'}) )
-    #resources = forms.FileField(label='Other resources',
-    #                            widget=forms.ClearableFileInput(attrs=
-    #                            {
-    #                                'multiple': True
-    #                            }))
+    resources = forms.FileField(widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'multiple': True}),
+                                required=False)
     file = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class':'form-control'}))
     start_date = forms.DateTimeField(widget=forms.TextInput(attrs={'class':'datepicker form-control'}))
     end_date = forms.DateTimeField(widget=forms.TextInput(attrs={'class':'datepicker form-control'}))

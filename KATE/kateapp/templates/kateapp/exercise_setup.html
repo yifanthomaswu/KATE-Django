@@ -107,11 +107,18 @@
         </div>
          <div class="fieldWrapper form-group">
             {{ form.file.errors }}
-            <label for="{{ form.r.id_for_label }}" class="col-sm-2 control-label">File Upload:</label>
+            <label for="{{ form.r.id_for_label }}" class="col-sm-2 control-label">Main File Upload:</label>
             <div class="col-sm-8">
             {{ form.file }}
             </div>
         </div>
+        <div class="fieldWrapper form-group">
+           {{ form.resources.errors }}
+           <label for="{{ form.r.id_for_label }}" class="col-sm-2 control-label">Other Resources:</label>
+           <div class="col-sm-8">
+           {{ form.resources }}
+           </div>
+       </div>
         <div class="col-sm-offset-8 col-sm-2">
         <input class="btn btn-primary" type="submit" value="Submit" />
       </form>
@@ -164,7 +171,7 @@
         }
       }
     </script>
-    
+
 
 
     </body>

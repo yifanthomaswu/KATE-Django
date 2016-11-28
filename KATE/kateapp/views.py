@@ -15,6 +15,9 @@ logger = logging.getLogger('django')
 def index(request):
     return render(request, 'kateapp/home.html')
 
+def grading_scheme(request):
+    return render(request, 'kateapp/grading_scheme.html')
+
 def personal_page(request):
     login = "yw8012"
     person = get_object_or_404(People, login=login)
@@ -157,6 +160,7 @@ def exercise_setup(request, code, number):
     if int(number) > newNumber:
         raise Http404("Exercise doesn't exist")
     if request.method == 'POST':
+        #new exercise
         form = NewExerciseForm(request.POST, request.FILES)
         if form.is_valid():
             #get file names
@@ -186,19 +190,25 @@ def exercise_setup(request, code, number):
                 assessment=form.cleaned_data["assessment"],
                 submission=form.cleaned_data["submission"],
                 esubmission_files_names=file_names)
-                #setup resource if required
-
-                #check if file given
-
-                #r = Resource(file=request.FILES["file"])
-                #save resource
-                #r.save()
-                #setup exercise-resource link
-                #er = Exercises_Resource(exercise=e,
-                #resource=r)
-                #er.save()
-
                 e.save()
+                #check if file given
+                if form.cleaned_data["file"]:
+                    #setup resource
+                    r = Resource(file=request.FILES["file"])
+                    #save resource
+                    r.save()
+                    #setup exercise-resource link
+                    er = Exercises_Resource(exercise=e,
+                                            resource=r)
+                    er.save()
+                if form.cleaned_data["resources"]:
+                    #setup additional resources
+                    for rFile in request.FILES.getlist("resources"):
+                        r = Resource(file=rFile)
+                        r.save()
+                        er = Exercises_Resource(exercise=e,
+                                                resource=r)
+                        er.save()
             return HttpResponseRedirect('/course/2016/' + code + '/')
         else:
             raise Http404("Form Validation failed")
@@ -207,8 +217,14 @@ def exercise_setup(request, code, number):
         if (int(number) == newNumber):
             form = NewExerciseForm()
         else:
-            if Exercises.objects.filter(code=code, number = number).exists():
-                exercise = Exercises.objects.get(code=code, number = number)
+            if Exercises.objects.filter(code=code, number=number).exists():
+                exercise = Exercises.objects.get(code=code, number=number)
+                if Resource.objects.filter(exercises_resource__exercise__code=exercise.code, exercises_resource__exercise__number = exercise.number).exists():
+                    resources = list(Resource.objects.filter(exercises_resource__exercise__code=exercise.code, exercises_resource__exercise__number = exercise.number))
+                    mainFile = resources.pop(0)
+                else:
+                    resources = None
+                    mainFile = None
                 data = {
                     'title' : exercise.title,
                     'start_date' : exercise.start_date,
@@ -216,13 +232,15 @@ def exercise_setup(request, code, number):
                     'exercise_type' : exercise.exercise_type,
                     'assessment' : exercise.assessment,
                     'submission' : exercise.submission,
+                    'file' : mainFile,
+                    'resources' : resources,
                     }
                 form = NewExerciseForm(data)
                 file_names = exercise.esubmission_files_names
                 if file_names == []:
                     file_names = [""]
             else:
-                raise Http404("Exercise doesn't exists")
+                raise Http404("Exercise doesn't exist")
         context = {
             'form': form,
             'code' : code,

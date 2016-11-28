@@ -121,14 +121,13 @@
        </div>
         <div class="col-sm-offset-8 col-sm-2">
         <input class="btn btn-primary" type="submit" value="Submit" name="submit"/>
-        <input id="cancel_button" class="btn btn-primary" type="submit" value="{{ cancel }}" name="{{ cancel }}"/>
+        <input id="cancel_button" class="btn btn-secondary" type="submit" value="{{ cancel }}" name="{{ cancel }}"/>
       </form>
     </div>
 
     <script>
-    if(id_submission.value=="{{types.ELECTRONIC}}"){
-          file_name.removeAttribute("hidden");
-        }
+    exercise();
+    electronic();
     var cancel = "{{ cancel }}";
     if (cancel == "Discard") {
       cancel_button.type = "button";
@@ -155,7 +154,7 @@
       id_file_name.value = text;
     }
 
-      id_submission.onchange=function(){
+    function electronic() {
         if(id_submission.value=="{{types.ELECTRONIC}}"){
           file_name.removeAttribute("hidden");
         }
@@ -164,7 +163,7 @@
         }
       }
 
-      id_exercise_type.onchange=function(){
+      function exercise() {
         if(id_exercise_type.value=="{{types.TUTORIAL}}"){
           id_assessment.options[0].selected = true;
           id_assessment.options[1].setAttribute("disabled", true);

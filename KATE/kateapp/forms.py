@@ -15,7 +15,7 @@ class NewExerciseForm(forms.Form):
     exercise_type = forms.ChoiceField(choices=Exercises.TYPE_CHOICES, widget=forms.Select(attrs={'class':'form-control'}))
     assessment = forms.ChoiceField(choices=Exercises.ASSESSMENT_CHOICES, widget=forms.Select(attrs={'class':'form-control'}))
     submission = forms.ChoiceField(choices=Exercises.SUBMISSION_CHOICES, widget=forms.Select(attrs={'class':'form-control'}))
-    file_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'class' : 'form-control'}) )
+    file_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'class' : 'form-control', 'style' : 'display:none'}) )
 
 
 class SubmissionForm(forms.Form):

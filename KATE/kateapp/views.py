@@ -159,6 +159,12 @@ def exercise_setup(request, code, number):
     if request.method == 'POST':
         form = NewExerciseForm(request.POST, request.FILES)
         if form.is_valid():
+            #get file names
+            file_names = form.cleaned_data["file_name"]
+            if (file_names == ""):
+                file_names = []
+            else:
+                file_names = file_names.split('@')
             if Exercises.objects.filter(code=code, number = number).exists():
                 Exercises.objects.filter(code=code, number = number).update(
                     title=form.cleaned_data["title"],
@@ -167,6 +173,7 @@ def exercise_setup(request, code, number):
                     exercise_type=form.cleaned_data["exercise_type"],
                     assessment=form.cleaned_data["assessment"],
                     submission=form.cleaned_data["submission"],
+                    esubmission_files_names=file_names,
                     )
             else:
                 #setup exercise
@@ -177,7 +184,8 @@ def exercise_setup(request, code, number):
                 number=newNumber,
                 exercise_type=form.cleaned_data["exercise_type"],
                 assessment=form.cleaned_data["assessment"],
-                submission=form.cleaned_data["submission"])
+                submission=form.cleaned_data["submission"],
+                esubmission_files_names=file_names)
                 #setup resource if required
 
                 #check if file given
@@ -195,6 +203,7 @@ def exercise_setup(request, code, number):
         else:
             raise Http404("Form Validation failed")
     else:
+        file_names = [""]
         if (int(number) == newNumber):
             form = NewExerciseForm()
         else:
@@ -209,6 +218,9 @@ def exercise_setup(request, code, number):
                     'submission' : exercise.submission,
                     }
                 form = NewExerciseForm(data)
+                file_names = exercise.esubmission_files_names
+                if file_names == []:
+                    file_names = [""]
             else:
                 raise Http404("Exercise doesn't exists")
         context = {
@@ -217,6 +229,8 @@ def exercise_setup(request, code, number):
             'number' : number,
             'course' : course,
             'types' : Exercises,
+            'num_files' : len(file_names),
+            'file_names' : file_names,
             }
         return render(request, 'kateapp/exercise_setup.html', context)
 

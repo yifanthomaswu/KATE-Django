@@ -164,14 +164,45 @@
       }
 
       function exercise() {
-        if(id_exercise_type.value=="{{types.TUTORIAL}}"){
+        id_assessment.options[0].removeAttribute("disabled");
+        id_assessment.options[1].removeAttribute("disabled");
+        id_assessment.options[2].removeAttribute("disabled");
+        
+        id_submission.options[0].removeAttribute("disabled");
+        id_submission.options[1].removeAttribute("disabled");
+        id_submission.options[2].removeAttribute("disabled");
+        if (id_exercise_type.value=="{{types.TUTORIAL}}") {
           id_assessment.options[0].selected = true;
           id_assessment.options[1].setAttribute("disabled", true);
           id_assessment.options[2].setAttribute("disabled", true);
+
+          id_submission.options[0].selected = true;
+          id_submission.options[1].setAttribute("disabled", true);
+          id_submission.options[2].setAttribute("disabled", true);
         }
-        else {
-          id_assessment.options[1].removeAttribute("disabled");
-          id_assessment.options[2].removeAttribute("disabled");
+        else if (id_exercise_type.value=="{{types.EXAM}}" 
+                  ||id_exercise_type.value=="{{types.TEST}}") {
+          id_assessment.options[1].selected = true;
+          id_assessment.options[0].setAttribute("disabled", true);
+          id_assessment.options[2].setAttribute("disabled", true);
+
+          if (id_exercise_type.value=="{{types.EXAM}}") {
+            id_submission.options[0].selected = true;
+            id_submission.options[1].setAttribute("disabled", true);
+            id_submission.options[2].setAttribute("disabled", true);
+          }
+          else {
+            id_submission.options[1].selected = true;
+            id_submission.options[0].setAttribute("disabled", true);
+          }
+        }
+        else if (id_exercise_type.value=="{{types.REPORT}}" 
+                  ||id_exercise_type.value=="{{types.PROJECT}}") {
+          id_assessment.options[1].selected = true;
+          id_assessment.options[0].setAttribute("disabled", true);
+
+          id_submission.options[1].selected = true;
+          id_submission.options[0].setAttribute("disabled", true);
         }
       }
     </script>

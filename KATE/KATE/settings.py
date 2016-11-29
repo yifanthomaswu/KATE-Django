@@ -124,6 +124,13 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+AUTHENTICATION_BACKENDS = (
+    'django_auth_ldap.backend.LDAPBackend',
+)
+
+AUTH_LDAP_SERVER_URI = "ldaps://ldaps-vip.cc.ic.ac.uk:636"
+AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk"
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 

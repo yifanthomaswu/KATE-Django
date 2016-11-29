@@ -136,17 +136,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 AUTH_LDAP_SERVER_URI = "ldaps://ldaps-vip.cc.ic.ac.uk:636"
-
-import ldap
-from django_auth_ldap.config import LDAPSearch
-
-AUTH_LDAP_BIND_DN = ""
-AUTH_LDAP_BIND_PASSWORD = ""
-AUTH_LDAP_USER_SEARCH = LDAPSearch("DC=ic,DC=ac,DC=uk",
-    ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)")
-
-
-# AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s@IC.AC.UK,OU=doc,OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk"
+AUTH_LDAP_USER_DN_TEMPLATE = "sAMaccountName=%(user)s,OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk"
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/

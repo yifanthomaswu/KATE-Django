@@ -228,7 +228,7 @@ def exercise_setup(request, code, number):
                 return HttpResponseRedirect('/course/2016/' + code + '/')
             else:
                 raise Http404("Form Validation failed")
-        elif (request.POST.get('Delete')):
+        elif (request.POST.get('delete')):
             #Delete button pressed
             Exercises.objects.get(code=code, number=number).delete()
             #TODO: What about resource deletion etc..????
@@ -237,7 +237,7 @@ def exercise_setup(request, code, number):
     else:
         ############ Form generated ############
         file_names = [""]
-        cancel = "Discard"
+        cancel = ""
         if (int(number) == newNumber):
             # Teacher is setting up a new exercise
             form = NewExerciseForm()

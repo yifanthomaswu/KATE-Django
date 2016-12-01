@@ -119,9 +119,9 @@
            {{ form.resources }}
            </div>
        </div>
-        <div class="col-sm-offset-8 col-sm-2">
+        <div id="buttons" class="col-sm-offset-8 col-sm-2">
         <input class="btn btn-primary" type="submit" value="Submit" name="submit"/>
-        <input id="cancel_button" class="btn btn-secondary" type="submit" value="{{ cancel }}" name="{{ cancel }}"/>
+        <input onclick="location.href='{% url 'course' code %}';" class="btn btn-secondary" type="button" value="Cancel" name="cancel"/>
       </form>
     </div>
 
@@ -129,9 +129,13 @@
     exercise();
     electronic();
     var cancel = "{{ cancel }}";
-    if (cancel == "Discard") {
-      cancel_button.type = "button";
-      cancel_button.setAttribute("onclick","location.href='{% url 'course' code %}';");
+    if (cancel == "Delete") {
+      var button = document.createElement("input");
+      button.className = "btn btn-secondary";
+      button.type = "submit";
+      button.value = "Delete"
+      button.name = "delete"
+      buttons.append(button);
     }
     var num = parseInt("{{ num_files }}") + 1;
     function add_name_field() {

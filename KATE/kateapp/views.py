@@ -7,24 +7,38 @@ from django.db.models import Max
 from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource
 from .forms import NewExerciseForm, SubmissionForm
 
-import datetime, calendar
+import datetime
+import calendar
 from datetime import timedelta
 
 logger = logging.getLogger('django')
 
+
 def index(request):
     return render(request, 'kateapp/home.html')
 
+
 def grading_scheme(request):
     return render(request, 'kateapp/grading_scheme.html')
+
 
 def personal_page(request):
     login = "yw8012"
     person = get_object_or_404(People, login=login)
     context = {
-        'person' : person,
+        'person': person,
     }
     return render(request, 'kateapp/personal_page.html', context)
+
+
+def individual_record(request, login):
+    person = get_object_or_404(People, login=login)
+    context = {
+        'person': person,
+    }
+    all_marks = Marks.objects.filter(login=login).order_by('exercise__code', 'exercise__number')
+    return render(request, 'kateapp/individual_record.html', context)
+
 
 def timetable(request, period_id, letter_yr, login):
     period = get_object_or_404(Period, pk=period_id)
@@ -38,10 +52,12 @@ def timetable(request, period_id, letter_yr, login):
         term_id = 3
     courses = []
     if term_id != 0:
-        courses = get_list_or_404(Courses.objects.order_by('code'), courses_classes__letter_yr=letter_yr, courses_term__term=term_id)
+        courses = get_list_or_404(Courses.objects.order_by(
+            'code'), courses_classes__letter_yr=letter_yr, courses_term__term=term_id)
     courses_exercises = []
     for course in courses:
-        exercises = list(Exercises.objects.filter(code=course.code).order_by('start_date', 'deadline'))
+        exercises = list(Exercises.objects.filter(
+            code=course.code).order_by('start_date', 'deadline'))
         bins = []
         for exercise in exercises:
             exercise_start = exercise.start_date.date()
@@ -52,7 +68,7 @@ def timetable(request, period_id, letter_yr, login):
                     for bin in bins:
                         can_place = True
                         for item in bin:
-                            if item.start_date.date() <= exercise_start <= item.deadline.date() or item.start_date.date() <= exercise_end <= item.deadline.date() or (exercise_start < item.start_date.date() and  exercise_end > item.deadline.date()):
+                            if item.start_date.date() <= exercise_start <= item.deadline.date() or item.start_date.date() <= exercise_end <= item.deadline.date() or (exercise_start < item.start_date.date() and exercise_end > item.deadline.date()):
                                 can_place = False
                                 break
                         if can_place:
@@ -87,7 +103,8 @@ def timetable(request, period_id, letter_yr, login):
             current_m = current_d.month
         d_count += 1
         current_d = current_d + timedelta(1)
-    months.append((calendar.month_name[period.end_date.month], period.end_date.day))
+    months.append(
+        (calendar.month_name[period.end_date.month], period.end_date.day))
     weeks = []
     d_count = 0
     current_d = period.start_date + timedelta(0)
@@ -106,31 +123,37 @@ def timetable(request, period_id, letter_yr, login):
         days.append((current_d.day, weekday))
         current_d = current_d + timedelta(1)
     context = {
-        'period' : period,
-        'person' : person,
-        'courses' : courses_exercises,
-        'months' : months,
-        'weeks' : weeks,
-        'days' : days,
+        'period': period,
+        'person': person,
+        'courses': courses_exercises,
+        'months': months,
+        'weeks': weeks,
+        'days': days,
     }
     return render(request, 'kateapp/timetable.html', context)
 
+
 def course_list(request, letter_yr):
-    courses_term1 = get_list_or_404(Courses, courses_classes__letter_yr=letter_yr, courses_term__term=1)
-    courses_term2 = get_list_or_404(Courses, courses_classes__letter_yr=letter_yr, courses_term__term=2)
-    courses_term3 = get_list_or_404(Courses, courses_classes__letter_yr=letter_yr, courses_term__term=3)
+    courses_term1 = get_list_or_404(
+        Courses, courses_classes__letter_yr=letter_yr, courses_term__term=1)
+    courses_term2 = get_list_or_404(
+        Courses, courses_classes__letter_yr=letter_yr, courses_term__term=2)
+    courses_term3 = get_list_or_404(
+        Courses, courses_classes__letter_yr=letter_yr, courses_term__term=3)
     context = {
-        'letter_yr' : letter_yr,
-        'courses_term1' : courses_term1,
-        'courses_term2' : courses_term2,
-        'courses_term3' : courses_term3,
+        'letter_yr': letter_yr,
+        'courses_term1': courses_term1,
+        'courses_term2': courses_term2,
+        'courses_term3': courses_term3,
     }
     return render(request, 'kateapp/course_list.html', context)
+
 
 def get_next_exercise_number(exercises):
     nextNumber = exercises.aggregate(Max('number'))['number__max']
     nextNumber = 1 if nextNumber is None else nextNumber + 1
     return nextNumber
+
 
 def course(request, code):
     course = get_object_or_404(Courses, pk=str(code))
@@ -142,17 +165,19 @@ def course(request, code):
     next_number = get_next_exercise_number(exercises)
     exercises_resources = []
     for exercise in list(exercises):
-        resources = list(Resource.objects.filter(exercises_resource__exercise__code=exercise.code, exercises_resource__exercise__number = exercise.number))
+        resources = list(Resource.objects.filter(
+            exercises_resource__exercise__code=exercise.code, exercises_resource__exercise__number=exercise.number))
         exercises_resources.append((exercise, resources))
     context = {
-        'course' : course,
-        'terms' : terms,
-        'teacher' : teacher,
-        'exercises_resources' : exercises_resources,
-        'next_number' : next_number,
-        'NO' : Exercises.NO,
+        'course': course,
+        'terms': terms,
+        'teacher': teacher,
+        'exercises_resources': exercises_resources,
+        'next_number': next_number,
+        'NO': Exercises.NO,
     }
     return render(request, 'kateapp/course.html', context)
+
 
 def exercise_setup(request, code, number):
     newNumber = get_next_exercise_number(Exercises.objects.filter(code=code))
@@ -160,126 +185,159 @@ def exercise_setup(request, code, number):
     if int(number) > newNumber:
         raise Http404("Exercise doesn't exist")
     if request.method == 'POST':
-        #new exercise
-        form = NewExerciseForm(request.POST, request.FILES)
-        if form.is_valid():
-            if Exercises.objects.filter(code=code, number = number).exists():
-                Exercises.objects.filter(code=code, number = number).update(
+        ############ Form Submitted ############
+        if request.POST.get('submit'):
+            form = NewExerciseForm(request.POST, request.FILES)
+            if form.is_valid():
+                # get file names
+                file_names = form.cleaned_data["file_name"]
+                if (file_names == ""):
+                    file_names = []
+                else:
+                    file_names = file_names.split('@')
+                if Exercises.objects.filter(code=code, number=number).exists():
+                    Exercises.objects.filter(code=code, number=number).update(
                     title=form.cleaned_data["title"],
                     start_date=form.cleaned_data["start_date"],
                     deadline=form.cleaned_data["end_date"],
                     exercise_type=form.cleaned_data["exercise_type"],
                     assessment=form.cleaned_data["assessment"],
                     submission=form.cleaned_data["submission"],
+                    esubmission_files_names=file_names,
                     )
-            else:
-                #setup exercise
-                e = Exercises(code=Courses.objects.get(code=code),
-                title=form.cleaned_data["title"],
-                start_date=form.cleaned_data["start_date"],
-                deadline=form.cleaned_data["end_date"],
-                number=newNumber,
-                exercise_type=form.cleaned_data["exercise_type"],
-                assessment=form.cleaned_data["assessment"],
-                submission=form.cleaned_data["submission"])
-                e.save()
-                #check if file given
-                if form.cleaned_data["file"]:
-                    #setup resource
-                    r = Resource(file=request.FILES["file"])
-                    #save resource
-                    r.save()
-                    #setup exercise-resource link
-                    er = Exercises_Resource(exercise=e,
-                                            resource=r)
-                    er.save()
-                if form.cleaned_data["resources"]:
-                    #setup additional resources
-                    for rFile in request.FILES.getlist("resources"):
-                        r = Resource(file=rFile)
+                else:
+                    # setup exercise
+                    e = Exercises(code=Courses.objects.get(code=code),
+                              title=form.cleaned_data["title"],
+                              start_date=form.cleaned_data["start_date"],
+                              deadline=form.cleaned_data["end_date"],
+                              number=newNumber,
+                              exercise_type=form.cleaned_data["exercise_type"],
+                              assessment=form.cleaned_data["assessment"],
+                              submission=form.cleaned_data["submission"],
+                              esubmission_files_names=file_names)
+                    e.save()
+                    # check if file given
+                    if form.cleaned_data["file"]:
+                        # setup resource
+                        r = Resource(file=request.FILES["file"])
+                        # save resource
                         r.save()
-                        er = Exercises_Resource(exercise=e,
-                                                resource=r)
+                        # setup exercise-resource link
+                        er = Exercises_Resource(exercise=e, resource=r)
                         er.save()
+                    if form.cleaned_data["resources"]:
+                        # setup additional resources
+                        for rFile in request.FILES.getlist("resources"):
+                            r = Resource(file=rFile)
+                            r.save()
+                            er = Exercises_Resource(exercise=e,
+                                                resource=r)
+                            er.save()
+                return HttpResponseRedirect('/course/2016/' + code + '/')
+            else:
+                raise Http404("Form Validation failed")
+        elif (request.POST.get('Delete')):
+            #Delete button pressed
+            Exercises.objects.get(code=code, number=number).delete()
+            #TODO: What about resource deletion etc..????
+            #raise Http404("ret " + res)
             return HttpResponseRedirect('/course/2016/' + code + '/')
-        else:
-            raise Http404("Form Validation failed")
     else:
-        #edit exercise
+        ############ Form generated ############
+        file_names = [""]
+        cancel = "Discard"
         if (int(number) == newNumber):
+            # Teacher is setting up a new exercise
             form = NewExerciseForm()
         else:
+            #Request to edit an exercise
             if Exercises.objects.filter(code=code, number=number).exists():
+                #Exercise exists, get it and populate form with data
                 exercise = Exercises.objects.get(code=code, number=number)
-                if Resource.objects.filter(exercises_resource__exercise__code=exercise.code, exercises_resource__exercise__number = exercise.number).exists():
-                    resources = list(Resource.objects.filter(exercises_resource__exercise__code=exercise.code, exercises_resource__exercise__number = exercise.number))
+                if Resource.objects.filter(exercises_resource__exercise__code=exercise.code, exercises_resource__exercise__number=exercise.number).exists():
+                    resources = list(Resource.objects.filter(
+                        exercises_resource__exercise__code=exercise.code, exercises_resource__exercise__number=exercise.number))
                     mainFile = resources.pop(0)
                 else:
                     resources = None
                     mainFile = None
                 data = {
-                    'title' : exercise.title,
-                    'start_date' : exercise.start_date,
-                    'end_date' : exercise.deadline,
-                    'exercise_type' : exercise.exercise_type,
-                    'assessment' : exercise.assessment,
-                    'submission' : exercise.submission,
-                    'file' : mainFile,
-                    'resources' : resources,
-                    }
+                    'title': exercise.title,
+                    'start_date': exercise.start_date,
+                    'end_date': exercise.deadline,
+                    'exercise_type': exercise.exercise_type,
+                    'assessment': exercise.assessment,
+                    'submission': exercise.submission,
+                    'file': mainFile,
+                    'resources': resources,
+                }
                 form = NewExerciseForm(data)
+                #File names are displayed through JS, hence not loaded
+                #into form but passed to context
+                file_names = exercise.esubmission_files_names
+                if file_names == []:
+                    file_names = [""]
+                #Exercise exists, Delete not Discard
+                cancel = "Delete"
             else:
                 raise Http404("Exercise doesn't exist")
         context = {
             'form': form,
-            'code' : code,
-            'number' : number,
-            'course' : course,
-            'types' : Exercises,
-            }
+            'code': code,
+            'number': number,
+            'course': course,
+            'types': Exercises,
+            'num_files': len(file_names),
+            'file_names': file_names,
+            'cancel' : cancel,
+        }
         return render(request, 'kateapp/exercise_setup.html', context)
 
+
 def submission(request, code, number):
-    #Check that exercise exists
+    # Check that exercise exists
     if not Exercises.objects.filter(code=code, number=number).exists():
         raise Http404("Exercise doesn't exist")
     exercise = Exercises.objects.get(code=code, number=number)
-    #Split, either form is being produced, or submitted
+    # Split, either form is being produced, or submitted
     if request.method == 'POST':
         ############ Form Submitted ############
         form = SubmissionForm(request.POST, request.FILES)
         if form.is_valid():
             #check if submitted already
             if Exercises_Resource.objects.filter(exercise=exercise).exists():
-                #update submission with new
-                Resource.objects.filter(Exercises_Resource__exercise=exercise).update(file=request.FILES["file"])
+                # update submission with new
+                Resource.objects.filter(Exercises_Resource__exercise=exercise).update(
+                    file=request.FILES["file"])
                 r = Resource.objects.get(Exercises_Resource__exercise=exercise)
-                Exercises_Resource.objects.filter(exercise=exercise).update(resource=r)
+                Exercises_Resource.objects.filter(
+                    exercise=exercise).update(resource=r)
             else:
-                #create new submission
-                #setup resource
+                # create new submission
+                # setup resource
                 r = Resource(file=request.FILES["file"])
                 r.save()
-                #setup exercise-resource link
+                # setup exercise-resource link
                 er = Exercises_Resource(exercise=exercise,
-                resource=r)
+                                        resource=r)
                 er.save()
             return HttpResponseRedirect('/submission/2016/' + code + '/' + number + '/')
     else:
         ############ Form generated ############
-        #check if submitted already
+        # check if submitted already
         if not Exercises_Resource.objects.filter(exercise=exercise).exists():
-            #create new unbound form
+            # create new unbound form
             form = SubmissionForm()
         else:
-            #create bound form
+            # create bound form
             data = {
-                }
+            }
             form = SubmissionForm(data)
         context = {
             'form': form,
-            'code' : code,
-            'number' : number,
-            'exercise' : exercise,
-            }
+            'code': code,
+            'number': number,
+            'exercise': exercise,
+        }
         return render(request, 'kateapp/submission.html', context)

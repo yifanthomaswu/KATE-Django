@@ -25,6 +25,20 @@ def grading_scheme(request):
 def personal_page(request):
     login = "yw8012"
     person = get_object_or_404(People, login=login)
+    # period = get_object_or_404(Period, pk=period_id)
+    # term_id = 0
+    # if period.period == 1:
+    #     term_id = 1
+    # elif period.period == 3:
+    #     term_id = 2
+    # elif period.period == 5:
+    #     term_id = 3
+    # courses = []
+    # if term_id != 0:
+    #     courses = get_list_or_404(Courses.objects.order_by(
+    #         'code'), courses_classes__letter_yr=letter_yr, courses_term__term=term_id)
+    # courses_exercises = []
+    
     context = {
         'person': person,
     }
@@ -260,7 +274,7 @@ def exercise_setup(request, code, number):
                 return HttpResponseRedirect('/course/2016/' + code + '/')
             else:
                 raise Http404("Form Validation failed")
-        elif (request.POST.get('Delete')):
+        elif (request.POST.get('delete')):
             #Delete button pressed
             Exercises.objects.get(code=code, number=number).delete()
             #TODO: What about resource deletion etc..????
@@ -269,7 +283,7 @@ def exercise_setup(request, code, number):
     else:
         ############ Form generated ############
         file_names = [""]
-        cancel = "Discard"
+        cancel = ""
         if (int(number) == newNumber):
             # Teacher is setting up a new exercise
             form = NewExerciseForm()

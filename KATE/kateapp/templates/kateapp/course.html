@@ -33,10 +33,6 @@
         <td>{{course.lecturer}}</td>
       </tr>
       <tr>
-        <th>Year:</th>
-        <td></td>
-      </tr>
-      <tr>
         {% if terms|length == 1 %}
         <th>Term:</th>
         {% else %}
@@ -49,39 +45,36 @@
     </table>
   </p>
 
-  <p>
-    <table class="table-striped table-responsive table-padding">
+  {% for rs in resource %}{% if rs %}<p>
+    <table class="table table-striped table-responsive">
+      <caption>{% cycle 'Note' 'Exercise' 'Url' 'Panopto' %}</caption>
       <thead>
         <tr>
+          <th>Title</th>
           <th>Date</th>
-          <th>Topic</th>
-          <th>Notes</th>
-          <th>Other Resources</th>
-          <th>Panopto Recording</th>
         </tr>
       </thead>
       <tbody>
+        {% for r in rs %}
         <tr>
-          <td>[A Date]</td>
-          <td>[A Topic]</td>
-          <td><a href="">[A document link]</a></td>
-          <td><a href="">[A resource link]</a></td>
-          <td><a href="">[A panopto link]</a></td>
+          <td>
+            <a href="{% if r.resource is None %}{{ r.link }}{% else %}{{ MEDIA_URL }}{{ r.resource.file.url }}{% endif %}">{{ r.titel }}</a>
+          </td>
+          <td>{{r.release_date|date:"D, d M Y"}}</td>
         </tr>
+        {% endfor %}
       </tbody>
     </table>
-  </p>
-
-  </br>
+  </p>{% endif %}{% endfor %}
 
   <p>
     <table class="table table-striped table-responsive">
       <caption>Exercises</caption>
       <thead>
         <tr>
-          <th>Date Due</th>
-          <th>Date Set</th>
           <th>Title</th>
+          <th>Date Issued</th>
+          <th>Date Due</th>
           <th></th>
         </tr>
       </thead>
@@ -96,17 +89,9 @@
         {% endif %}
         {% for er in exercises_resources %}
         <tr>
+          <td><a href="{% url 'submission' er.0.code.code er.0.number %}">{{er.0.title}}</a>
+          <td>{{er.0.start_date|date:"D, d M Y"}}</td>
           <td>{{er.0.deadline|date:"D, d M Y h:iA"}}</td>
-          <td>{{er.0.start_date|date:"D, d M Y h:iA"}}</td>
-          <td>
-            {% if er.1|length > 0 %}
-              <a href="{{ MEDIA_URL }}{{ er.1.0.file.url }}">
-            {% endif %}
-            {{er.0.title}}
-            {% if er.1|length > 0 %}
-              </a>
-            {% endif %}
-          </td>
           {% if teacher %}
             <td><a class="btn btn-primary btn-sm active" href="{% url 'exercise_setup' course.code er.0.number %}" role="button">Edit</a></td>
           {% else %}

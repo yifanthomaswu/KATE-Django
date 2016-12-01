@@ -128,6 +128,30 @@
 
           <div class="container-fluid task-notification">
             <h3>Task Notification</h3>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Exercises Title</th>
+                  <th>Course</th>
+                  <th>Due Date</th>
+                  <th>Time Left</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ce in courses_exercises %}
+                <tr>
+                  <td><a href="{% url 'submission' ce.0.code.code ce.0.number %}">{{ce.0.title}}</a></td>
+                  <td>{{ce.0.code.title}}
+                  <td>{{ce.0.deadline|date:"D, d M Y h:iA"}}</td>
+                  {% if ce.2%}
+                  <td>{{ce.1}} days</td>
+                  {% else %}
+                  <td>{{ce.1}} hours</td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
 
           <div class="container-fluid twitter-feed">

@@ -3,6 +3,9 @@ from django.shortcuts import get_object_or_404, get_list_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import loader
 from django.db.models import Max
+from django.utils import timezone
+
+
 
 from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource
 from .forms import NewExerciseForm, SubmissionForm
@@ -10,6 +13,9 @@ from .forms import NewExerciseForm, SubmissionForm
 import datetime
 import calendar
 from datetime import timedelta
+from datetime import datetime
+
+from operator import attrgetter
 
 logger = logging.getLogger('django')
 
@@ -25,22 +31,23 @@ def grading_scheme(request):
 def personal_page(request):
     login = "yw8012"
     person = get_object_or_404(People, login=login)
-    # period = get_object_or_404(Period, pk=period_id)
-    # term_id = 0
-    # if period.period == 1:
-    #     term_id = 1
-    # elif period.period == 3:
-    #     term_id = 2
-    # elif period.period == 5:
-    #     term_id = 3
-    # courses = []
-    # if term_id != 0:
-    #     courses = get_list_or_404(Courses.objects.order_by(
-    #         'code'), courses_classes__letter_yr=letter_yr, courses_term__term=term_id)
-    # courses_exercises = []
-    
+    #courses = list(Courses.objects.filter(required=person)) + list(Courses.objects.filter(registered=person))
+    courses = list(Courses.objects.all()) 
+    courses_exercises = []
+    date_now = timezone.now()
+    for course in courses:
+        exercises = list(Exercises.objects.filter(code=course.code, start_date__lte=date_now, 
+            deadline__gte=date_now).order_by('deadline'))
+        for exercise in exercises:
+            if((exercise.deadline - date_now).days > 0):
+                courses_exercises.append((exercise, (exercise.deadline - date_now).days, True))
+            else:
+                courses_exercises.append((exercise, (exercise.deadline - date_now).seconds / 3600, False))
+
+
     context = {
         'person': person,
+        'courses_exercises' : courses_exercises,
     }
     return render(request, 'kateapp/personal_page.html', context)
 

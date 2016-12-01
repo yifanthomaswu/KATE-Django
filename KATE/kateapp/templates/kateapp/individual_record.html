@@ -1,0 +1,60 @@
+{% load staticfiles %}
+<html>
+    <head>
+        <title>KATe</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/style.css' %}">
+    </head>
+    <body>
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="{% url 'index' %}">
+                <img alt="Brand" src="{% static 'kateapp/images/ilogo.png' %}">
+                KATe
+              </a>
+            </div>
+            <div>
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="{% url 'personal_page' %}">Home</a></li>
+                <li><a href="{% url 'timetable' 1 person.student_letter_yr person.login %}">Timetable</a></li>
+                <li><a href="{% url 'course_list' person.student_letter_yr %}">Module List</a></li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+        <div>
+            <table>
+                <thead>
+                    <th>Exercise</th>
+                    <th>Type</th>
+                    <th>Title</th>
+                    <th>Grade</th>
+                </thead>
+                <tbody>
+                    {% for course_marks in courses_marks %}
+                    <tr>
+                        <th colspan="4">{{course_marks.0.code}} {{course_marks.0.title}}</th>
+                    </tr>
+                    {% if course_marks.1|length == 0 %}
+                    <tr>
+                        <td colspan="4">&gt;&gt; No exercise activities recorded for this module &lt;&lt;</td>
+                    </tr>
+                    {% else %}
+                    {% for mark in course_marks.1 %}
+                    <tr>
+                        <td>{{mark.exercise.number}}</td>
+                        <td>{{mark.exercise.exercise_type}}</td>
+                        <td>{{mark.exercise.title}}</td>
+                        <td>{{mark.mark}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

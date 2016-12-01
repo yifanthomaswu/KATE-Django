@@ -25,11 +25,57 @@ def grading_scheme(request):
 def personal_page(request):
     login = "yw8012"
     person = get_object_or_404(People, login=login)
+    # period = get_object_or_404(Period, pk=period_id)
+    # term_id = 0
+    # if period.period == 1:
+    #     term_id = 1
+    # elif period.period == 3:
+    #     term_id = 2
+    # elif period.period == 5:
+    #     term_id = 3
+    # courses = []
+    # if term_id != 0:
+    #     courses = get_list_or_404(Courses.objects.order_by(
+    #         'code'), courses_classes__letter_yr=letter_yr, courses_term__term=term_id)
+    # courses_exercises = []
+
     context = {
         'person': person,
     }
     return render(request, 'kateapp/personal_page.html', context)
 
+
+def individual_record(request, login):
+    person = get_object_or_404(People, login=login)
+    courses_marks = []
+    for course in person.registered_courses.all():
+        marks = list(Marks.objects.filter(login=login, exercise__code=course.code).order_by('exercise__number'))
+        textual_marks = [convert_mark_number_text(elem) for elem in marks]
+        courses_marks.append((course, textual_marks))
+    context = {
+        'person': person,
+        'courses_marks': courses_marks,
+    }
+    return render(request, 'kateapp/individual_record.html', context)
+def convert_mark_number_text(mark):
+    number_mark = mark.mark
+    if number_mark < 30:
+        mark.mark = 'F'
+    elif number_mark < 40:
+        mark.mark = 'E'
+    elif number_mark < 50:
+        mark.mark = 'D'
+    elif number_mark < 60:
+        mark.mark = 'C'
+    elif number_mark < 70:
+        mark.mark = 'B'
+    elif number_mark < 80:
+        mark.mark = 'A'
+    elif number_mark < 90:
+        mark.mark = 'A+'
+    else:
+        mark.mark = 'A*'
+    return mark
 
 def timetable(request, period_id, letter_yr, login):
     period = get_object_or_404(Period, pk=period_id)
@@ -228,7 +274,7 @@ def exercise_setup(request, code, number):
                 return HttpResponseRedirect('/course/2016/' + code + '/')
             else:
                 raise Http404("Form Validation failed")
-        elif (request.POST.get('Delete')):
+        elif (request.POST.get('delete')):
             #Delete button pressed
             Exercises.objects.get(code=code, number=number).delete()
             #TODO: What about resource deletion etc..????
@@ -237,7 +283,7 @@ def exercise_setup(request, code, number):
     else:
         ############ Form generated ############
         file_names = [""]
-        cancel = "Discard"
+        cancel = ""
         if (int(number) == newNumber):
             # Teacher is setting up a new exercise
             form = NewExerciseForm()
@@ -304,10 +350,10 @@ def submission(request, code, number):
     # Split, either form is being produced, or submitted
     if request.method == 'POST':
         ############ Form Submitted ############
-        form = SubmissionForm(request.POST)
+        form = SubmissionForm(request.POST, request.FILES)
         if form.is_valid():
-            # check if submitted already
-            if Exercises_Resource.objects.filter(exercise=exercise).exitsts():
+            #check if submitted already
+            if Exercises_Resource.objects.filter(exercise=exercise).exists():
                 # update submission with new
                 Resource.objects.filter(Exercises_Resource__exercise=exercise).update(
                     file=request.FILES["file"])

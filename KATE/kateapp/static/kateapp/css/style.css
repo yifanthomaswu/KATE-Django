@@ -117,7 +117,7 @@
 .timetable table{
 	border-collapse: separate;
 	border-spacing: 1px;
-	font-size: 1vw;
+	font-size: 1.1vw;
 }
 
 .table-auto th{
@@ -186,6 +186,15 @@
 }
 
 .exercise-form h3 {
+	text-align: center;
+	padding-bottom: 20px;
+}
+
+.grade-scheme {
+	padding: 30px 20% 0 20%;
+}
+
+.grade-scheme h3 {
 	text-align: center;
 	padding-bottom: 20px;
 }

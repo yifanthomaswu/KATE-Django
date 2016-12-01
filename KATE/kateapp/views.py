@@ -247,10 +247,10 @@ def submission(request, code, number):
     #Split, either form is being produced, or submitted
     if request.method == 'POST':
         ############ Form Submitted ############
-        form = SubmissionForm(request.POST)
+        form = SubmissionForm(request.POST, request.FILES)
         if form.is_valid():
             #check if submitted already
-            if Exercises_Resource.objects.filter(exercise=exercise).exitsts():
+            if Exercises_Resource.objects.filter(exercise=exercise).exists():
                 #update submission with new
                 Resource.objects.filter(Exercises_Resource__exercise=exercise).update(file=request.FILES["file"])
                 r = Resource.objects.get(Exercises_Resource__exercise=exercise)

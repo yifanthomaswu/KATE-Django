@@ -136,16 +136,17 @@ class Resource(models.Model):
 class Courses_Resource(models.Model):
     code = models.ForeignKey(Courses, on_delete=models.PROTECT)
     title = models.CharField(max_length=200)
-    resource = models.ForeignKey(Resource, on_delete=models.PROTECT, null=True)
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE, null=True)
     link = models.URLField(null=True)
+    release_date = models.DateField()
 
     NOTE = 'NOTE'
-    EXERCISE = 'EXERCISE'
+    PROBLEM = 'PROBLEM'
     URL = 'URL'
     PANOPTO = 'PANOPTO'
     TYPE_CHOICES = (
         (NOTE, 'Note'),
-        (EXERCISE, 'Exercise'),
+        (PROBLEM, 'Problem'),
         (URL, 'Url'),
         (PANOPTO, 'Panopto'),
     )
@@ -160,7 +161,7 @@ class Courses_Resource(models.Model):
 @python_2_unicode_compatible
 class Exercises_Resource(models.Model):
     exercise = models.ForeignKey(Exercises, on_delete=models.PROTECT)
-    resource = models.ForeignKey(Resource, on_delete=models.PROTECT)
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
 
     SPECIFICATION = 'SPEC'
     DATA = 'DATA'

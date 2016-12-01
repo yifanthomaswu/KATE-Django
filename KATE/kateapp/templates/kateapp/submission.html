@@ -42,15 +42,61 @@
   </script>
 
 
-    <div class ="container-fluid exercise-form">
-      <form action="{% url 'submission' code number%}" method="post" enctype="multipart/form-data"
-      class = "form-horizontal">
-        {% csrf_token %}
-        {{ form }}
-        <div>
-          <input type="submit" value="Submit" />
-        </div>
-      </form>
-    </div>
+  <div class="container-fluid module-content">
+  <h3>Module CO{{course.code}}: {{course.title}}</h3>
+  <p>
+    <table class="table-responsive table-padding">
+      <tr>
+        <th>Lecturer:</th>
+        <td>{{course.lecturer}}</td>
+      </tr>
+      <tr>
+        <th>Title:</th>
+        <td>{{exercise.title}}</td>
+      </tr>
+      <tr>
+        <th>Assessment:</th>
+        <td>{{exercise.get_assessment_display}}</td>
+      </tr>
+      <tr>
+        <th>Submission:</th>
+        <td>{{exercise.get_submission_display}}</td>
+      </tr>
+      <tr>
+        <th>Issued:</th>
+        <td>{{exercise.start_date|date:"D, d M Y"}}</td>
+      </tr>
+      <tr>
+        <th>Due:</th>
+        <td>{{exercise.deadline|date:"D, d M Y h:iA"}}</td>
+      </tr>
+    </table>
+  </p>
+
+
+  {% for rs in resource %}{% if rs %}<p>
+    <table class="table table-striped table-responsive">
+      <caption>{% cycle 'Specification' 'Data file' 'Model answer' 'Marking scheme' %}</caption>
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rs %}
+        <tr>
+          <td>
+            <a href="{{ MEDIA_URL }}{{ r.file.url }}">{{ r.filename }}</a>
+          </td>
+          <td>{{r.timestamp|date:"D, d M Y h:iA"}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </p>{% endif %}{% endfor %}
+
+  </div>
+
     </body>
 </html>

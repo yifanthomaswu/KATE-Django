@@ -296,7 +296,7 @@ def exercise_setup(request, code, number):
                     r = Resource(file=request.FILES["file"])
                     # save resource
                     r.save()
-                    
+
                     #Check if this is upload for a brand new exercsie
                     if not Exercises.objects.filter(code=code, number=number).exists():
                         #create new exercise here
@@ -310,7 +310,7 @@ def exercise_setup(request, code, number):
                               submission=form.cleaned_data["submission"],
                               )
                         e.save()
-                    
+
 
                     # setup exercise-resource link
                     exercise = Exercises.objects.get(code=code, number=number)

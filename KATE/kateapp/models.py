@@ -10,22 +10,24 @@ class Classes(models.Model):
         return self.letter_yr
 
 @python_2_unicode_compatible
+class Courses(models.Model):
+    code = models.CharField(max_length=200, primary_key=True)
+    title = models.CharField(max_length=200)
+    lecturer = models.ForeignKey('People', on_delete=models.PROTECT)
+    def __str__(self):
+        return self.code + " " + self.title
+
+@python_2_unicode_compatible
 class People(models.Model):
     login = models.CharField(max_length=200, primary_key=True)
     firstname = models.CharField(max_length=200)
     lastname = models.CharField(max_length=200)
     student_letter_yr = models.ForeignKey(Classes, on_delete=models.PROTECT, null=True)
     tutor = models.ForeignKey('self', on_delete=models.PROTECT, null=True)
+    required_courses = models.ManyToManyField(Courses, related_name='required')
+    registered_courses = models.ManyToManyField(Courses, related_name='registered')
     def __str__(self):
         return self.login
-
-@python_2_unicode_compatible
-class Courses(models.Model):
-    code = models.CharField(max_length=200, primary_key=True)
-    title = models.CharField(max_length=200)
-    lecturer = models.ForeignKey(People, on_delete=models.PROTECT)
-    def __str__(self):
-        return self.code + " " + self.title
 
 @python_2_unicode_compatible
 class Term(models.Model):
@@ -107,9 +109,9 @@ class Exercises(models.Model):
     esubmission_files_names = ArrayField(models.CharField(max_length=50), default=[])
 
     class Meta:
-        unique_together = (("code", "number"),)
+        unique_together = (('code', 'number'),)
     def __str__(self):
-        return self.title + ": " + self.start_date.__str__() + " ~ " + self.deadline.__str__()
+        return self.code.code + " " + self.number.__str__()  + " " + self.title + ": " + self.start_date.__str__() + " ~ " + self.deadline.__str__()
 
 @python_2_unicode_compatible
 class Period(models.Model):
@@ -118,7 +120,7 @@ class Period(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     def __str__(self):
-        return self.period.__str__() + ": " + self.start_date.__str__() + " ~ " + self.end_date.__str__()
+        return self.period.__str__() + " " + self.period.name + ": " + self.start_date.__str__() + " ~ " + self.end_date.__str__()
 
 @python_2_unicode_compatible
 class Resource(models.Model):
@@ -130,7 +132,24 @@ class Resource(models.Model):
 @python_2_unicode_compatible
 class Courses_Resource(models.Model):
     code = models.ForeignKey(Courses, on_delete=models.PROTECT)
-    resource = models.ForeignKey(Resource, on_delete=models.PROTECT)
+    resource = models.ForeignKey(Resource, on_delete=models.PROTECT, null=True)
+    link = models.URLField(null=True)
+
+    NOTE = 'NOTE'
+    EXERCISE = 'EXERCISE'
+    URL = 'URL'
+    PANOPTO = 'PANOPTO'
+    TYPE_CHOICES = (
+        (NOTE, 'Note'),
+        (EXERCISE, 'Exercise'),
+        (URL, 'Url'),
+        (PANOPTO, 'Panopto'),
+    )
+    type = models.CharField(
+        max_length=15,
+        choices=TYPE_CHOICES,
+        default=NOTE,
+    )
     def __str__(self):
         return self.code.__str__() + " " + self.resource.__str__()
 
@@ -138,5 +157,39 @@ class Courses_Resource(models.Model):
 class Exercises_Resource(models.Model):
     exercise = models.ForeignKey(Exercises, on_delete=models.PROTECT)
     resource = models.ForeignKey(Resource, on_delete=models.PROTECT)
+
+    SPECIFICATION = 'SPEC'
+    DATA = 'DATA'
+    ANSWER = 'ANSWER'
+    MARKING = 'MARKING'
+    TYPE_CHOICES = (
+        (SPECIFICATION, 'Specification'),
+        (DATA, 'Data files'),
+        (ANSWER, 'Model answer'),
+        (MARKING, 'Marking scheme'),
+    )
+    type = models.CharField(
+        max_length=15,
+        choices=TYPE_CHOICES,
+        default=SPECIFICATION,
+    )
     def __str__(self):
         return self.exercise.__str__() + " " + self.resource.__str__()
+
+@python_2_unicode_compatible
+class Submissions(models.Model):
+    exercise = models.ForeignKey(Exercises, on_delete=models.PROTECT)
+    leader = models.ForeignKey(People, on_delete=models.PROTECT, related_name='leader')
+    members = models.ManyToManyField(People, related_name='members')
+    files = models.ManyToManyField(Resource)
+    timestamp = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.exercise.code.code + " " + self.exercise.number.__str__() + " " + self.leader.__str__() + self.members.all().__str__()
+
+@python_2_unicode_compatible
+class Marks(models.Model):
+    exercise = models.ForeignKey(Exercises, on_delete=models.PROTECT)
+    login = models.ForeignKey(People, on_delete=models.PROTECT)
+    mark = models.DecimalField(max_digits=5, decimal_places=2)
+    def __str__(self):
+        return self.login.__str__() + " " + self.exercise.code.code + " " + self.exercise.number.__str__() + " " + self.mark.__str__()

@@ -45,7 +45,7 @@
       <h3>Exercise Setup<br>
       Module CO{{course.code}}: {{course.title}}
       </h3>
-      <form action="{% url 'exercise_setup' code number%}" method="post" enctype="multipart/form-data" class = "form-horizontal">
+      <form action="{% url 'exercise_setup' code number%}" method="post" onsubmit="finalize()" enctype="multipart/form-data" class = "form-horizontal">
         {% csrf_token %}
         {{ form.non_field_errors }}
         <div class="fieldWrapper form-group">
@@ -93,24 +93,70 @@
         <div hidden id="file_name" class="fieldWrapper form-group">
             {{ form.file_name.errors }}
             <label for="{{ form.file_name.id_for_label }}" class="col-sm-2 control-label">File Name:</label>
-            <div class="col-sm-8">
-            {{ form.file_name }}
+            <div class="col-sm-8" id="file_name_list">
+              {% for file in file_names %}
+              <input class="form-control" id="file{{forloop.counter}}" type="text" value="{{file}}">
+              {% endfor %}
+              <span class="input-group-btn">
+              <button type="button" class="btn btn-default btn-number" onclick="add_name_field()">
+                  <span class="glyphicon glyphicon-plus"></span>
+              </button>
+              </span>
+              {{ form.file_name }}
             </div>
         </div>
          <div class="fieldWrapper form-group">
             {{ form.file.errors }}
-            <label for="{{ form.r.id_for_label }}" class="col-sm-2 control-label">File Upload:</label>
+            <label for="{{ form.r.id_for_label }}" class="col-sm-2 control-label">Main File Upload:</label>
             <div class="col-sm-8">
             {{ form.file }}
             </div>
         </div>
+        <div class="fieldWrapper form-group">
+           {{ form.resources.errors }}
+           <label for="{{ form.r.id_for_label }}" class="col-sm-2 control-label">Other Resources:</label>
+           <div class="col-sm-8">
+           {{ form.resources }}
+           </div>
+       </div>
         <div class="col-sm-offset-8 col-sm-2">
-        <input class="btn btn-primary" type="submit" value="Submit" />
+        <input class="btn btn-primary" type="submit" value="Submit" name="submit"/>
+        <input id="cancel_button" class="btn btn-secondary" type="submit" value="{{ cancel }}" name="{{ cancel }}"/>
       </form>
     </div>
 
     <script>
-      id_submission.onchange=function(){
+    exercise();
+    electronic();
+    var cancel = "{{ cancel }}";
+    if (cancel == "Discard") {
+      cancel_button.type = "button";
+      cancel_button.setAttribute("onclick","location.href='{% url 'course' code %}';");
+    }
+    var num = parseInt("{{ num_files }}") + 1;
+    function add_name_field() {
+      var input = document.createElement("input");
+      input.className = "form-control";
+      input.id = "file" + num;
+      input.type = "text";
+      file_name_list.append(input);
+      num++;
+    }
+
+    function finalize() {
+      if(id_submission.value=="{{types.ELECTRONIC}}"){
+        var text = file1.value;
+        for (i = 2; i < num; i++) {
+          var field = document.getElementById("file" + i);
+          if (field.value != "") {
+            text += "@" + field.value;
+          }
+        }
+        id_file_name.value = text;
+      }
+    }
+
+    function electronic() {
         if(id_submission.value=="{{types.ELECTRONIC}}"){
           file_name.removeAttribute("hidden");
         }
@@ -119,17 +165,50 @@
         }
       }
 
-      id_exercise_type.onchange=function(){
-        if(id_exercise_type.value=="{{types.TUTORIAL}}"){
-          id_assessment.options[0].selected = true;
-          id_assessment.setAttribute("disabled", true);
+      function exercise() {
+        id_assessment.options[0].removeAttribute("disabled");
+        id_assessment.options[1].removeAttribute("disabled");
+        id_assessment.options[2].removeAttribute("disabled");
+        
+        id_submission.options[0].removeAttribute("disabled");
+        id_submission.options[1].removeAttribute("disabled");
+        id_submission.options[2].removeAttribute("disabled");
+        if (id_exercise_type.value=="{{types.TUTORIAL}}") {
+          id_assessment.options[0].selected =  true;
+          id_assessment.options[1].setAttribute("disabled", true);
+          id_assessment.options[2].setAttribute("disabled", true);
+
+          id_submission.options[0].selected = true;
+          id_submission.options[1].setAttribute("disabled", true);
+          id_submission.options[2].setAttribute("disabled", true);
         }
-        else {
-          id_assessment.removeAttribute("disabled");
+        else if (id_exercise_type.value=="{{types.EXAM}}" 
+                  ||id_exercise_type.value=="{{types.TEST}}") {
+          id_assessment.options[1].selected = true;
+          id_assessment.options[0].setAttribute("disabled", true);
+          id_assessment.options[2].setAttribute("disabled", true);
+
+          if (id_exercise_type.value=="{{types.EXAM}}") {
+            id_submission.options[0].selected = true;
+            id_submission.options[1].setAttribute("disabled", true);
+            id_submission.options[2].setAttribute("disabled", true);
+          }
+          else {
+            id_submission.options[1].selected = id_submission.options[0].selected ? true : id_submission.options[1].selected;
+            id_submission.options[0].setAttribute("disabled", true);
+          }
+        }
+        else if (id_exercise_type.value=="{{types.REPORT}}" 
+                  ||id_exercise_type.value=="{{types.PROJECT}}") {
+          id_assessment.options[1].selected = id_assessment.options[0].selected ? true : id_assessment.options[1].selected;
+          id_assessment.options[0].setAttribute("disabled", true);
+
+          id_submission.options[1].selected = id_submission.options[0].selected ? true : id_submission.options[1].selected;
+          id_submission.options[0].setAttribute("disabled", true);
         }
       }
     </script>
-    
+
 
 
     </body>

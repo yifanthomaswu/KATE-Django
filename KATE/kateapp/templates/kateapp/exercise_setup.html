@@ -107,18 +107,42 @@
         </div>
          <div class="fieldWrapper form-group">
             {{ form.file.errors }}
-            <label for="{{ form.r.id_for_label }}" class="col-sm-3 control-label">Main File Upload:</label>
+            <label for="{{ form.r.id_for_label }}" class="col-sm-3 control-label">File Upload:</label>
             <div class="col-sm-8">
             {{ form.file }}
+            {{ form.file_type }}
+            <input class="btn btn-secondary" type="submit" value="Upload" name="upload"/>
             </div>
         </div>
-        <div class="fieldWrapper form-group">
-           {{ form.resources.errors }}
-           <label for="{{ form.r.id_for_label }}" class="col-sm-3 control-label">Other Resources:</label>
-           <div class="col-sm-8">
-           {{ form.resources }}
-           </div>
-       </div>
+         <div class="fieldWrapper form-group">
+            <label for="{{ form.r.id_for_label }}" class="col-sm-3 control-label">Files:</label>
+            <div class="col-sm-8">
+            {% for rs in resource %}{% if rs %}<p>
+              <table class="table table-striped table-responsive">
+              <caption>{% cycle 'Specification' 'Data file' 'Model answer' 'Marking scheme' %}</caption>
+              <thead>
+               <tr>
+                <th>File</th>
+                <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in rs %}
+                  <tr>
+                    <td>
+                      <a href="{{ MEDIA_URL }}{{ r.file.url }}">{{ r.filename }}</a>
+                    </td>
+                    <td>{{r.timestamp|date:"D, d M Y h:iA"}}</td>
+                    <td>
+                      <input class="btn btn-secondary" onclick="remove('{{ r.pk }}')" type="submit" value="Remove" name="remove"/>
+                    </td>
+                  </tr>
+              {% endfor %}
+              </tbody>
+              </table>
+            </p>{% endif %}{% endfor %}
+          </div>
+        </div>
 
       <form>
         <div id="buttons" class="col-sm-offset-7 col-sm-5">
@@ -147,6 +171,13 @@
       input.type = "text";
       file_name_list.append(input);
       num++;
+    }
+
+    function remove(object) {
+      var output = document.createElement("input");
+      output.name = "remove_file";
+      output.value = object;
+      file_name_list.append(output);
     }
 
     function finalize() {

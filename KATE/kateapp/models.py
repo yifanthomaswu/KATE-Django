@@ -160,7 +160,7 @@ class Courses_Resource(models.Model):
 @python_2_unicode_compatible
 class Exercises_Resource(models.Model):
     exercise = models.ForeignKey(Exercises, on_delete=models.PROTECT)
-    resource = models.ForeignKey(Resource, on_delete=models.PROTECT)
+    resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
 
     SPECIFICATION = 'SPEC'
     DATA = 'DATA'

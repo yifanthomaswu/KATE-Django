@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import loader
 from django.db.models import Max
 
-from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource
+from .models import *
 from .forms import NewExerciseForm, SubmissionForm
 
 import datetime
@@ -287,10 +287,20 @@ def exercise_setup(request, code, number):
 
 
 def submission(request, code, number):
+    teacher = True
     # Check that exercise exists
     if not Exercises.objects.filter(code=code, number=number).exists():
         raise Http404("Exercise doesn't exist")
     exercise = Exercises.objects.get(code=code, number=number)
+    course = get_object_or_404(Courses, pk=code)
+    specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='SPEC').order_by('exercises_resource__resource__timestamp'))
+    data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='DATA').order_by('exercises_resource__resource__timestamp'))
+    answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='ANSWER').order_by('exercises_resource__resource__timestamp'))
+    if teacher:
+        marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='MARKING').order_by('exercises_resource__resource__timestamp'))
+        resource = (specification, data, answer, marking)
+    else:
+        resource = (specification, data, answer)
     # Split, either form is being produced, or submitted
     if request.method == 'POST':
         ############ Form Submitted ############
@@ -327,8 +337,8 @@ def submission(request, code, number):
             form = SubmissionForm(data)
         context = {
             'form': form,
-            'code': code,
-            'number': number,
+            'course': course,
             'exercise': exercise,
+            'resource' : resource,
         }
         return render(request, 'kateapp/submission.html', context)

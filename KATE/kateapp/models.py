@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.utils.encoding import python_2_unicode_compatible
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+import os
 
 @python_2_unicode_compatible
 class Classes(models.Model):
@@ -126,12 +127,15 @@ class Period(models.Model):
 class Resource(models.Model):
     file = models.FileField(upload_to='')
     timestamp = models.DateTimeField(auto_now=True)
+    def filename(self):
+        return os.path.basename(self.file.name)
     def __str__(self):
         return self.file.name + " " + self.timestamp.__str__()
 
 @python_2_unicode_compatible
 class Courses_Resource(models.Model):
     code = models.ForeignKey(Courses, on_delete=models.PROTECT)
+    title = models.CharField(max_length=200)
     resource = models.ForeignKey(Resource, on_delete=models.PROTECT, null=True)
     link = models.URLField(null=True)
 
@@ -164,7 +168,7 @@ class Exercises_Resource(models.Model):
     MARKING = 'MARKING'
     TYPE_CHOICES = (
         (SPECIFICATION, 'Specification'),
-        (DATA, 'Data files'),
+        (DATA, 'Data file'),
         (ANSWER, 'Model answer'),
         (MARKING, 'Marking scheme'),
     )

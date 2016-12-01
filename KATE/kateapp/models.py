@@ -182,7 +182,14 @@ class Submissions(models.Model):
     leader = models.ForeignKey(People, on_delete=models.PROTECT, related_name='leader')
     members = models.ManyToManyField(People, related_name='members')
     files = models.ManyToManyField(Resource)
-    mark = models.DecimalField(max_digits=5, decimal_places=2, default=None, null=True)
     timestamp = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.exercise.code.code + " " + self.exercise.number.__str__() + " " + self.leader.__str__() + self.members.all().__str__()
+
+@python_2_unicode_compatible
+class Marks(models.Model):
+    exercise = models.ForeignKey(Exercises, on_delete=models.PROTECT)
+    login = models.ForeignKey(People, on_delete=models.PROTECT)
+    mark = models.DecimalField(max_digits=5, decimal_places=2)
+    def __str__(self):
+        return self.login.__str__() + " " + self.exercise.code.code + " " + self.exercise.number.__str__() + " " + self.mark.__str__()

@@ -6,8 +6,10 @@ class NewExerciseForm(forms.Form):
     resources = forms.FileField(widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'multiple': True}),
                                 required=False)
     file = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class':'form-control'}))
-    start_date = forms.DateTimeField(widget=forms.TextInput(attrs={'class':'datepicker form-control'}))
-    end_date = forms.DateTimeField(widget=forms.TextInput(attrs={'class':'datepicker form-control'}))
+    start_date = forms.DateField(widget=forms.TextInput(attrs={'class':'datepicker form-control'}),
+                                input_formats=['%m/%d/%Y','%m/%d/%y'])
+    end_date = forms.DateField(widget=forms.TextInput(attrs={'class':'datepicker form-control'}))
+    end_time = forms.TimeField(widget=forms.TextInput(attrs={'class':'form-control'}))
     #number = forms.IntegerField(widget=forms.NumberInput(attrs={'class' : 'form-control'}))
     exercise_type = forms.ChoiceField(choices=Exercises.TYPE_CHOICES, widget=forms.Select(attrs={'class':'form-control', 'onchange' : 'exercise()'}))
     assessment = forms.ChoiceField(choices=Exercises.ASSESSMENT_CHOICES, widget=forms.Select(attrs={'class':'form-control'}))

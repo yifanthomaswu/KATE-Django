@@ -211,8 +211,12 @@ def exercise_setup(request, code, number):
                 if Exercises.objects.filter(code=code, number=number).exists():
                     Exercises.objects.filter(code=code, number=number).update(
                     title=form.cleaned_data["title"],
-                    start_date=form.cleaned_data["start_date"],
-                    deadline=form.cleaned_data["end_date"],
+                    start_date=datetime.datetime.combine(
+                                    form.cleaned_data["start_date"],
+                                    datetime.time(0,0)),
+                    deadline=datetime.datetime.combine(
+                                    form.cleaned_data["end_date"],
+                                    form.cleaned_data["end_time"]),
                     exercise_type=form.cleaned_data["exercise_type"],
                     assessment=form.cleaned_data["assessment"],
                     submission=form.cleaned_data["submission"],
@@ -222,8 +226,12 @@ def exercise_setup(request, code, number):
                     # setup exercise
                     e = Exercises(code=Courses.objects.get(code=code),
                               title=form.cleaned_data["title"],
-                              start_date=form.cleaned_data["start_date"],
-                              deadline=form.cleaned_data["end_date"],
+                              start_date=datetime.datetime.combine(
+                                              form.cleaned_data["start_date"],
+                                              datetime.time(0,0)),
+                              deadline=datetime.datetime.combine(
+                                              form.cleaned_data["end_date"],
+                                              form.cleaned_data["end_time"]),
                               number=newNumber,
                               exercise_type=form.cleaned_data["exercise_type"],
                               assessment=form.cleaned_data["assessment"],
@@ -277,8 +285,9 @@ def exercise_setup(request, code, number):
                     mainFile = None
                 data = {
                     'title': exercise.title,
-                    'start_date': exercise.start_date,
-                    'end_date': exercise.deadline,
+                    'start_date': exercise.start_date.date(),
+                    'end_date': exercise.deadline.date(),
+                    'end_time': exercise.deadline.time(),
                     'exercise_type': exercise.exercise_type,
                     'assessment': exercise.assessment,
                     'submission': exercise.submission,

@@ -7,8 +7,10 @@
         <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/style.css' %}">
 
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="https://raw.githubusercontent.com/jonthornton/jquery-timepicker/master/jquery.timepicker.css">
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="https://raw.githubusercontent.com/jonthornton/jquery-timepicker/master/jquery.timepicker.min.js"></script>
 
     </head>
     <body>
@@ -35,8 +37,14 @@
       changeMonth: true,
       changeYear: true,
       yearRange: "2015:2020",
-      // You can put more options here.
-
+      firstDay: 1,
+      minDate: 0,
+      dateFormat: "dd/mm/yy"
+    });
+    $('.timepicker').timepicker({
+      scrollDefault: 'now',
+      step: 60,
+      timeFormat: 'h:i A'
     });
   });
   </script>
@@ -67,6 +75,12 @@
             <label for="{{ form.end_date.id_for_label }}" class="col-sm-3 control-label">Deadline:</label>
             <div class="col-sm-8">
             {{ form.end_date }}
+            </div>
+        </div>
+        <div class="fieldWrapper form-group">
+            {{ form.end_time.errors }}
+            <div class="col-sm-8">
+            {{ form.end_time }}
             </div>
         </div>
         <div class="fieldWrapper form-group">
@@ -206,7 +220,7 @@
         id_assessment.options[0].removeAttribute("disabled");
         id_assessment.options[1].removeAttribute("disabled");
         id_assessment.options[2].removeAttribute("disabled");
-        
+
         id_submission.options[0].removeAttribute("disabled");
         id_submission.options[1].removeAttribute("disabled");
         id_submission.options[2].removeAttribute("disabled");
@@ -219,7 +233,7 @@
           id_submission.options[1].setAttribute("disabled", true);
           id_submission.options[2].setAttribute("disabled", true);
         }
-        else if (id_exercise_type.value=="{{types.EXAM}}" 
+        else if (id_exercise_type.value=="{{types.EXAM}}"
                   ||id_exercise_type.value=="{{types.TEST}}") {
           id_assessment.options[1].selected = true;
           id_assessment.options[0].setAttribute("disabled", true);
@@ -235,7 +249,7 @@
             id_submission.options[0].setAttribute("disabled", true);
           }
         }
-        else if (id_exercise_type.value=="{{types.REPORT}}" 
+        else if (id_exercise_type.value=="{{types.REPORT}}"
                   ||id_exercise_type.value=="{{types.PROJECT}}") {
           id_assessment.options[1].selected = id_assessment.options[0].selected ? true : id_assessment.options[1].selected;
           id_assessment.options[0].setAttribute("disabled", true);

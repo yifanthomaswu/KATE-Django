@@ -128,6 +128,9 @@
     text-align: right;
 }
 
+.module-content {
+	padding: 20px 15% 60px 15%;
+}
 .module-content h3{
 	text-align: center;
 	padding-bottom: 30px;

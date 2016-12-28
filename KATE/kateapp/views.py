@@ -37,15 +37,13 @@ def personal_page(request):
     date_now = timezone.now()
     for course in courses:
         courses_exercises = courses_exercises + list(Exercises.objects.filter(
-            code=course.code, start_date__lte=date_now, deadline__gte=date_now).order_by('deadline'))
+            code=course.code, start_date__lte=date_now, deadline__gte=date_now))
     courses_exercises.sort(key=itemgetter('deadline'))
     for exercise in courses_exercises:
         if((exercise.deadline - date_now).days > 0):
             courses_exercises.append((exercise, (exercise.deadline - date_now).days, True))
         else:
             courses_exercises.append((exercise, (exercise.deadline - date_now).seconds / 3600, False))
-
-
     context = {
         'person': person,
         'courses_exercises' : courses_exercises,

@@ -351,6 +351,7 @@ def submission(request, code, number):
     if not Exercises.objects.filter(code=code, number=number).exists():
         raise Http404("Exercise doesn't exist")
     exercise = Exercises.objects.get(code=code, number=number)
+    course = get_object_or_404(Courses, pk=str(code))
     # Split, either form is being produced, or submitted
     if request.method == 'POST':
         ############ Form Submitted ############
@@ -387,7 +388,7 @@ def submission(request, code, number):
             form = SubmissionForm(data)
         context = {
             'form': form,
-            'code': code,
+            'course': course,
             'number': number,
             'exercise': exercise,
         }

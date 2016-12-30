@@ -7,7 +7,7 @@ from django.utils import timezone
 
 
 
-from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource
+from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource, Marks
 from .forms import NewExerciseForm, SubmissionForm
 
 import datetime

@@ -41,14 +41,14 @@
     $( ".datepicker" ).datepicker({
       changeMonth: true,
       changeYear: true,
-      yearRange: "2015:2020",
+      yearRange: "2015:2040",
       firstDay: 1,
       minDate: 0,
       dateFormat: "dd/mm/yy"
     });
     $('.timepicker').timepicker({
       scrollDefault: 'now',
-      step: 60,
+      step: 30,
       timeFormat: 'h:i A'
     });
   });
@@ -84,6 +84,7 @@
         </div>
         <div class="fieldWrapper form-group">
             {{ form.end_time.errors }}
+            <label for="{{ form.end_date.id_for_label }}" class="col-sm-3 control-label"></label>
             <div class="col-sm-8">
             {{ form.end_time }}
             </div>

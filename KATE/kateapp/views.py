@@ -10,10 +10,8 @@ from django.utils import timezone
 from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource, Marks
 from .forms import NewExerciseForm, SubmissionForm
 
-import datetime
 import calendar
-from datetime import timedelta
-from datetime import datetime
+from datetime import datetime, time, timedelta
 
 from operator import attrgetter, itemgetter
 
@@ -246,10 +244,10 @@ def exercise_setup(request, code, number):
                 if Exercises.objects.filter(code=code, number=number).exists():
                     Exercises.objects.filter(code=code, number=number).update(
                     title=form.cleaned_data["title"],
-                    start_date=datetime.datetime.combine(
+                    start_date=datetime.combine(
                                     form.cleaned_data["start_date"],
-                                    datetime.time(0,0)),
-                    deadline=datetime.datetime.combine(
+                                    time()),
+                    deadline=datetime.combine(
                                     form.cleaned_data["end_date"],
                                     form.cleaned_data["end_time"]),
                     exercise_type=form.cleaned_data["exercise_type"],
@@ -261,10 +259,10 @@ def exercise_setup(request, code, number):
                     # setup exercise
                     e = Exercises(code=course,
                               title=form.cleaned_data["title"],
-                              start_date=datetime.datetime.combine(
+                              start_date=datetime.combine(
                                               form.cleaned_data["start_date"],
-                                              datetime.time(0,0)),
-                              deadline=datetime.datetime.combine(
+                                              time()),
+                              deadline=datetime.combine(
                                               form.cleaned_data["end_date"],
                                               form.cleaned_data["end_time"]),
                               number=newNumber,

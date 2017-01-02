@@ -27,26 +27,31 @@ def grading_scheme(request):
 
 
 def personal_page(request):
+    teacher = False
     login = "yw8012"
     person = get_object_or_404(People, login=login)
-    #courses = list(Courses.objects.filter(required=person)) + list(Courses.objects.filter(registered=person))
-    courses = list(Courses.objects.all())
-    exercises = []
-    date_now = timezone.now()
-    for course in courses:
-        exercises = exercises + list(Exercises.objects.filter(
-            code=course.code, start_date__lte=date_now, deadline__gte=date_now))
-    exercises.sort(key=lambda x:x.deadline)
-    courses_exercises = []
-    for exercise in exercises:
-        if((exercise.deadline - date_now).days > 0):
-            courses_exercises.append((exercise, (exercise.deadline - date_now).days, True))
-        else:
-            courses_exercises.append((exercise, (exercise.deadline - date_now).seconds / 3600, False))
-    context = {
-        'person': person,
-        'courses_exercises' : courses_exercises,
-    }
+    if(teacher):
+        courses = list(Courses.objects.filter(lecturer_id=login))
+    else:
+        #courses = list(Courses.objects.filter(required=person)) + list(Courses.objects.filter(registered=person))
+        courses = list(Courses.objects.all())
+        exercises = []
+        date_now = timezone.now()
+        for course in courses:
+            exercises = exercises + list(Exercises.objects.filter(
+                code=course.code, start_date__lte=date_now, deadline__gte=date_now))
+        exercises.sort(key=lambda x:x.deadline)
+        courses_exercises = []
+        for exercise in exercises:
+            if((exercise.deadline - date_now).days > 0):
+                courses_exercises.append((exercise, (exercise.deadline - date_now).days, True))
+            else:
+                courses_exercises.append((exercise, (exercise.deadline - date_now).seconds / 3600, False))
+        context = {
+            'teacher': teacher,
+            'person': person,
+            'courses_exercises' : courses_exercises,
+        }
     return render(request, 'kateapp/personal_page.html', context)
 
 def individual_record(request, login):

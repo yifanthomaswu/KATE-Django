@@ -85,5 +85,43 @@
 
   </div>
 
+   {% if form %}
+   <div class ="container-fluid exercise-form">
+      <h3>Declaration:<br>
+      </h3>
+      <ul>
+        <li>We declare that this final submitted version is our unaided work.</li>
+        <li>We acknowledge the following people for help through our original discussions:</li>
+      </ul>
+
+      <form action="{% url 'submission' course.code exercise.number%}" method="post" enctype="multipart/form-data" class = "form-horizontal">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="fieldWrapper form-group">
+            {{ form.leader.errors }}
+            <label class="col-sm-3 control-label">Leader:</label>
+            <div class="col-sm-8">
+            {{ form.leader }}
+            </div>
+        </div>
+
+        <div class="col-sm-offset-7 col-sm-5">
+        <input id="button" class="btn btn-primary" type="submit" value="Submit" name="submit"/>
+      </form>
+      <br>
+      <br>
+      <br>
+      <a id="cover_sheet" hidden="true" href="{% url 'cover_sheet' course.code exercise.number%}">Cover Sheet</a>
+    </div>
+    {% endif %}
+
+    {% if bound %}
+    <script>
+    button.setAttribute("disabled", true);
+    id_leader.setAttribute("disabled", true);
+    cover_sheet.removeAttribute("hidden");
+    </script>
+    {% endif %}
+
     </body>
 </html>

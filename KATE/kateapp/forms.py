@@ -22,8 +22,6 @@ class NewExerciseForm(forms.Form):
     file_name = forms.CharField(required=False, widget=forms.TextInput(attrs={'class' : 'form-control', 'style' : 'display:none'}) )
 
 class SubmissionForm(forms.Form):
-    #Is it Electronic submission?
-    file = forms.FileField(label='Document')
-    # How many files to upload?
-    #Add group members?
-    #Generate smt else if not electronic?...
+    files = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class':'form-control','multiple': True}))
+    leader = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control'}) )
+    #What about a group??

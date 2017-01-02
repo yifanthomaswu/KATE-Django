@@ -105,10 +105,13 @@
             </div>
         </div>
 
-      <form>
         <div class="col-sm-offset-7 col-sm-5">
         <input id="button" class="btn btn-primary" type="submit" value="Submit" name="submit"/>
       </form>
+      <br>
+      <br>
+      <br>
+      <a id="cover_sheet" hidden="true" href="{% url 'cover_sheet' course.code exercise.number%}">Cover Sheet</a>
     </div>
     {% endif %}
 
@@ -116,6 +119,7 @@
     <script>
     button.setAttribute("disabled", true);
     id_leader.setAttribute("disabled", true);
+    cover_sheet.removeAttribute("hidden");
     </script>
     {% endif %}
 

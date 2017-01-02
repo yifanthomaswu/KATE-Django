@@ -7,7 +7,7 @@ from django.utils import timezone
 
 
 
-from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource, Marks
+from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource, Submissions, Marks
 from .forms import NewExerciseForm, SubmissionForm
 
 import calendar
@@ -466,6 +466,61 @@ def submission(request, code, number):
     #else:
     #    resource = (specification, data, answer)
     # Split, either form is being produced, or submitted
+
+    if exercise.submission == Exercises.NO:
+        return displayPlainSubmissionPage(request, course, exercise)
+
+    elif exercise.submission == Exercises.HARDCOPY:
+        return displayHardcopySubmissionPage(request, course, exercise)
+
+    else:
+        return displayElectronicSubmissionPage(request, course, exercise)
+    
+def displayPlainSubmissionPage(request, course, exercise):
+    context = {
+            'course': course,
+            'exercise': exercise,
+        }
+    return render(request, 'kateapp/submission.html', context)
+
+def displayHardcopySubmissionPage(request, course, exercise):
+    ####################################################################
+    user = "yw8012"
+    ####################################################################
+    if request.method == 'POST':
+        ############ Form Submitted ############
+        form = SubmissionForm(request.POST)
+        if form.is_valid():
+            # create new submission
+            leader = get_object_or_404(People, login=form.cleaned_data["leader"])
+            new_sub = Submissions(exercise=exercise, leader=leader)
+            new_sub.save()
+            return HttpResponseRedirect('/submission/2016/' + course.code + '/' + str(exercise.number) + '/')
+    else:
+        ############ Form generated ############
+        # check if submitted already
+        if not Submissions.objects.filter(exercise=exercise, leader=People.objects.get(login=user)).exists():
+            # create new unbound form
+            form = SubmissionForm()
+            bound = False
+        else:
+            # create bound form
+            data = {
+                'leader' : user
+            }
+            form = SubmissionForm(data)
+            bound = True
+
+        context = {
+            'form': form,
+            'course': course,
+            'exercise': exercise,
+            'bound' : bound,
+        }
+        return render(request, 'kateapp/submission.html', context)
+
+
+'''
     if request.method == 'POST':
         ############ Form Submitted ############
         form = SubmissionForm(request.POST, request.FILES)
@@ -507,3 +562,4 @@ def submission(request, code, number):
         #    'resource': resource,
         #}
         return render(request, 'kateapp/submission.html', context)
+'''

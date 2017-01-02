@@ -13,7 +13,7 @@ from .forms import NewExerciseForm, SubmissionForm
 import calendar
 from datetime import datetime, time, timedelta
 
-from operator import attrgetter, itemgetter
+from operator import attrgetter
 
 logger = logging.getLogger('django')
 
@@ -31,13 +31,14 @@ def personal_page(request):
     person = get_object_or_404(People, login=login)
     #courses = list(Courses.objects.filter(required=person)) + list(Courses.objects.filter(registered=person))
     courses = list(Courses.objects.all())
-    courses_exercises = []
+    exercises = []
     date_now = timezone.now()
     for course in courses:
-        courses_exercises = courses_exercises + list(Exercises.objects.filter(
+        exercises = exercises + list(Exercises.objects.filter(
             code=course.code, start_date__lte=date_now, deadline__gte=date_now))
-    courses_exercises.sort(key=itemgetter('deadline'))
-    for exercise in courses_exercises:
+    exercises.sort(key=lambda x:x.deadline)
+    courses_exercises = []
+    for exercise in exercises:
         if((exercise.deadline - date_now).days > 0):
             courses_exercises.append((exercise, (exercise.deadline - date_now).days, True))
         else:

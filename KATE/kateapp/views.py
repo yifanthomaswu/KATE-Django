@@ -525,7 +525,65 @@ def displayHardcopySubmissionPage(request, course, exercise):
         return render(request, 'kateapp/submission.html', context)
 
 def displayElectronicSubmissionPage(request, course, exercise):
-    return Http404("error")
+    ####################################################################
+    user = "yw8012"
+    ####################################################################
+    if request.method == 'POST':
+        ############ Form Submitted ############
+        form = SubmissionForm(request.POST)
+        files = request.FILES.getlist('files')
+        if form.is_valid():
+            # check if submitted already
+            if Submissions.objects.filter(exercise=exercise, leader=People.objects.get(login=user)).exists():
+                pass
+                # update submission with new
+                #Resource.objects.filter(Exercises_Resource__exercise=exercise).update(
+                #    file=request.FILES["file"])
+                #r = Resource.objects.get(Exercises_Resource__exercise=exercise)
+                #Exercises_Resource.objects.filter(
+                #    exercise=exercise).update(resource=r)
+            else:
+                #check num of uplaoded files matches required num of files for exercsie
+                file_names = exercise.esubmission_files_names
+                if len(files) != len(file_names):
+                    raise Http404("Errorrrr1")
+                # create new submission
+                leader = get_object_or_404(People, login=form.cleaned_data["leader"])
+                new_sub = Submissions(exercise=exercise, leader=leader)
+                new_sub.save()
+                # setup resources
+                for file in files:
+                    if file.name not in file_names:
+                        raise Http404("Errorrrr2")
+                    r = Resource(file=file)
+                    #r.save()
+                    # setup exercise-resource link
+                    #new_sub.files.add(r)
+            return HttpResponseRedirect('/submission/2016/' + course.code + '/' + str(exercise.number) + '/')
+        else:
+            raise Http404("Errorrrr3")
+    else:
+        ############ Form generated ############
+        # check if submitted already
+        if not Submissions.objects.filter(exercise=exercise, leader=People.objects.get(login=user)).exists():
+            # create new unbound form
+            form = SubmissionForm()
+            bound = False
+        else:
+            # create bound form
+            data = {
+                'leader' : user
+            }
+            form = SubmissionForm(data)
+            bound = True
+        context = {
+            'form': form,
+            'course': course,
+            'exercise': exercise,
+            'bound' : bound,
+            'elec' : True,
+        }
+        return render(request, 'kateapp/submission.html', context)
 
 #This method is what generates the Cover sheet for Hardcopy submission
 def cover_sheet(request, code, number):
@@ -587,47 +645,3 @@ def cover_sheet(request, code, number):
     p.showPage()
     p.save()
     return response
-
-'''
-    if request.method == 'POST':
-        ############ Form Submitted ############
-        form = SubmissionForm(request.POST, request.FILES)
-        if form.is_valid():
-            # check if submitted already
-            if Exercises_Resource.objects.filter(exercise=exercise).exists():
-                # update submission with new
-                Resource.objects.filter(Exercises_Resource__exercise=exercise).update(
-                    file=request.FILES["file"])
-                r = Resource.objects.get(Exercises_Resource__exercise=exercise)
-                Exercises_Resource.objects.filter(
-                    exercise=exercise).update(resource=r)
-            else:
-                # create new submission
-                # setup resource
-                r = Resource(file=request.FILES["file"])
-                r.save()
-                # setup exercise-resource link
-                er = Exercises_Resource(exercise=exercise,
-                                        resource=r)
-                er.save()
-            return HttpResponseRedirect('/submission/2016/' + code + '/' + number + '/')
-    else:
-        ############ Form generated ############
-        # check if submitted already
-        if not Exercises_Resource.objects.filter(exercise=exercise).exists():
-            # create new unbound form
-            form = SubmissionForm()
-        else:
-            # create bound form
-            data = {
-            }
-            form = SubmissionForm(data)
-        context = {
-            'form': form,
-            'course': course,
-            'exercise': exercise,
-        }
-        #    'resource': resource,
-        #}
-        return render(request, 'kateapp/submission.html', context)
-'''

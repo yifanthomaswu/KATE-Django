@@ -105,6 +105,25 @@
             </div>
         </div>
 
+
+        {% if elec %}
+        <ul>
+          <li>Files to upload {{ exercise.esubmission_files_names }}</li>
+        </ul>
+        <div class="fieldWrapper form-group">
+            {{ form.files.errors }}
+            <label for="{{ form.r.id_for_label }}" class="col-sm-3 control-label">File Upload:</label>
+            <div class="col-sm-8">
+            {{ form.files }}
+            {{ form.files_type }}
+            </div>
+        </div>
+        {% endif %}
+
+
+
+
+
         <div class="col-sm-offset-7 col-sm-5">
         <input id="button" class="btn btn-primary" type="submit" value="Submit" name="submit"/>
       </form>
@@ -117,10 +136,14 @@
 
     {% if bound %}
     <script>
-    button.setAttribute("disabled", true);
     id_leader.setAttribute("disabled", true);
+    </script>
+    {% if not elec %}
+    <script>
+    button.setAttribute("disabled", true);
     cover_sheet.removeAttribute("hidden");
     </script>
+    {% endif %}
     {% endif %}
 
     </body>

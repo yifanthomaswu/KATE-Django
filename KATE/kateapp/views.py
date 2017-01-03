@@ -468,8 +468,8 @@ def submission(request, code, number):
     #    resource = (specification, data, answer, marking)
     #else:
     #    resource = (specification, data, answer)
-    # Split, either form is being produced, or submitted
 
+    #We split here depending on what submission will be available
     if exercise.submission == Exercises.NO:
         return displayPlainSubmissionPage(request, course, exercise)
 
@@ -480,6 +480,8 @@ def submission(request, code, number):
         return displayElectronicSubmissionPage(request, course, exercise)
     
 def displayPlainSubmissionPage(request, course, exercise):
+    #Dispay a plain submission page with some info only
+    #TODO: Need to extend to also show recources, like associated files @@ This goes or all views
     context = {
             'course': course,
             'exercise': exercise,
@@ -525,6 +527,7 @@ def displayHardcopySubmissionPage(request, course, exercise):
 def displayElectronicSubmissionPage(request, course, exercise):
     return Http404("error")
 
+#This method is what generates the Cover sheet for Hardcopy submission
 def cover_sheet(request, code, number):
     ##################################################
     user = "yw8012"
@@ -554,28 +557,30 @@ def cover_sheet(request, code, number):
     p.drawString(100, 610, "Submitted: " + submission.timestamp.strftime('%A, %d %B %Y %I:%M %p'))
     p.drawString(100, 40, "Page Generated: " + datetime.now().strftime('%A, %d %B %Y %I:%M %p'))
 
-
     p.setFont("Courier-BoldOblique", 25)
     p.drawString(width/2, 750, "KATe")
     p.setFont("Courier-BoldOblique", 13)
     p.drawString(100, 700, "Cover Sheet")
 
+    #We draw the 2 border rectangles here
     a = 10
     p.rect(a, a, width-(2*a), height-(2*a))
     a = 15
     p.setLineWidth(2)
     p.rect(a, a, width-(2*a), height-(2*a))
 
+    #Set the content of the QR message here
     QRmessage = courseName + "%0A" + name + "%0A" + person.login + "%0A" + submission.timestamp.strftime('%A, %d %B %Y %I:%M %p')
+    #Set the size of the QR code on the cover sheet, in pixels
     size = 300 #in pixels
 
-
+    #Use Google Charts to generate QR code
     baseURL = "https://chart.googleapis.com/chart?cht=qr&choe=ISO-8859-1&chld=H"
     dimensions = "&chs=" + str(size) + "x" + str(size)
     baseURL += dimensions
     baseURL += "&chl=" + QRmessage
     img = Image.open(urlopen(baseURL))
-    #img = Image.open(urlopen("https://chart.googleapis.com/chart?cht=qr&chs=400x400&choe=ISO-8859-1&chld=H&chl=hello+melek%0Ayou+suck"))
+    #We draw the actaul QR code here, we can set the x and y, but width and height should be 'size'
     p.drawInlineImage(img, width/2-(size/2), 50, size, size)
 
     # Close the PDF object cleanly, and we're done.

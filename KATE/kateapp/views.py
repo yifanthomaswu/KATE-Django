@@ -7,7 +7,7 @@ from django.utils import timezone
 
 
 
-from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource, Marks
+from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource, Marks, Submissions
 from .forms import NewExerciseForm, SubmissionForm
 
 import calendar
@@ -27,11 +27,31 @@ def grading_scheme(request):
 
 
 def personal_page(request):
-    teacher = False
+    teacher = True
     login = "yw8012"
     person = get_object_or_404(People, login=login)
     if(teacher):
-        courses = list(Courses.objects.filter(lecturer_id=login))
+        login = "test01"
+        current_term = 1 #TODO which term?
+        courses = get_list_or_404(Courses, lecturer_id=login, courses_term__term=current_term)
+        exercises = []
+        date_now = timezone.now()
+        for course in courses:
+            exercises = exercises + list(Exercises.objects.filter(
+                code=course.code, deadline__lte=date_now, assessment__in=["GROUP", "INDIVIDUAL"], marked=False))
+        exercises.sort(key=lambda x:x.deadline)
+        courses_exercises = []
+        for exercise in exercises:
+            if((date_now - exercise.deadline).days > 0):
+                courses_exercises.append((exercise, (date_now - exercise.deadline).days, True))
+            else:
+                courses_exercises.append((exercise, (date_now - exercise.deadline).seconds / 3600, False))
+        context = {
+            'teacher': teacher,
+            'person': person,
+            'courses': courses,
+            'courses_exercises' : courses_exercises,
+        }
     else:
         #courses = list(Courses.objects.filter(required=person)) + list(Courses.objects.filter(registered=person))
         courses = list(Courses.objects.all())
@@ -66,6 +86,7 @@ def individual_record(request, login):
         'courses_marks': courses_marks,
     }
     return render(request, 'kateapp/individual_record.html', context)
+
 def convert_mark_number_text(mark):
     number_mark = mark.mark
     if number_mark < 30:
@@ -511,3 +532,57 @@ def submission(request, code, number):
             'resource': resource,
         }
         return render(request, 'kateapp/submission.html', context)
+
+def marking(request, code, number):
+    exercise = Exercises.objects.get(code=code, number=number)
+    course = get_object_or_404(Courses, pk=code)
+    submissions = Submissions.objects.filter(exercise_id=exercise.id).order_by('leader_id')
+
+    # Split, either form is being produced, or submitted
+    if request.method == 'POST':
+        ############ Form Submitted ############
+        form = MarkingForm(request.POST)
+        if form.is_valid():
+            # check if submitted already
+            if Exercises_Resource.objects.filter(exercise=exercise).exists():
+                # update submission with new
+                Resource.objects.filter(Exercises_Resource__exercise=exercise).update(
+                    file=request.FILES["file"])
+                r = Resource.objects.get(Exercises_Resource__exercise=exercise)
+                Exercises_Resource.objects.filter(
+                    exercise=exercise).update(resource=r)
+            else:
+                # create new submission
+                # setup resource
+                r = Resource(file=request.FILES["file"])
+                r.save()
+                # setup exercise-resource link
+                er = Exercises_Resource(exercise=exercise,
+                                        resource=r)
+                er.save()
+            return HttpResponseRedirect('/submission/2016/' + code + '/' + number + '/')
+    else:
+        ############ Form generated ############
+        # check if submitted already
+        if not Exercises_Resource.objects.filter(exercise=exercise).exists():
+            # create new unbound form
+            form = SubmissionForm()
+        else:
+            # create bound form
+            data = {
+            }
+            form = SubmissionForm(data)
+        context = {
+            'form': form,
+            'course': course,
+            'exercise': exercise,
+            'resource': resource,
+        }
+        return render(request, 'kateapp/submission.html', context)
+
+    context = {
+        'course': course,
+        'exercise': exercise,
+        'submissions': submissions,
+    }
+    return render(request, 'kateapp/marking.html', context)

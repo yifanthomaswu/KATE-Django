@@ -109,6 +109,8 @@ class Exercises(models.Model):
 
     esubmission_files_names = ArrayField(models.CharField(max_length=50), default=[])
 
+    marked = models.BooleanField(default=False)
+
     class Meta:
         unique_together = (('code', 'number'),)
     def __str__(self):

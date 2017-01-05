@@ -57,29 +57,77 @@
   </p>
 
   {% if exercise.get_submission_display == "Electronic" %}
-    Download all Submissions as zip
+    TODO: Download all Submissions as zip
   {% endif %}
-    <table class="table table-striped">
-      <thead>
-        <th>Student-ID</th>
-        <th>Mark</th>
-      </thead>
-      <tbody>
-        {% for submission in submissions %}
-        <tr>
-          {% if submission.timestamp > exercise.deadline %}
-          <font color="red">
+    <form action="{% url 'marking' code number%}" method="post" onsubmit="finalize()" enctype="multipart/form-data" class ="form-horizontal">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <input type="submit" value="Save" name="save" id="save_button" class="btn btn-primary" />
+      <table class="table table-striped">
+        <thead>
+          <th>Student-ID</th>
+          <th>Mark</th>
+        </thead>
+        <tbody>
+          {% for submission in submissions %}
+          <tr>
+            {% if submission.timestamp > exercise.deadline %}
+            <font color="red">
             {% endif %}
-          <td>{{submission.leader_id}}</td>
-          {% if submission.timestamp > exercise.deadline %}
-          </font>
+            <td id="id{{forloop.counter}}">{{submission.leader_id}}</td>
+            {% if submission.timestamp > exercise.deadline %}
+            </font>
             {% endif %}
-          <td><input type="number" min="0" max="100"></input></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+            <td><input type="number" min="0" max="100" id="mark{{forloop.counter}}" name="{{submission.leader_id}}"></input></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div hidden id="marks" class="fieldWrapper form-group">
+        {{ form.marks }}
+      </div>
+    </form>
+
+    <script>
+    var num_submissions = parseInt("{{ num_submissions }}");
+
+    initialize();
+    function initialize() {
+      var text = id_marks.value;
+      var marks = text.split("@");
+      for (i = 0; i < marks.length; i++) {
+        var markfield = document.getElementsByName(marks[i].split("_")[0])[0];
+        markfield.value = marks[i].split("_")[1];
+      }
+
+      //check if all marks are put in
+      for (i = 1; i <= num_submissions; i++) {
+        var markfield = document.getElementById("mark" + i);
+        if (markfield.value == "") {
+          return;
+        }
+      }
+      var button = document.createElement("input");
+      button.className = "btn btn-primary";
+      button.type = "submit";
+      button.value = "Publish";
+      button.name = "publish";
+      save_button.after(button);
+    }
+
+    function finalize() {
+      var text = id1.innerText + "_" + mark1.value;
+      for (i = 2; i <= num_submissions; i++) {
+        var idfield = document.getElementById("id" + i);
+        var markfield = document.getElementById("mark" + i);
+        if (markfield.value != "") {
+          text += "@" + idfield.innerText + "_" + markfield.value;
+        }
+      }
+      id_marks.value = text;
+    }
+    </script>
   </div>
 
-    </body>
+</body>
 </html>

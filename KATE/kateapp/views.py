@@ -8,7 +8,7 @@ from django.utils import timezone
 
 
 from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource, Marks, Submissions
-from .forms import NewExerciseForm, SubmissionForm
+from .forms import NewExerciseForm, SubmissionForm, MarkingForm
 
 import calendar
 from datetime import datetime, time, timedelta
@@ -537,52 +537,59 @@ def marking(request, code, number):
     exercise = Exercises.objects.get(code=code, number=number)
     course = get_object_or_404(Courses, pk=code)
     submissions = Submissions.objects.filter(exercise_id=exercise.id).order_by('leader_id')
-
+    #TODO get all subscribed students and group them if group submission
     # Split, either form is being produced, or submitted
     if request.method == 'POST':
         ############ Form Submitted ############
         form = MarkingForm(request.POST)
         if form.is_valid():
-            # check if submitted already
-            if Exercises_Resource.objects.filter(exercise=exercise).exists():
-                # update submission with new
-                Resource.objects.filter(Exercises_Resource__exercise=exercise).update(
-                    file=request.FILES["file"])
-                r = Resource.objects.get(Exercises_Resource__exercise=exercise)
-                Exercises_Resource.objects.filter(
-                    exercise=exercise).update(resource=r)
-            else:
-                # create new submission
-                # setup resource
-                r = Resource(file=request.FILES["file"])
-                r.save()
-                # setup exercise-resource link
-                er = Exercises_Resource(exercise=exercise,
-                                        resource=r)
-                er.save()
-            return HttpResponseRedirect('/submission/2016/' + code + '/' + number + '/')
+            marks_string = form.cleaned_data["marks"]
+            marks = marks_string.split("@")
+            for mark in marks:
+                student_id = mark.split("_")[0]
+                student_mark = mark.split("_")[1]
+                # check if marked already
+                if Marks.objects.filter(login_id=student_id, exercise_id=exercise.id).exists():
+                    # check if mark changed
+                    mark_object = Marks.objects.get(login_id=student_id, exercise_id=exercise.id)
+                    if not mark_object.mark == student_mark:
+                        Marks.objects.filter(login_id=student_id, exercise_id=exercise.id).update(mark=student_mark)
+                else:
+                    #setup mark
+                    m = Marks(mark=student_mark,
+                            exercise_id=exercise.id,
+                            login_id=student_id,
+                            released=False)
+                    m.save()
+            return HttpResponseRedirect('/marking/2016/' + code + '/' + number + '/')
+        else:
+            return HttpResponse("Fehler")
     else:
         ############ Form generated ############
         # check if submitted already
-        if not Exercises_Resource.objects.filter(exercise=exercise).exists():
+        if not Marks.objects.filter(exercise_id=exercise.id).exists():
             # create new unbound form
-            form = SubmissionForm()
+            form = MarkingForm()
         else:
             # create bound form
+            marks_string = ""
+            for submission in submissions:
+                if Marks.objects.filter(login_id=submission.leader_id).exists():
+                    mark = Marks.objects.get(login_id=submission.leader_id)
+                    marks_string += mark.login_id + "_" + str(mark.mark) + "@"
+            if marks_string != "":
+                marks_string = marks_string[:-1]
             data = {
+                'marks': marks_string,
             }
-            form = SubmissionForm(data)
+            form = MarkingForm(data)
         context = {
             'form': form,
             'course': course,
             'exercise': exercise,
-            'resource': resource,
+            'submissions': submissions,
+            'code': code,
+            'number': number,
+            'num_submissions': submissions.count()
         }
-        return render(request, 'kateapp/submission.html', context)
-
-    context = {
-        'course': course,
-        'exercise': exercise,
-        'submissions': submissions,
-    }
-    return render(request, 'kateapp/marking.html', context)
+        return render(request, 'kateapp/marking.html', context)

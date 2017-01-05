@@ -27,3 +27,6 @@ class SubmissionForm(forms.Form):
     # How many files to upload?
     #Add group members?
     #Generate smt else if not electronic?...
+
+class MarkingForm(forms.Form):
+    marks = forms.CharField(required=False, widget=forms.TextInput(attrs={'class' : 'form-control'}))

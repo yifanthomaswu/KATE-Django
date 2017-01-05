@@ -44,18 +44,24 @@
                       <th>Course</th>
                       <th>Deadline</th>
                       <th>Time Passed</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {% for ce in courses_exercises %}
                     <tr>
-                      <td><a href="{% url 'marking' ce.0.code.code ce.0.number %}">{{ce.0.title}}</a></td>
+                      <td>{{ce.0.title}}</td>
                       <td>{{ce.0.code.title}}
                       <td>{{ce.0.deadline|date:"D, d M Y h:iA"}}</td>
                       {% if ce.2%}
                       <td>{{ce.1}} days</td>
                       {% else %}
                       <td>{{ce.1}} hours</td>
+                      {% endif %}
+                      {% if ce.1.marked %}
+                      <td>Publish Marks</td>
+                      {% else %}
+                      <td><a href="{% url 'marking' ce.0.code.code ce.0.number %}">Enter Marks</a></td>
                       {% endif %}
                     </tr>
                     {% endfor %}

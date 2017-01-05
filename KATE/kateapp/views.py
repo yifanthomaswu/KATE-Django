@@ -9,6 +9,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from PIL import Image
 from urllib import urlopen
+from collections import Counter
 
 from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource, Submissions, Marks
 from .forms import NewExerciseForm, SubmissionForm
@@ -530,38 +531,55 @@ def displayElectronicSubmissionPage(request, course, exercise):
     ####################################################################
     if request.method == 'POST':
         ############ Form Submitted ############
-        form = SubmissionForm(request.POST)
+        form = SubmissionForm(request.POST, request.FILES)
         files = request.FILES.getlist('files')
         if form.is_valid():
+            expected_file_names = exercise.esubmission_files_names
+            given_file_names = [file.name for file in files]
             # check if submitted already
             if Submissions.objects.filter(exercise=exercise, leader=People.objects.get(login=user)).exists():
-                pass
-                # update submission with new
-                #Resource.objects.filter(Exercises_Resource__exercise=exercise).update(
-                #    file=request.FILES["file"])
-                #r = Resource.objects.get(Exercises_Resource__exercise=exercise)
-                #Exercises_Resource.objects.filter(
-                #    exercise=exercise).update(resource=r)
+                #Need to check if files uplaoded are in the expected name formats
+                if not set(given_file_names).issubset(expected_file_names):
+                    raise Http404(str(given_file_names) + " is not a subset of: " + str(expected_file_names))
+                submission = get_object_or_404(Submissions, exercise=exercise, leader=People.objects.get(login=user))
+                # Delte the files we are replacing
+                # Add the replecement
+                for file_name in given_file_names:
+                    f = submission.files.get(file__startswith=file_name.split('.')[0], file__contains=file_name.split('.')[1])
+                    f.file.delete(False)
+                    f.delete()
+                for file in files:
+                    r = Resource(file=file)
+                    r.save()
+                    # setup submission-resource link
+                    submission.files.add(r)
+                
             else:
-                #check num of uplaoded files matches required num of files for exercsie
-                file_names = exercise.esubmission_files_names
-                if len(files) != len(file_names):
-                    raise Http404("Errorrrr1")
+                #check num/name of uploaded files matches required for exercise
+                if not Counter(expected_file_names) == Counter(given_file_names):
+                    #if they diff by num or name raise
+                    raise Http404(str(given_file_names) + " did not match the required: " + str(expected_file_names))
                 # create new submission
                 leader = get_object_or_404(People, login=form.cleaned_data["leader"])
                 new_sub = Submissions(exercise=exercise, leader=leader)
                 new_sub.save()
                 # setup resources
                 for file in files:
-                    if file.name not in file_names:
-                        raise Http404("Errorrrr2")
                     r = Resource(file=file)
-                    #r.save()
-                    # setup exercise-resource link
-                    #new_sub.files.add(r)
+                    r.save()
+                    # setup submission-resource link
+                    new_sub.files.add(r)
             return HttpResponseRedirect('/submission/2016/' + course.code + '/' + str(exercise.number) + '/')
         else:
-            raise Http404("Errorrrr3")
+            context = {
+            'form': form,
+            'course': course,
+            'exercise': exercise,
+            'bound' : True,
+            'elec' : True,
+            }
+            raise Http404("inv")
+            #return render(request, 'kateapp/submission.html', context)
     else:
         ############ Form generated ############
         # check if submitted already

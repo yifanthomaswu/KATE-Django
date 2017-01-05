@@ -27,8 +27,8 @@ def grading_scheme(request):
 
 
 def personal_page(request):
-    teacher = True
-    login = "yw8012"
+    teacher = False
+    login = "bp2214"
     person = get_object_or_404(People, login=login)
     if(teacher):
         login = "test01"
@@ -38,7 +38,7 @@ def personal_page(request):
         date_now = timezone.now()
         for course in courses:
             exercises = exercises + list(Exercises.objects.filter(
-                code=course.code, deadline__lte=date_now, assessment__in=["GROUP", "INDIVIDUAL"], marked=False))
+                code=course.code, deadline__lte=date_now, assessment__in=["GROUP", "INDIVIDUAL"], released=False))
         exercises.sort(key=lambda x:x.deadline)
         courses_exercises = []
         for exercise in exercises:
@@ -78,7 +78,7 @@ def individual_record(request, login):
     person = get_object_or_404(People, login=login)
     courses_marks = []
     for course in person.registered_courses.all():
-        marks = list(Marks.objects.filter(login=login, exercise__code=course.code).order_by('exercise__number'))
+        marks = list(Marks.objects.filter(login=login, exercise__code=course.code, released=True).order_by('exercise__number'))
         textual_marks = [convert_mark_number_text(elem) for elem in marks]
         courses_marks.append((course, textual_marks))
     context = {
@@ -561,9 +561,20 @@ def marking(request, code, number):
                             login_id=student_id,
                             released=False)
                     m.save()
+            all_marked = True
+            for submission in submissions:
+                if not Marks.objects.filter(login_id=submission.leader_id, exercise_id=exercise.id).exists:
+                    all_marked = False
+                    break
+            if all_marked:
+                Exercises.objects.filter(code=code, number=number).update(marked=True)
+                #publish marks
+                if request.POST.get('publish'):
+                    Marks.objects.filter(exercise_id=exercise.id).update(released=True)
+                    Exercises.objects.filter(code=code, number=number).update(released=True)
+                    return HttpResponseRedirect('/personal_page')
+
             return HttpResponseRedirect('/marking/2016/' + code + '/' + number + '/')
-        else:
-            return HttpResponse("Fehler")
     else:
         ############ Form generated ############
         # check if submitted already
@@ -574,8 +585,8 @@ def marking(request, code, number):
             # create bound form
             marks_string = ""
             for submission in submissions:
-                if Marks.objects.filter(login_id=submission.leader_id).exists():
-                    mark = Marks.objects.get(login_id=submission.leader_id)
+                if Marks.objects.filter(login_id=submission.leader_id, exercise_id=exercise.id).exists():
+                    mark = Marks.objects.get(login_id=submission.leader_id, exercise_id=exercise.id)
                     marks_string += mark.login_id + "_" + str(mark.mark) + "@"
             if marks_string != "":
                 marks_string = marks_string[:-1]
@@ -590,6 +601,7 @@ def marking(request, code, number):
             'submissions': submissions,
             'code': code,
             'number': number,
-            'num_submissions': submissions.count()
+            'num_submissions': submissions.count(),
+            'all_marked': exercise.marked
         }
         return render(request, 'kateapp/marking.html', context)

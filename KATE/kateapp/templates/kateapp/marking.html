@@ -71,13 +71,15 @@
         <tbody>
           {% for submission in submissions %}
           <tr>
-            {% if submission.timestamp > exercise.deadline %}
-            <font color="red">
-            {% endif %}
-            <td id="id{{forloop.counter}}">{{submission.leader_id}}</td>
-            {% if submission.timestamp > exercise.deadline %}
-            </font>
-            {% endif %}
+            <td id="id{{forloop.counter}}">
+              {% if submission.timestamp > exercise.deadline %}
+              <font color="red">
+                {{submission.leader_id}}
+              </font>
+              {% else %}
+                {{submission.leader_id}}
+              {% endif %}
+            </td>
             <td><input type="number" min="0" max="100" id="mark{{forloop.counter}}" name="{{submission.leader_id}}"></input></td>
           </tr>
           {% endfor %}
@@ -94,25 +96,24 @@
     initialize();
     function initialize() {
       var text = id_marks.value;
-      var marks = text.split("@");
-      for (i = 0; i < marks.length; i++) {
-        var markfield = document.getElementsByName(marks[i].split("_")[0])[0];
-        markfield.value = marks[i].split("_")[1];
+      if (text != "") {
+        var marks = text.split("@");
+        for (i = 0; i < marks.length; i++) {
+          var markfield = document.getElementsByName(marks[i].split("_")[0])[0];
+          markfield.value = marks[i].split("_")[1];
+        }
       }
 
       //check if all marks are put in
-      for (i = 1; i <= num_submissions; i++) {
-        var markfield = document.getElementById("mark" + i);
-        if (markfield.value == "") {
-          return;
-        }
+      var all_marked = "{{ all_marked }}";
+      if(all_marked == "True") {
+        var button = document.createElement("input");
+        button.className = "btn btn-primary";
+        button.type = "submit";
+        button.value = "Publish";
+        button.name = "publish";
+        save_button.after(button);
       }
-      var button = document.createElement("input");
-      button.className = "btn btn-primary";
-      button.type = "submit";
-      button.value = "Publish";
-      button.name = "publish";
-      save_button.after(button);
     }
 
     function finalize() {

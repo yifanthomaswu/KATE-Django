@@ -58,11 +58,7 @@
                       {% else %}
                       <td>{{ce.1}} hours</td>
                       {% endif %}
-                      {% if ce.1.marked %}
-                      <td>Publish Marks</td>
-                      {% else %}
                       <td><a href="{% url 'marking' ce.0.code.code ce.0.number %}">Enter Marks</a></td>
-                      {% endif %}
                     </tr>
                     {% endfor %}
                   </tbody>

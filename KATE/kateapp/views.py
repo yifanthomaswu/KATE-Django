@@ -455,41 +455,43 @@ def exercise_setup(request, code, number):
 
 
 def submission(request, code, number):
-    #teacher = True
+    teacher = True
     # Check that exercise exists
     if not Exercises.objects.filter(code=code, number=number).exists():
         raise Http404("Exercise doesn't exist")
     exercise = Exercises.objects.get(code=code, number=number)
     course = get_object_or_404(Courses, pk=code)
-    #specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='SPEC').order_by('exercises_resource__resource__timestamp'))
-    #data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='DATA').order_by('exercises_resource__resource__timestamp'))
-    #answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='ANSWER').order_by('exercises_resource__resource__timestamp'))
-    #if teacher:
-    #    marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='MARKING').order_by('exercises_resource__resource__timestamp'))
-    #    resource = (specification, data, answer, marking)
-    #else:
-    #    resource = (specification, data, answer)
+
+    specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='SPEC').order_by('exercises_resource__resource__timestamp'))
+    data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='DATA').order_by('exercises_resource__resource__timestamp'))
+    answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='ANSWER').order_by('exercises_resource__resource__timestamp'))
+    if teacher:
+        marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='MARKING').order_by('exercises_resource__resource__timestamp'))
+        resource = (specification, data, answer, marking)
+    else:
+        resource = (specification, data, answer)
 
     #We split here depending on what submission will be available
     if exercise.submission == Exercises.NO:
-        return displayPlainSubmissionPage(request, course, exercise)
+        return displayPlainSubmissionPage(request, course, exercise, resource)
 
     elif exercise.submission == Exercises.HARDCOPY:
-        return displayHardcopySubmissionPage(request, course, exercise)
+        return displayHardcopySubmissionPage(request, course, exercise, resource)
 
     else:
-        return displayElectronicSubmissionPage(request, course, exercise)
+        return displayElectronicSubmissionPage(request, course, exercise, resource)
     
-def displayPlainSubmissionPage(request, course, exercise):
+def displayPlainSubmissionPage(request, course, exercise, resource):
     #Dispay a plain submission page with some info only
     #TODO: Need to extend to also show recources, like associated files @@ This goes or all views
     context = {
             'course': course,
             'exercise': exercise,
+            'resource' : resource,
         }
     return render(request, 'kateapp/submission.html', context)
 
-def displayHardcopySubmissionPage(request, course, exercise):
+def displayHardcopySubmissionPage(request, course, exercise, resource):
     ####################################################################
     user = "yw8012"
     ####################################################################
@@ -522,10 +524,11 @@ def displayHardcopySubmissionPage(request, course, exercise):
             'course': course,
             'exercise': exercise,
             'bound' : bound,
+            'resource' : resource,
         }
         return render(request, 'kateapp/submission.html', context)
 
-def displayElectronicSubmissionPage(request, course, exercise):
+def displayElectronicSubmissionPage(request, course, exercise, resource):
     ####################################################################
     user = "yw8012"
     ####################################################################
@@ -587,6 +590,7 @@ def displayElectronicSubmissionPage(request, course, exercise):
             # create new unbound form
             form = SubmissionForm()
             bound = False
+            uploads = []
         else:
             # create bound form
             data = {
@@ -594,12 +598,15 @@ def displayElectronicSubmissionPage(request, course, exercise):
             }
             form = SubmissionForm(data)
             bound = True
+            uploads = list(Submissions.objects.get(exercise=exercise, leader=People.objects.get(login=user)).files.all())
         context = {
             'form': form,
             'course': course,
             'exercise': exercise,
             'bound' : bound,
             'elec' : True,
+            'uploads' : uploads,
+            'resource' : resource,
         }
         return render(request, 'kateapp/submission.html', context)
 

@@ -118,6 +118,38 @@
             {{ form.files_type }}
             </div>
         </div>
+        {% if uploads %}
+        <div class="fieldWrapper form-group">
+            <label for="{{ form.r.id_for_label }}" class="col-sm-3 control-label">Files:</label>
+            <div class="col-sm-8">
+              <p>
+              <table class="table table-striped table-responsive">
+              <caption>Uploaded Files:</caption>
+              <thead>
+               <tr>
+                <th>File</th>
+                <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in uploads %}
+                  <tr>
+                    <td>
+                      <a href="{{ MEDIA_URL }}{{ r.file.url }}">{{ r.filename }}</a>
+                    </td>
+                    <td>{{r.timestamp|date:"D, d M Y h:iA"}}</td>
+                    <td>
+                    </td>
+                  </tr>
+              {% endfor %}
+              </tbody>
+              </table>
+            </p>
+          </div>
+        </div>
+        {% endif %}
+
+        
         {% endif %}
 
 

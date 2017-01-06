@@ -7,6 +7,8 @@ from django.utils import timezone
 from ..models import *
 from ..forms import MarkingForm
 
+from .helper import get_next_exercise_number
+
 from datetime import datetime, time, timedelta
 
 logger = logging.getLogger('django')

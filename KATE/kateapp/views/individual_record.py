@@ -3,12 +3,19 @@ from django.shortcuts import get_object_or_404, render
 from ..models import People, Marks
 
 def individual_record(request, login):
+    # get the logged in student
     person = get_object_or_404(People, login=login)
+    # set up data structure to store data for html template
     courses_marks = []
+    # traverse all registered courses for the student
     for course in person.registered_courses.all():
+        # get the marks for the current course
         marks = list(Marks.objects.filter(login=login, exercise__code=course.code, released=True).order_by('exercise__number'))
+        # convert the mark numbers to text
         textual_marks = [convert_mark_number_text(elem) for elem in marks]
+        # append the course with corresponding marks to the datastructure
         courses_marks.append((course, textual_marks))
+    #set up the context for the html template
     context = {
         'person': person,
         'courses_marks': courses_marks,
@@ -16,6 +23,7 @@ def individual_record(request, login):
     return render(request, 'kateapp/individual_record.html', context)
 
 def convert_mark_number_text(mark):
+    # returns the textual mark for number marks
     number_mark = mark.mark
     if number_mark < 30:
         mark.mark = 'F'

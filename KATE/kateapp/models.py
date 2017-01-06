@@ -110,8 +110,6 @@ class Exercises(models.Model):
     esubmission_files_names = ArrayField(models.CharField(max_length=50), default=[])
     
     marked = models.BooleanField(default=False)
-
-    marked = models.BooleanField(default=False)
     released = models.BooleanField(default=False)
 
     class Meta:
@@ -155,7 +153,7 @@ class Courses_Resource(models.Model):
         (URL, 'Url'),
         (PANOPTO, 'Panopto'),
     )
-    type = models.CharField(
+    course_resource_type = models.CharField(
         max_length=15,
         choices=TYPE_CHOICES,
         default=NOTE,
@@ -178,7 +176,7 @@ class Exercises_Resource(models.Model):
         (ANSWER, 'Model answer'),
         (MARKING, 'Marking scheme'),
     )
-    resource_type = models.CharField(
+    exercise_resource_type = models.CharField(
         max_length=15,
         choices=TYPE_CHOICES,
         default=SPECIFICATION,

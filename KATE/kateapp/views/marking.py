@@ -12,12 +12,12 @@ def marking(request, code, number):
     # Split, either form is being produced, or submitted
     if request.method == 'POST':
         ############ Form submitted ############
-        return process_marking_form(exercise, course, submissions, code, number)
+        return process_marking_form(exercise, course, submissions, request, code, number)
     else:
         ############ Form generated ############
-        return generate_marking_form(exercise, course, submissions, code, number)
+        return generate_marking_form(exercise, course, submissions, request, code, number)
 
-def process_marking_form(exercise, course, submissions, code, number):
+def process_marking_form(exercise, course, submissions, request, code, number):
     form = MarkingForm(request.POST)
     if form.is_valid():
         marks_string = form.cleaned_data["marks"]
@@ -55,7 +55,7 @@ def process_marking_form(exercise, course, submissions, code, number):
     else:
         return Http404("Form Validation failed")
 
-def generate_marking_form(exercise, course, submissions, code, number):
+def generate_marking_form(exercise, course, submissions, request, code, number):
     # check if submitted already
     if not Marks.objects.filter(exercise_id=exercise.id).exists():
         # create new unbound form

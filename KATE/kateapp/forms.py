@@ -25,3 +25,6 @@ class SubmissionForm(forms.Form):
     files = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class':'form-control','multiple': True}))
     leader = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control'}) )
     #What about a group??
+
+class MarkingForm(forms.Form):
+    marks = forms.CharField(required=False, widget=forms.TextInput(attrs={'class' : 'form-control'}))

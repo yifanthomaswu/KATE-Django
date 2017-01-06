@@ -25,6 +25,49 @@
           </div>
         </nav>
 
+
+        {% if teacher %}
+            <div>
+                <h3>My Courses</h3>
+                <ul>
+                    {% for course in courses %}
+                    <li><a href="{% url 'course' course.code %}">CO{{course.code}}: {{ course.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <h3>Pending Coursework</h3>
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Exercise Title</th>
+                      <th>Course</th>
+                      <th>Deadline</th>
+                      <th>Time Passed</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for ce in courses_exercises %}
+                    <tr>
+                      <td>{{ce.0.title}}</td>
+                      <td>{{ce.0.code.title}}
+                      <td>{{ce.0.deadline|date:"D, d M Y h:iA"}}</td>
+                      {% if ce.2%}
+                      <td>{{ce.1}} days</td>
+                      {% else %}
+                      <td>{{ce.1}} hours</td>
+                      {% endif %}
+                      <td><a href="{% url 'marking' ce.0.code.code ce.0.number %}">Enter Marks</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+            <div>
+
+            </div>
+        {% else %}
           <div class="container-fluid personal-info">
             <div class="row">
              <div class="col-md-4 profile-pic">
@@ -153,6 +196,7 @@
               </tbody>
             </table>
           </div>
+          {% endif %}
 
           <div class="container-fluid twitter-feed">
             <h3>Class Twitter Feed</h3>

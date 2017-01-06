@@ -1,0 +1,134 @@
+{% load staticfiles %}
+<html>
+    <head>
+        <title>KATe</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/style.css' %}">
+
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    </head>
+    <body>
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="{% url 'index' %}">
+                <img alt="Brand" src="{% static 'kateapp/images/ilogo.png' %}">
+                KATe
+              </a>
+            </div>
+            <div>
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="{% url 'personal_page' %}">Home</a></li>
+                <li><a href="{% url 'index' %}">Timetable</a></li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+  <div class="container-fluid module-content">
+  <h3>Module CO{{course.code}}: {{course.title}}</h3>
+  <p>
+    <table class="table-responsive table-padding">
+      <tr>
+        <th>Title:</th>
+        <td>{{exercise.title}}</td>
+      </tr>
+      <tr>
+        <th>Assessment:</th>
+        <td>{{exercise.get_assessment_display}}</td>
+      </tr>
+      <tr>
+        <th>Submission:</th>
+        <td>{{exercise.get_submission_display}}</td>
+      </tr>
+      <tr>
+        <th>Issued:</th>
+        <td>{{exercise.start_date|date:"D, d M Y"}}</td>
+      </tr>
+      <tr>
+        <th>Due:</th>
+        <td>{{exercise.deadline|date:"D, d M Y h:iA"}}</td>
+      </tr>
+    </table>
+  </p>
+
+  {% if exercise.get_submission_display == "Electronic" %}
+    TODO: Download all Submissions as zip
+  {% endif %}
+    <form action="{% url 'marking' code number%}" method="post" onsubmit="finalize()" enctype="multipart/form-data" class ="form-horizontal">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <input type="submit" value="Save" name="save" id="save_button" class="btn btn-primary" />
+      <table class="table table-striped">
+        <thead>
+          <th>Student-ID</th>
+          <th>Mark</th>
+        </thead>
+        <tbody>
+          {% for submission in submissions %}
+          <tr>
+            <td id="id{{forloop.counter}}">
+              {% if submission.timestamp > exercise.deadline %}
+              <font color="red">
+                {{submission.leader_id}}
+              </font>
+              {% else %}
+                {{submission.leader_id}}
+              {% endif %}
+            </td>
+            <td><input type="number" min="0" max="100" id="mark{{forloop.counter}}" name="{{submission.leader_id}}"></input></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div hidden id="marks" class="fieldWrapper form-group">
+        {{ form.marks }}
+      </div>
+    </form>
+
+    <script>
+    var num_submissions = parseInt("{{ num_submissions }}");
+
+    initialize();
+    function initialize() {
+      var text = id_marks.value;
+      if (text != "") {
+        var marks = text.split("@");
+        for (i = 0; i < marks.length; i++) {
+          var markfield = document.getElementsByName(marks[i].split("_")[0])[0];
+          markfield.value = marks[i].split("_")[1];
+        }
+      }
+
+      //check if all marks are put in
+      var all_marked = "{{ all_marked }}";
+      if(all_marked == "True") {
+        var button = document.createElement("input");
+        button.className = "btn btn-primary";
+        button.type = "submit";
+        button.value = "Publish";
+        button.name = "publish";
+        save_button.after(button);
+      }
+    }
+
+    function finalize() {
+      var text = id1.innerText + "_" + mark1.value;
+      for (i = 2; i <= num_submissions; i++) {
+        var idfield = document.getElementById("id" + i);
+        var markfield = document.getElementById("mark" + i);
+        if (markfield.value != "") {
+          text += "@" + idfield.innerText + "_" + markfield.value;
+        }
+      }
+      id_marks.value = text;
+    }
+    </script>
+  </div>
+
+</body>
+</html>

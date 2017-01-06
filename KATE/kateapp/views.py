@@ -11,8 +11,8 @@ from PIL import Image
 from urllib import urlopen
 from collections import Counter
 
-from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource, Submissions, Marks
-from .forms import NewExerciseForm, SubmissionForm
+from .models import Classes, People, Courses, Term, Courses_Term, Courses_Classes, Exercises, Period, Resource, Exercises_Resource, Courses_Resource, Marks, Submissions
+from .forms import NewExerciseForm, SubmissionForm, MarkingForm
 
 import calendar
 from datetime import datetime, time, timedelta
@@ -31,33 +31,58 @@ def grading_scheme(request):
 
 
 def personal_page(request):
-    login = "yw8012"
+    teacher = False
+    login = "bp2214"
     person = get_object_or_404(People, login=login)
-    #courses = list(Courses.objects.filter(required=person)) + list(Courses.objects.filter(registered=person))
-    courses = list(Courses.objects.all())
-    exercises = []
-    date_now = timezone.now()
-    for course in courses:
-        exercises = exercises + list(Exercises.objects.filter(
-            code=course.code, start_date__lte=date_now, deadline__gte=date_now))
-    exercises.sort(key=lambda x:x.deadline)
-    courses_exercises = []
-    for exercise in exercises:
-        if((exercise.deadline - date_now).days > 0):
-            courses_exercises.append((exercise, (exercise.deadline - date_now).days, True))
-        else:
-            courses_exercises.append((exercise, (exercise.deadline - date_now).seconds / 3600, False))
-    context = {
-        'person': person,
-        'courses_exercises' : courses_exercises,
-    }
+    if(teacher):
+        login = "test01"
+        current_term = 1 #TODO which term?
+        courses = get_list_or_404(Courses, lecturer_id=login, courses_term__term=current_term)
+        exercises = []
+        date_now = timezone.now()
+        for course in courses:
+            exercises = exercises + list(Exercises.objects.filter(
+                code=course.code, deadline__lte=date_now, assessment__in=["GROUP", "INDIVIDUAL"], released=False))
+        exercises.sort(key=lambda x:x.deadline)
+        courses_exercises = []
+        for exercise in exercises:
+            if((date_now - exercise.deadline).days > 0):
+                courses_exercises.append((exercise, (date_now - exercise.deadline).days, True))
+            else:
+                courses_exercises.append((exercise, (date_now - exercise.deadline).seconds / 3600, False))
+        context = {
+            'teacher': teacher,
+            'person': person,
+            'courses': courses,
+            'courses_exercises' : courses_exercises,
+        }
+    else:
+        #courses = list(Courses.objects.filter(required=person)) + list(Courses.objects.filter(registered=person))
+        courses = list(Courses.objects.all())
+        exercises = []
+        date_now = timezone.now()
+        for course in courses:
+            exercises = exercises + list(Exercises.objects.filter(
+                code=course.code, start_date__lte=date_now, deadline__gte=date_now))
+        exercises.sort(key=lambda x:x.deadline)
+        courses_exercises = []
+        for exercise in exercises:
+            if((exercise.deadline - date_now).days > 0):
+                courses_exercises.append((exercise, (exercise.deadline - date_now).days, True))
+            else:
+                courses_exercises.append((exercise, (exercise.deadline - date_now).seconds / 3600, False))
+        context = {
+            'teacher': teacher,
+            'person': person,
+            'courses_exercises' : courses_exercises,
+        }
     return render(request, 'kateapp/personal_page.html', context)
 
 def individual_record(request, login):
     person = get_object_or_404(People, login=login)
     courses_marks = []
     for course in person.registered_courses.all():
-        marks = list(Marks.objects.filter(login=login, exercise__code=course.code).order_by('exercise__number'))
+        marks = list(Marks.objects.filter(login=login, exercise__code=course.code, released=True).order_by('exercise__number'))
         textual_marks = [convert_mark_number_text(elem) for elem in marks]
         courses_marks.append((course, textual_marks))
     context = {
@@ -65,6 +90,7 @@ def individual_record(request, login):
         'courses_marks': courses_marks,
     }
     return render(request, 'kateapp/individual_record.html', context)
+
 def convert_mark_number_text(mark):
     number_mark = mark.mark
     if number_mark < 30:
@@ -480,7 +506,7 @@ def submission(request, code, number):
 
     else:
         return displayElectronicSubmissionPage(request, course, exercise, resource)
-    
+
 def displayPlainSubmissionPage(request, course, exercise, resource):
     #Dispay a plain submission page with some info only
     #TODO: Need to extend to also show recources, like associated files @@ This goes or all views
@@ -556,7 +582,7 @@ def displayElectronicSubmissionPage(request, course, exercise, resource):
                     r.save()
                     # setup submission-resource link
                     submission.files.add(r)
-                
+
             else:
                 #check num/name of uploaded files matches required for exercise
                 if not Counter(expected_file_names) == Counter(given_file_names):
@@ -670,3 +696,76 @@ def cover_sheet(request, code, number):
     p.showPage()
     p.save()
     return response
+
+def marking(request, code, number):
+    exercise = Exercises.objects.get(code=code, number=number)
+    course = get_object_or_404(Courses, pk=code)
+    submissions = Submissions.objects.filter(exercise_id=exercise.id).order_by('leader_id')
+    #TODO get all subscribed students and group them if group submission
+    # Split, either form is being produced, or submitted
+    if request.method == 'POST':
+        ############ Form Submitted ############
+        form = MarkingForm(request.POST)
+        if form.is_valid():
+            marks_string = form.cleaned_data["marks"]
+            marks = marks_string.split("@")
+            for mark in marks:
+                student_id = mark.split("_")[0]
+                student_mark = mark.split("_")[1]
+                # check if marked already
+                if Marks.objects.filter(login_id=student_id, exercise_id=exercise.id).exists():
+                    # check if mark changed
+                    mark_object = Marks.objects.get(login_id=student_id, exercise_id=exercise.id)
+                    if not mark_object.mark == student_mark:
+                        Marks.objects.filter(login_id=student_id, exercise_id=exercise.id).update(mark=student_mark)
+                else:
+                    #setup mark
+                    m = Marks(mark=student_mark,
+                            exercise_id=exercise.id,
+                            login_id=student_id,
+                            released=False)
+                    m.save()
+            all_marked = True
+            for submission in submissions:
+                if not Marks.objects.filter(login_id=submission.leader_id, exercise_id=exercise.id).exists:
+                    all_marked = False
+                    break
+            if all_marked:
+                Exercises.objects.filter(code=code, number=number).update(marked=True)
+                #publish marks
+                if request.POST.get('publish'):
+                    Marks.objects.filter(exercise_id=exercise.id).update(released=True)
+                    Exercises.objects.filter(code=code, number=number).update(released=True)
+                    return HttpResponseRedirect('/personal_page')
+
+            return HttpResponseRedirect('/marking/2016/' + code + '/' + number + '/')
+    else:
+        ############ Form generated ############
+        # check if submitted already
+        if not Marks.objects.filter(exercise_id=exercise.id).exists():
+            # create new unbound form
+            form = MarkingForm()
+        else:
+            # create bound form
+            marks_string = ""
+            for submission in submissions:
+                if Marks.objects.filter(login_id=submission.leader_id, exercise_id=exercise.id).exists():
+                    mark = Marks.objects.get(login_id=submission.leader_id, exercise_id=exercise.id)
+                    marks_string += mark.login_id + "_" + str(mark.mark) + "@"
+            if marks_string != "":
+                marks_string = marks_string[:-1]
+            data = {
+                'marks': marks_string,
+            }
+            form = MarkingForm(data)
+        context = {
+            'form': form,
+            'course': course,
+            'exercise': exercise,
+            'submissions': submissions,
+            'code': code,
+            'number': number,
+            'num_submissions': submissions.count(),
+            'all_marked': exercise.marked
+        }
+        return render(request, 'kateapp/marking.html', context)

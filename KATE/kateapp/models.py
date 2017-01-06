@@ -111,6 +111,9 @@ class Exercises(models.Model):
     
     marked = models.BooleanField(default=False)
 
+    marked = models.BooleanField(default=False)
+    released = models.BooleanField(default=False)
+
     class Meta:
         unique_together = (('code', 'number'),)
     def __str__(self):
@@ -198,5 +201,6 @@ class Marks(models.Model):
     exercise = models.ForeignKey(Exercises, on_delete=models.PROTECT)
     login = models.ForeignKey(People, on_delete=models.PROTECT)
     mark = models.DecimalField(max_digits=5, decimal_places=2)
+    released = models.BooleanField(default=False)
     def __str__(self):
         return self.login.__str__() + " " + self.exercise.code.code + " " + self.exercise.number.__str__() + " " + self.mark.__str__()

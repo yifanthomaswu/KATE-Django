@@ -54,11 +54,11 @@ def exercise_setup(request, code, number):
                     file_names = [""]
                 #Exercise exists, Delete not Discard
                 cancel = "Delete"
-                specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='SPEC').order_by('exercises_resource__resource__timestamp'))
-                data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='DATA').order_by('exercises_resource__resource__timestamp'))
+                specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='SPEC').order_by('exercises_resource__resource__timestamp'))
+                data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='DATA').order_by('exercises_resource__resource__timestamp'))
 
-                answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='ANSWER').order_by('exercises_resource__resource__timestamp'))
-                marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='MARKING').order_by('exercises_resource__resource__timestamp'))
+                answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='ANSWER').order_by('exercises_resource__resource__timestamp'))
+                marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='MARKING').order_by('exercises_resource__resource__timestamp'))
                 resource = (specification, data, answer, marking)
             else:
                 raise Http404("Exercise doesn't exist")
@@ -188,17 +188,17 @@ def process_exercise_setup_file_upload(newNumber, course, request, code, number)
 
             # setup exercise-resource link
             exercise = Exercises.objects.get(code=code, number=number)
-            er = Exercises_Resource(exercise=exercise, resource=r, type=form.cleaned_data["file_type"])
+            er = Exercises_Resource(exercise=exercise, resource=r, exercise_resource_type=form.cleaned_data["file_type"])
             er.save()
 
             file_names = exercise.esubmission_files_names
             if file_names == []:
                 file_names = [""]
             cancel = "Delete"
-            specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='SPEC').order_by('exercises_resource__resource__timestamp'))
-            data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='DATA').order_by('exercises_resource__resource__timestamp'))
-            answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='ANSWER').order_by('exercises_resource__resource__timestamp'))
-            marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='MARKING').order_by('exercises_resource__resource__timestamp'))
+            specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='SPEC').order_by('exercises_resource__resource__timestamp'))
+            data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='DATA').order_by('exercises_resource__resource__timestamp'))
+            answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='ANSWER').order_by('exercises_resource__resource__timestamp'))
+            marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='MARKING').order_by('exercises_resource__resource__timestamp'))
             resource = (specification, data, answer, marking)
             context = {
                 'form': form,
@@ -230,10 +230,10 @@ def process_exercise_setup_file_remove(request, code, number):
         if file_names == []:
             file_names = [""]
         cancel = "Delete"
-        specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='SPEC').order_by('exercises_resource__resource__timestamp'))
-        data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='DATA').order_by('exercises_resource__resource__timestamp'))
-        answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='ANSWER').order_by('exercises_resource__resource__timestamp'))
-        marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='MARKING').order_by('exercises_resource__resource__timestamp'))
+        specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='SPEC').order_by('exercises_resource__resource__timestamp'))
+        data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='DATA').order_by('exercises_resource__resource__timestamp'))
+        answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='ANSWER').order_by('exercises_resource__resource__timestamp'))
+        marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='MARKING').order_by('exercises_resource__resource__timestamp'))
         resource = (specification, data, answer, marking)
         context = {
             'form': form,

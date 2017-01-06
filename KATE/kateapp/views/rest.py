@@ -49,10 +49,10 @@ def course(request, code):
         resources = list(Resource.objects.filter(
             exercises_resource__exercise__code=exercise.code, exercises_resource__exercise__number=exercise.number))
         exercises_resources.append((exercise, resources))
-    note = list(Courses_Resource.objects.filter(code=code, type='NOTE').order_by('release_date'))
-    exercise = list(Courses_Resource.objects.filter(code=code, type='PROBLEM').order_by('release_date'))
-    url = list(Courses_Resource.objects.filter(code=code, type='URL').order_by('release_date'))
-    panopto = list(Courses_Resource.objects.filter(code=code, type='PANOPTO').order_by('release_date'))
+    note = list(Courses_Resource.objects.filter(code=code, course_resource_type='NOTE').order_by('release_date'))
+    exercise = list(Courses_Resource.objects.filter(code=code, course_resource_type='PROBLEM').order_by('release_date'))
+    url = list(Courses_Resource.objects.filter(code=code, course_resource_type='URL').order_by('release_date'))
+    panopto = list(Courses_Resource.objects.filter(code=code, course_resource_type='PANOPTO').order_by('release_date'))
     resource = (note, exercise, url, panopto)
     context = {
         'course': course,

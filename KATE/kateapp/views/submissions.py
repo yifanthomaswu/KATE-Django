@@ -20,11 +20,11 @@ def submission(request, code, number):
     exercise = Exercises.objects.get(code=code, number=number)
     course = get_object_or_404(Courses, pk=code)
 
-    specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='SPEC').order_by('exercises_resource__resource__timestamp'))
-    data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='DATA').order_by('exercises_resource__resource__timestamp'))
-    answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='ANSWER').order_by('exercises_resource__resource__timestamp'))
+    specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='SPEC').order_by('exercises_resource__resource__timestamp'))
+    data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='DATA').order_by('exercises_resource__resource__timestamp'))
+    answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='ANSWER').order_by('exercises_resource__resource__timestamp'))
     if teacher:
-        marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__type='MARKING').order_by('exercises_resource__resource__timestamp'))
+        marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='MARKING').order_by('exercises_resource__resource__timestamp'))
         resource = (specification, data, answer, marking)
     else:
         resource = (specification, data, answer)

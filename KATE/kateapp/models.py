@@ -178,7 +178,7 @@ class Exercises_Resource(models.Model):
         (ANSWER, 'Model answer'),
         (MARKING, 'Marking scheme'),
     )
-    type = models.CharField(
+    resource_type = models.CharField(
         max_length=15,
         choices=TYPE_CHOICES,
         default=SPECIFICATION,

@@ -41,7 +41,6 @@ def submission(request, code, number):
 
 def displayPlainSubmissionPage(request, course, exercise, resource):
     #Dispay a plain submission page with some info only
-    #TODO: Need to extend to also show recources, like associated files @@ This goes or all views
     context = {
             'course': course,
             'exercise': exercise,

@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, get_list_or_404, render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 
 from reportlab.pdfgen import canvas
@@ -9,7 +9,7 @@ from collections import Counter
 
 from datetime import datetime
 
-from ..models import *
+from ..models import Exercises, People, Resource, Courses, Submissions
 from ..forms import SubmissionForm
 
 def submission(request, code, number):

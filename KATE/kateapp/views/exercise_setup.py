@@ -31,10 +31,8 @@ def exercise_setup(request, code, number):
                 if Resource.objects.filter(exercises_resource__exercise__code=exercise.code, exercises_resource__exercise__number=exercise.number).exists():
                     resources = list(Resource.objects.filter(
                         exercises_resource__exercise__code=exercise.code, exercises_resource__exercise__number=exercise.number))
-                    mainFile = resources.pop(0)
                 else:
                     resources = None
-                    mainFile = None
                 data = {
                     'title': exercise.title,
                     'start_date': exercise.start_date.date(),
@@ -43,20 +41,20 @@ def exercise_setup(request, code, number):
                     'exercise_type': exercise.exercise_type,
                     'assessment': exercise.assessment,
                     'submission': exercise.submission,
-                    'file': mainFile,
                     'resources': resources,
                 }
-                form = NewExerciseForm(data)
                 #File names are displayed through JS, hence not loaded
                 #into form but passed to context
+                form = NewExerciseForm(data)
+
                 file_names = exercise.esubmission_files_names
                 if file_names == []:
                     file_names = [""]
+
                 #Exercise exists, Delete not Discard
                 cancel = "Delete"
                 specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='SPEC').order_by('exercises_resource__resource__timestamp'))
                 data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='DATA').order_by('exercises_resource__resource__timestamp'))
-
                 answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='ANSWER').order_by('exercises_resource__resource__timestamp'))
                 marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='MARKING').order_by('exercises_resource__resource__timestamp'))
                 resource = (specification, data, answer, marking)
@@ -87,7 +85,7 @@ def process_exercise_setup_form(newNumber, course, request, code, number):
         return process_exercise_setup_file_upload(newNumber, course, request, code, number)
     elif (request.POST.get('remove')):
         # File remove button pressed
-        return process_exercise_setup_file_remove(request, code, number)
+        return process_exercise_setup_file_remove(newNumber, course, request, code, number)
 
 def process_exercise_setup_submission(newNumber, course, request, code, number):
     form = NewExerciseForm(request.POST, request.FILES)
@@ -215,7 +213,7 @@ def process_exercise_setup_file_upload(newNumber, course, request, code, number)
     else:
         raise Http404("Form Validation failed")
 
-def process_exercise_setup_file_remove(request, code, number):
+def process_exercise_setup_file_remove(newNumber, course, request, code, number):
     form = NewExerciseForm(request.POST, request.FILES)
     if request.POST.get('remove_file'):
         r = request.POST.get('remove_file')

@@ -137,9 +137,9 @@
          <div class="fieldWrapper form-group">
             <label for="{{ form.r.id_for_label }}" class="col-sm-3 control-label">Files:</label>
             <div class="col-sm-8">
-            {% for rs in resource %}{% if rs %}<p>
+            {% for rs in resource %}<p>
               <table class="table table-striped table-responsive">
-              <caption>{% cycle 'Specification' 'Data file' 'Model answer' 'Marking scheme' %}</caption>
+              <caption {% if not rs %} hidden='true' {% endif %}>{% cycle 'Specification' 'Data file' 'Model answer' 'Marking scheme' %}</caption>{% if rs %}
               <thead>
                <tr>
                 <th>File</th>

@@ -169,6 +169,23 @@ def process_exercise_setup_file_upload(newNumber, course, request, code, number)
             # save resource
             r.save()
 
+            #Do some path magic here #lol
+            import os
+            from django.conf import settings
+            init_path = r.file.path
+            new_name = '2016/CO' + course.code + '/Exercises/Ex' + str(number) + '/Resources/' + r.file.name
+            r.file.name = new_name
+            new_path = settings.MEDIA_ROOT + '/' + new_name
+            new_dir = os.path.dirname(new_path)
+            try:
+                os.makedirs(new_dir)
+            except OSError:
+                #this happens if directory already exists
+                pass
+                #raise Http404("failed " + new_dir)
+            os.rename(init_path, new_path)
+            r.save()
+
             #Check if this is upload for a brand new exercsie
             if not Exercises.objects.filter(code=code, number=number).exists():
                 #create new exercise here
@@ -218,10 +235,11 @@ def process_exercise_setup_file_remove(newNumber, course, request, code, number)
     if request.POST.get('remove_file'):
         r = request.POST.get('remove_file')
 
-        Resource.objects.get(pk=r).delete()
-        #re = Resource.objects.get(pk=r)
-        #Exercises_Resource.objects.get(resource=re).delete()
-        #re.delete()
+        re = get_object_or_404(Resource, pk=r)
+        re.file.delete(False)
+        re.delete()
+
+        #No need to delete Exercises_Resource as its Resource filed is on CASCADE
 
         exercise = Exercises.objects.get(code=code, number=number)
         file_names = exercise.esubmission_files_names

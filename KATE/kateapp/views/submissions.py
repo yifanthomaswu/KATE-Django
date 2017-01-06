@@ -96,7 +96,9 @@ def displayElectronicSubmissionPage(request, course, exercise, resource):
         if form.is_valid():
             expected_file_names = exercise.esubmission_files_names
             given_file_names = [file.name for file in files]
+            leader = get_object_or_404(People, login=form.cleaned_data["leader"])
             # check if submitted already
+            # TODO: for groups checking will need to check if any submission where either login or user is memebr
             if Submissions.objects.filter(exercise=exercise, leader=People.objects.get(login=user)).exists():
                 #Need to check if files uplaoded are in the expected name formats
                 if not set(given_file_names).issubset(expected_file_names):
@@ -105,12 +107,31 @@ def displayElectronicSubmissionPage(request, course, exercise, resource):
                 # Delte the files we are replacing
                 # Add the replecement
                 for file_name in given_file_names:
-                    f = submission.files.get(file__startswith=file_name.split('.')[0], file__contains=file_name.split('.')[1])
+                    f = submission.files.filter(file__contains=file_name.split('.')[0]).get(file__contains=file_name.split('.')[1])
+                    #Delete the actual file first
                     f.file.delete(False)
                     f.delete()
                 for file in files:
                     r = Resource(file=file)
                     r.save()
+
+                    #Do some path magic here #lol
+                    import os
+                    from django.conf import settings
+                    init_path = r.file.path
+                    new_name = '2016/CO' + course.code + '/Exercises/Ex' + str(exercise.number) + '/Submissions/' + leader.login + '/' + r.file.name
+                    r.file.name = new_name
+                    new_path = settings.MEDIA_ROOT + '/' + new_name
+                    new_dir = os.path.dirname(new_path)
+                    try:
+                        os.makedirs(new_dir)
+                    except OSError:
+                        #this happens if directory already exists
+                        pass
+                        #raise Http404("failed " + new_dir)
+                    os.rename(init_path, new_path)
+                    r.save()
+                    
                     # setup submission-resource link
                     submission.files.add(r)
 
@@ -120,13 +141,32 @@ def displayElectronicSubmissionPage(request, course, exercise, resource):
                     #if they diff by num or name raise
                     raise Http404(str(given_file_names) + " did not match the required: " + str(expected_file_names))
                 # create new submission
-                leader = get_object_or_404(People, login=form.cleaned_data["leader"])
                 new_sub = Submissions(exercise=exercise, leader=leader)
                 new_sub.save()
                 # setup resources
                 for file in files:
                     r = Resource(file=file)
                     r.save()
+
+
+                    #Do some path magic here #lol
+                    import os
+                    from django.conf import settings
+                    init_path = r.file.path
+                    new_name = '2016/CO' + course.code + '/Exercises/Ex' + str(exercise.number) + '/Submissions/' + leader.login + '/' + r.file.name
+                    r.file.name = new_name
+                    new_path = settings.MEDIA_ROOT + '/' + new_name
+                    new_dir = os.path.dirname(new_path)
+                    try:
+                        os.makedirs(new_dir)
+                    except OSError:
+                        #this happens if directory already exists
+                        pass
+                        #raise Http404("failed " + new_dir)
+                    os.rename(init_path, new_path)
+                    r.save()
+
+
                     # setup submission-resource link
                     new_sub.files.add(r)
             return HttpResponseRedirect('/submission/2016/' + course.code + '/' + str(exercise.number) + '/')

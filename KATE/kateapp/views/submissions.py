@@ -20,7 +20,7 @@ def isStaff(user, exercises):
     return True
 
 def pastDeadline(exercise):
-    return date.today() > exercise.deadline
+    return datetime.today() > exercise.deadline
 
 def submission(request, code, number):
     exercise = get_object_or_404(Exercises,code=code, number=number)

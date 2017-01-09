@@ -7,6 +7,8 @@ from PIL import Image
 from urllib import urlopen
 from collections import Counter
 
+from django.utils import timezone
+
 from datetime import datetime, date
 
 from ..models import Exercises, People, Resource, Courses, Submissions
@@ -20,7 +22,8 @@ def isStaff(user, exercises):
     return True
 
 def pastDeadline(exercise):
-    return datetime.today() > exercise.deadline
+    now = timezone.now()
+    return now > exercise.deadline
 
 def submission(request, code, number):
     exercise = get_object_or_404(Exercises,code=code, number=number)

@@ -7,19 +7,20 @@ from PIL import Image
 from urllib import urlopen
 from collections import Counter
 
-from datetime import datetime
+from datetime import datetime, date
 
 from ..models import Exercises, People, Resource, Courses, Submissions
 from ..forms import SubmissionForm
 
 def getUser():
-    return None
+    user_login = "yw8012"
+    return get_object_or_404(People, login=user_login)
 
 def isStaff(user, exercises):
     return True
 
-def markingReleased(exercise):
-    return False
+def pastDeadline(exercise):
+    return date.today() > exercise.deadline
 
 def submission(request, code, number):
     exercise = get_object_or_404(Exercises,code=code, number=number)
@@ -43,7 +44,7 @@ def submission(request, code, number):
         resource = (specification, data, answer)
 
     #We split here depending on what type of submission will be available
-    if exercise.submission == Exercises.NO:
+    if exercise.submission == Exercises.NO or pastDeadline(exercise):
         return displayPlainSubmissionPage(request, course, exercise, resource)
 
     elif exercise.submission == Exercises.HARDCOPY:
@@ -54,10 +55,15 @@ def submission(request, code, number):
 
 def displayPlainSubmissionPage(request, course, exercise, resource):
     #Dispay a plain submission page with some info only
+    if pastDeadline(exercise):
+        disabled = True
+    else:
+        disabled = False
     context = {
             'course': course,
             'exercise': exercise,
             'resource' : resource,
+            'disabled' : disabled,
         }
     return render(request, 'kateapp/submission.html', context)
 

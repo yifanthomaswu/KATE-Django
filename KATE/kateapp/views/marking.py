@@ -40,27 +40,20 @@ def process_marking_form(exercise, course, submissions, request, code, number):
                             exercise_id=exercise.id,
                             login_id=student_id)
                     m.save()
-        all_marked = True
-        for submission in submissions:
-            if not Marks.objects.filter(login_id=submission.leader_id, exercise_id=exercise.id).exists():
-                #TODO Check all marks? not only leader
-                all_marked = False
-                break
-        if all_marked:
-            Exercises.objects.filter(code=code, number=number).update(marked=True)
-            #publish marks
-            if request.POST.get('publish'):
-                release_date = form.cleaned_data["release_date"]
-                release_time = form.cleaned_data["release_time"]
-                release_datetime = timezone.now()
-                if release_time is None:
-                    if release_date is not None:
-                        release_datetime = datetime.combine(release_date,
-                                                        timezone.now().time)
-                else:
-                    release_datetime = datetime.combine(release_date, release_time)
-                Exercises.objects.filter(code=code, number=number).update(mark_release_date=release_datetime)
-                return HttpResponseRedirect('/personal_page')
+
+        #publish marks
+        if request.POST.get('publish'):
+            release_date = form.cleaned_data["release_date"]
+            release_time = form.cleaned_data["release_time"]
+            release_datetime = timezone.now()
+            if release_time is None:
+                if release_date is not None:
+                    release_datetime = datetime.combine(release_date,
+                                                    timezone.now().time)
+            else:
+                release_datetime = datetime.combine(release_date, release_time)
+            Exercises.objects.filter(code=code, number=number).update(mark_release_date=release_datetime)
+            return HttpResponseRedirect('/personal_page')
 
         return HttpResponseRedirect('/marking/2016/' + code + '/' + number + '/')
     else:
@@ -84,6 +77,12 @@ def generate_marking_form(exercise, course, submissions, request, code, number):
             'marks': marks_string,
         }
         form = MarkingForm(data)
+    all_marked = True
+    for submission in submissions:
+        if not Marks.objects.filter(login_id=submission.leader_id, exercise_id=exercise.id).exists():
+            #TODO Check all marks? not only leader
+            all_marked = False
+            break
     context = {
         'form': form,
         'course': course,
@@ -92,6 +91,6 @@ def generate_marking_form(exercise, course, submissions, request, code, number):
         'code': code,
         'number': number,
         'num_submissions': submissions.count(),
-        'all_marked': exercise.marked
+        'all_marked': all_marked
     }
     return render(request, 'kateapp/marking.html', context)

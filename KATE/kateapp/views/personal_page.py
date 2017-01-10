@@ -4,7 +4,7 @@ from django.utils import timezone
 from ..models import People, Courses, Exercises
 
 def personal_page(request):
-    teacher = True
+    teacher = False
     login = "yw8012"
     person = get_object_or_404(People, login=login)
     if(teacher):

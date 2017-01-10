@@ -109,7 +109,6 @@ class Exercises(models.Model):
 
     esubmission_files_names = ArrayField(models.CharField(max_length=50), default=[])
 
-    marked = models.BooleanField(default=False)
     mark_release_date = models.DateTimeField(null=True)
 
     class Meta:

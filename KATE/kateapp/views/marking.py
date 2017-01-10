@@ -21,26 +21,28 @@ def process_marking_form(exercise, course, submissions, request, code, number):
     form = MarkingForm(request.POST)
     if form.is_valid():
         marks_string = form.cleaned_data["marks"]
-        marks = marks_string.split("@")
-        for mark in marks:
-            student_id = mark.split("_")[0]
-            student_mark = mark.split("_")[1]
-            # check if marked already
-            if Marks.objects.filter(login_id=student_id, exercise_id=exercise.id).exists():
-                # check if mark changed
-                mark_object = Marks.objects.get(login_id=student_id, exercise_id=exercise.id)
-                if not mark_object.mark == student_mark:
-                    Marks.objects.filter(login_id=student_id, exercise_id=exercise.id).update(mark=student_mark)
-            else:
-                #setup mark
-                m = Marks(mark=student_mark,
-                        exercise_id=exercise.id,
-                        login_id=student_id,
-                        released=False)
-                m.save()
+        if(marks_string != ""):
+            marks = marks_string.split("@")
+            for mark in marks:
+                student_id = mark.split("_")[0]
+                student_mark = mark.split("_")[1]
+                # check if marked already
+                if Marks.objects.filter(login_id=student_id, exercise_id=exercise.id).exists():
+                    # check if mark changed
+                    mark_object = Marks.objects.get(login_id=student_id, exercise_id=exercise.id)
+                    if not mark_object.mark == student_mark:
+                        Marks.objects.filter(login_id=student_id, exercise_id=exercise.id).update(mark=student_mark)
+                else:
+                    #setup mark
+                    m = Marks(mark=student_mark,
+                            exercise_id=exercise.id,
+                            login_id=student_id,
+                            released=False)
+                    m.save()
         all_marked = True
         for submission in submissions:
-            if not Marks.objects.filter(login_id=submission.leader_id, exercise_id=exercise.id).exists:
+            if not Marks.objects.filter(login_id=submission.leader_id, exercise_id=exercise.id).exists():
+                #TODO Check all marks? not only leader
                 all_marked = False
                 break
         if all_marked:

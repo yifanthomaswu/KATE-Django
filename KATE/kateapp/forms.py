@@ -28,3 +28,7 @@ class SubmissionForm(forms.Form):
 
 class MarkingForm(forms.Form):
     marks = forms.CharField(required=False, widget=forms.TextInput(attrs={'class' : 'form-control'}))
+    release_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'class':'datepicker form-control'}, format=DATE_FORMATS[0]),
+                                input_formats=DATE_FORMATS)
+    release_time = forms.TimeField(required=False, widget=forms.TimeInput(attrs={'class':'timepicker form-control'}, format=TIME_FORMATS[0]),
+                                input_formats=TIME_FORMATS)

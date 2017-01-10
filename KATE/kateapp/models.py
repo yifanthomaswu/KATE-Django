@@ -147,11 +147,15 @@ class Courses_Resource(models.Model):
     PROBLEM = 'PROBLEM'
     URL = 'URL'
     PANOPTO = 'PANOPTO'
+    PIAZZA = 'PIAZZA'
+    HOMEPAGE = 'HOMEPAGE'
     TYPE_CHOICES = (
         (NOTE, 'Note'),
         (PROBLEM, 'Problem'),
         (URL, 'Url'),
         (PANOPTO, 'Panopto'),
+        (PIAZZA, 'Piazza'),
+        (HOMEPAGE, 'Homepage'),
     )
     course_resource_type = models.CharField(
         max_length=15,

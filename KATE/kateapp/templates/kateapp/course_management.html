@@ -1,0 +1,169 @@
+{% load staticfiles %}
+<html>
+<head>
+  <title>KATe</title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/style.css' %}">
+
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  
+  <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/timepicker.css' %}">
+  <script src="{% static 'kateapp/js/timepicker.min.js' %}"></script>
+</head>
+
+<body>
+  <script>
+  $(function() {
+    $( ".datepicker" ).datepicker({
+      changeMonth: true,
+      changeYear: true,
+      yearRange: "2015:2040",
+      firstDay: 1,
+      minDate: 0,
+      dateFormat: "dd/mm/yy"
+    });
+    $('.timepicker').timepicker({
+      scrollDefault: 'now',
+      step: 30,
+      timeFormat: 'h:i A'
+    });
+  });
+  </script>
+
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="{% url 'index' %}">
+          <img alt="Brand" src="{% static 'kateapp/images/ilogo.png' %}"> KATe
+        </a>
+      </div>
+      <div>
+        <ul class="nav navbar-nav navbar-right">
+                <li><a href="{% url 'personal_page' %}">Home</a></li>
+                <li><a href="{% url 'index' %}">Timetable</a></li>
+                <li><a href="{% url 'course_list' 'c1' %}">Module List</a></li>
+              </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid module-content">
+  <h3>Module CO{{course.code}}: {{course.title}}</h3>
+  <p>
+    <table class="table-responsive table-padding">
+      <tr>
+        <th>Lecturer:</th>
+        <td>{{course.lecturer}}</td>
+      </tr>
+      <tr>
+        {% if terms|length == 1 %}
+        <th>Term:</th>
+        {% else %}
+        <th>Terms:</th>
+        {% endif %}
+        {% for term in terms %}
+        <td>{{term.name}}</td>
+        {% endfor %}
+      </tr>
+    </table>
+  </p>
+
+  {% for rs in resource %}{% if rs %}<p>
+    <table class="table table-striped table-responsive">
+      <caption>{% cycle 'Note' 'Exercise' 'Url' 'Panopto' %}</caption>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rs %}
+        <tr>
+          <td>
+            <a href="{% if r.resource is None %}{{ r.link }}{% else %}{{ MEDIA_URL }}{{ r.resource.file.url }}{% endif %}">{{ r.titel }}</a>
+          </td>
+          <td>{{r.release_date|date:"D, d M Y"}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </p>{% endif %}{% endfor %}
+
+  </div>
+
+
+
+  <form id="form" action="{% url 'course_management' course.code %}" method="post" enctype="multipart/form-data" class = "form-horizontal">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="fieldWrapper form-group">
+            {{ form.title.errors }}
+            <label class="col-sm-3 control-label">Resource Name:</label>
+            <div class="col-sm-8">
+            {{ form.title }}
+            </div>
+        </div>
+
+        <div class="fieldWrapper form-group">
+            {{ form.course_resource_type.errors }}
+            <label class="col-sm-3 control-label">Course Resource Type:</label>
+            <div class="col-sm-8">
+            {{ form.course_resource_type }}
+            </div>
+        </div>
+
+        <div id="URLEntry" style="display:none" class="fieldWrapper form-group">
+            {{ form.link.errors }}
+            <label class="col-sm-3 control-label">URL:</label>
+            <div class="col-sm-8">
+            {{ form.link }}
+            </div>
+        </div>
+
+        <div id="FileUpload" style="display:none" class="fieldWrapper form-group">
+            {{ form.file.errors }}
+            <label class="col-sm-3 control-label">File Upload:</label>
+            <div class="col-sm-8">
+            {{ form.file }}
+            </div>
+        </div>
+
+        <div class="fieldWrapper form-group">
+            {{ form.release_date.errors }}
+            <label for="{{ form.end_date.id_for_label }}" class="col-sm-3 control-label">Date to be released:</label>
+            <div class="col-sm-8">
+            {{ form.release_date }}
+            </div>
+        </div>
+
+        <div class="col-sm-offset-7 col-sm-5">
+          <input id="button" class="btn btn-primary" type="submit" value="Add Resource" name="submit"/>
+        </div>
+      </form>
+
+</body>
+
+<script>
+displayEntry()
+function displayEntry() {
+  if (id_course_resource_type.value=="{{ types.NOTE }}" 
+      || id_course_resource_type.value=="{{ types.PROBLEM }}") {
+        FileUpload.removeAttribute("style");
+        URLEntry.setAttribute("style", "display:none");
+        id_link.value = "";
+        }
+  else {
+    URLEntry.removeAttribute("style");
+    FileUpload.setAttribute("style", "display:none");
+    id_file.type = "";
+    id_file.type = "file";
+    //form.reset() for later
+  }
+}
+</script>
+
+</html>

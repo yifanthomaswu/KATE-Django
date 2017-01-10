@@ -239,7 +239,7 @@ def process_exercise_setup_file_remove(newNumber, course, request, code, number)
         re.file.delete(False)
         re.delete()
 
-        #No need to delete Exercises_Resource as its Resource filed is on CASCADE
+        #No need to delete Exercises_Resource as its Resource file field is on CASCADE
 
         exercise = Exercises.objects.get(code=code, number=number)
         file_names = exercise.esubmission_files_names

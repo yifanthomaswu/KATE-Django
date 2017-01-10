@@ -14,4 +14,6 @@ urlpatterns = [
     url(r'^marking/2016/(?P<code>[.0-9]+)/(?P<number>[1-9]+)/$', views.marking, name='marking'),
     url(r'^grading_scheme/$', views.grading_scheme, name='grading_scheme'),
     url(r'^cover_sheet/2016/(?P<code>[.0-9]+)/(?P<number>[1-9][0-9]*)/$', views.cover_sheet, name='cover_sheet'),
+    url(r'^course/2016/(?P<code>[.0-9]+)/manage/$', views.course_management, name='course_management'),
+
 ]

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Exercises, Exercises_Resource
+from .models import Exercises, Exercises_Resource, Courses_Resource
 
 DATE_FORMATS = ['%d/%m/%Y', '%d/%m/%y']
 TIME_FORMATS = ['%I:%M %p', '%I:%M%p', '%H:%M']
@@ -32,3 +32,11 @@ class MarkingForm(forms.Form):
                                 input_formats=DATE_FORMATS)
     release_time = forms.TimeField(required=False, widget=forms.TimeInput(attrs={'class':'timepicker form-control'}, format=TIME_FORMATS[0]),
                                 input_formats=TIME_FORMATS)
+
+class CourseManagementForm(forms.Form):
+    title = forms.CharField(widget=forms.TextInput(attrs={'class' : 'form-control'}) )
+    course_resource_type = forms.ChoiceField(choices=Courses_Resource.TYPE_CHOICES, widget=forms.Select(attrs={'class':'form-control', 'onchange' : 'displayEntry()'}))
+    file = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class':'form-control'}))
+    link = forms.URLField(required=False)
+    release_date = forms.DateField(widget=forms.DateInput(attrs={'class':'datepicker form-control'}, format=DATE_FORMATS[0]),
+                                input_formats=DATE_FORMATS)

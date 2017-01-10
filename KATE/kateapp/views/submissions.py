@@ -7,30 +7,47 @@ from PIL import Image
 from urllib import urlopen
 from collections import Counter
 
-from datetime import datetime
+from django.utils import timezone
+
+from datetime import datetime, date
 
 from ..models import Exercises, People, Resource, Courses, Submissions
 from ..forms import SubmissionForm
 
+def getUser():
+    user_login = "yw8012"
+    return get_object_or_404(People, login=user_login)
+
+def isStaff(user, exercises):
+    return True
+
+def pastDeadline(exercise):
+    now = timezone.now()
+    return now > exercise.deadline
+
 def submission(request, code, number):
-    teacher = True
-    # Check that exercise exists
-    if not Exercises.objects.filter(code=code, number=number).exists():
-        raise Http404("Exercise doesn't exist")
-    exercise = Exercises.objects.get(code=code, number=number)
+    exercise = get_object_or_404(Exercises,code=code, number=number)
+
+    user = getUser()
+    showMarking = isStaff(user, exercise)
+
+    #Uncomment for testing purposes
+    #showMarking = True
+
     course = get_object_or_404(Courses, pk=code)
 
+    # Computes and puts together the resources that the template uses, ie the files associated with this exercise
     specification = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='SPEC').order_by('exercises_resource__resource__timestamp'))
     data = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='DATA').order_by('exercises_resource__resource__timestamp'))
     answer = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='ANSWER').order_by('exercises_resource__resource__timestamp'))
-    if teacher:
+    if showMarking:
         marking = list(Resource.objects.filter(exercises_resource__exercise__code=code, exercises_resource__exercise__number=number, exercises_resource__exercise_resource_type='MARKING').order_by('exercises_resource__resource__timestamp'))
         resource = (specification, data, answer, marking)
     else:
         resource = (specification, data, answer)
 
-    #We split here depending on what submission will be available
-    if exercise.submission == Exercises.NO:
+    #We split here depending on what type of submission will be available
+    if exercise.submission == Exercises.NO or pastDeadline(exercise):
         return displayPlainSubmissionPage(request, course, exercise, resource)
 
     elif exercise.submission == Exercises.HARDCOPY:
@@ -41,10 +58,12 @@ def submission(request, code, number):
 
 def displayPlainSubmissionPage(request, course, exercise, resource):
     #Dispay a plain submission page with some info only
+    disabled = pastDeadline(exercise)
     context = {
             'course': course,
             'exercise': exercise,
             'resource' : resource,
+            'disabled' : disabled,
         }
     return render(request, 'kateapp/submission.html', context)
 

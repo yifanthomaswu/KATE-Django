@@ -107,6 +107,11 @@
   </p>
 
   </div>
+
+  {% if teacher %}
+    <a class="btn btn-primary btn-sm active" href="{% url 'course_management' course.code %}" role="button">Manage Course</a>
+  {% endif %}
+
 </body>
 
 </html>

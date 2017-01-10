@@ -4,7 +4,7 @@ from django.utils import timezone
 from ..models import People, Courses, Exercises
 
 def personal_page(request):
-    teacher = False
+    teacher = True
     login = "yw8012"
     person = get_object_or_404(People, login=login)
     if(teacher):
@@ -21,7 +21,7 @@ def display_teacher_personal_page(person, login):
     date_now = timezone.now()
     for course in courses:
         exercises = exercises + list(Exercises.objects.filter(
-            code=course.code, deadline__lte=date_now, assessment__in=["GROUP", "INDIVIDUAL"], released=False))
+            code=course.code, deadline__lte=date_now, assessment__in=["GROUP", "INDIVIDUAL"], mark_release_date=None))
     exercises.sort(key=lambda x:x.deadline)
     courses_exercises = []
     for exercise in exercises:

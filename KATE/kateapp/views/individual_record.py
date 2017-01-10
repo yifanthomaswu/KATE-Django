@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 
 from ..models import People, Marks
 
@@ -10,7 +11,7 @@ def individual_record(request, login):
     # traverse all registered courses for the student
     for course in person.registered_courses.all():
         # get the marks for the current course
-        marks = list(Marks.objects.filter(login=login, exercise__code=course.code, released=True).order_by('exercise__number'))
+        marks = list(Marks.objects.filter(login=login, exercise__code=course.code, exercise__mark_release_date__lte=timezone.now()).order_by('exercise__number'))
         # convert the mark numbers to text
         textual_marks = [convert_mark_number_text(elem) for elem in marks]
         # append the course with corresponding marks to the datastructure

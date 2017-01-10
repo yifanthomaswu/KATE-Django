@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, Http404
+from django.utils import timezone
+from datetime import datetime, time
 
 from ..models import Exercises, Courses, Submissions, Marks
 from ..forms import MarkingForm
@@ -36,8 +38,7 @@ def process_marking_form(exercise, course, submissions, request, code, number):
                     #setup mark
                     m = Marks(mark=student_mark,
                             exercise_id=exercise.id,
-                            login_id=student_id,
-                            released=False)
+                            login_id=student_id)
                     m.save()
         all_marked = True
         for submission in submissions:
@@ -49,8 +50,16 @@ def process_marking_form(exercise, course, submissions, request, code, number):
             Exercises.objects.filter(code=code, number=number).update(marked=True)
             #publish marks
             if request.POST.get('publish'):
-                Marks.objects.filter(exercise_id=exercise.id).update(released=True)
-                Exercises.objects.filter(code=code, number=number).update(released=True)
+                release_date = form.cleaned_data["release_date"]
+                release_time = form.cleaned_data["release_time"]
+                release_datetime = timezone.now()
+                if release_time is None:
+                    if release_date is not None:
+                        release_datetime = datetime.combine(release_date,
+                                                        timezone.now().time)
+                else:
+                    release_datetime = datetime.combine(release_date, release_time)
+                Exercises.objects.filter(code=code, number=number).update(mark_release_date=release_datetime)
                 return HttpResponseRedirect('/personal_page')
 
         return HttpResponseRedirect('/marking/2016/' + code + '/' + number + '/')

@@ -108,9 +108,9 @@ class Exercises(models.Model):
     )
 
     esubmission_files_names = ArrayField(models.CharField(max_length=50), default=[])
-    
+
     marked = models.BooleanField(default=False)
-    released = models.BooleanField(default=False)
+    mark_release_date = models.DateTimeField(null=True)
 
     class Meta:
         unique_together = (('code', 'number'),)
@@ -203,6 +203,5 @@ class Marks(models.Model):
     exercise = models.ForeignKey(Exercises, on_delete=models.PROTECT)
     login = models.ForeignKey(People, on_delete=models.PROTECT)
     mark = models.DecimalField(max_digits=5, decimal_places=2)
-    released = models.BooleanField(default=False)
     def __str__(self):
         return self.login.__str__() + " " + self.exercise.code.code + " " + self.exercise.number.__str__() + " " + self.mark.__str__()

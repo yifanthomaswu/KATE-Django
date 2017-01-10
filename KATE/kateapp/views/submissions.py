@@ -58,10 +58,7 @@ def submission(request, code, number):
 
 def displayPlainSubmissionPage(request, course, exercise, resource):
     #Dispay a plain submission page with some info only
-    if pastDeadline(exercise):
-        disabled = True
-    else:
-        disabled = False
+    disabled = pastDeadline(exercise)
     context = {
             'course': course,
             'exercise': exercise,

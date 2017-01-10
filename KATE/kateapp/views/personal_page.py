@@ -5,7 +5,7 @@ from ..models import People, Courses, Exercises, Period
 
 def personal_page(request):
     teacher = True
-    login = "yw8012"
+    login = request.user.get_username()
     person = get_object_or_404(People, login=login)
     if(teacher):
         context = display_teacher_personal_page(person, login)

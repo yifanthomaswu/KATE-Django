@@ -149,6 +149,7 @@ with open('/var/lib/jenkins/workspace/ldapconfig.txt') as f:
 AUTH_LDAP_USER_SEARCH = LDAPSearch("OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk",
     ldap.SCOPE_SUBTREE, "(sAMaccountName=%(user)s)")
 
+LOGIN_REDIRECT_URL = "/personal_page/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/

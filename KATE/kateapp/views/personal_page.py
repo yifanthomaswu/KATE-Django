@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, get_list_or_404, render
 from django.utils import timezone
 
-from ..models import People, Courses, Exercises
+from ..models import People, Courses, Exercises, Period
 
 def personal_page(request):
     teacher = False
@@ -19,6 +19,7 @@ def display_teacher_personal_page(person, login):
     courses = get_list_or_404(Courses, lecturer_id=login, courses_term__term=current_term)
     exercises = []
     date_now = timezone.now()
+    period = get_object_or_404(Period, start_date__lte=date_now, end_date__gte=date_now)
     for course in courses:
         exercises = exercises + list(Exercises.objects.filter(
             code=course.code, deadline__lte=date_now, assessment__in=["GROUP", "INDIVIDUAL"], mark_release_date=None))
@@ -34,6 +35,7 @@ def display_teacher_personal_page(person, login):
         'person': person,
         'courses': courses,
         'courses_exercises' : courses_exercises,
+        'period' : period,
     }
     return context
 
@@ -42,6 +44,7 @@ def display_student_personal_page(person, login):
     courses = list(Courses.objects.all())
     exercises = []
     date_now = timezone.now()
+    period = get_object_or_404(Period, start_date__lte=date_now, end_date__gte=date_now)
     for course in courses:
         exercises = exercises + list(Exercises.objects.filter(
             code=course.code, start_date__lte=date_now, deadline__gte=date_now))
@@ -56,5 +59,6 @@ def display_student_personal_page(person, login):
         'teacher': False,
         'person': person,
         'courses_exercises' : courses_exercises,
+        'period' : period,
     }
     return context

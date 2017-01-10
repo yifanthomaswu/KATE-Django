@@ -82,15 +82,10 @@
       </tbody>
     </table>
   </p>{% endif %}{% endfor %}
-
-  {% if exercise.get_submission_display == "Hardcopy" %}
-    
-  {% endif %}
-
   </div>
 
   {% if disabled %}
-    <h1>Cannot submit at this time </h1>
+    <h3>Submission will be marked as <strong>LATE</strong></h3>
   {% endif %}
 
    {% if form %}

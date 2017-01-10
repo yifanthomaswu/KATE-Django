@@ -47,7 +47,7 @@ def submission(request, code, number):
         resource = (specification, data, answer)
 
     #We split here depending on what type of submission will be available
-    if exercise.submission == Exercises.NO or pastDeadline(exercise):
+    if exercise.submission == Exercises.NO:
         return displayPlainSubmissionPage(request, course, exercise, resource)
 
     elif exercise.submission == Exercises.HARDCOPY:
@@ -58,12 +58,12 @@ def submission(request, code, number):
 
 def displayPlainSubmissionPage(request, course, exercise, resource):
     #Dispay a plain submission page with some info only
-    disabled = pastDeadline(exercise)
+    #disabled = pastDeadline(exercise)
     context = {
             'course': course,
             'exercise': exercise,
             'resource' : resource,
-            'disabled' : disabled,
+            'disabled' : False,
         }
     return render(request, 'kateapp/submission.html', context)
 
@@ -101,6 +101,7 @@ def displayHardcopySubmissionPage(request, course, exercise, resource):
             'exercise': exercise,
             'bound' : bound,
             'resource' : resource,
+            'disabled' : pastDeadline(exercise),
         }
         return render(request, 'kateapp/submission.html', context)
 
@@ -196,6 +197,7 @@ def displayElectronicSubmissionPage(request, course, exercise, resource):
             'exercise': exercise,
             'bound' : True,
             'elec' : True,
+            'disabled' : pastDeadline(exercise),
             }
             raise Http404("inv")
             #return render(request, 'kateapp/submission.html', context)
@@ -223,6 +225,7 @@ def displayElectronicSubmissionPage(request, course, exercise, resource):
             'elec' : True,
             'uploads' : uploads,
             'resource' : resource,
+            'disabled' : pastDeadline(exercise),
         }
         return render(request, 'kateapp/submission.html', context)
 

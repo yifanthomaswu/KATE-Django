@@ -6,11 +6,30 @@ from ..forms import CourseManagementForm
 
 
 def course_management(request, code):
+    login = "test01"
+
     course = get_object_or_404(Courses, pk=str(code))
+
+    validation_fail = False
+    action= "cancel"
+
+    if request.method == 'POST':
+        ###### Course Resource being added #####
+        form = CourseManagementForm(request.POST, request.FILES)
+        if form.is_valid():
+            #create new Cource_Resource 
+            
+            return HttpResponseRedirect('/course/2016/' + course.code + '/manage/')  
+        #Form validation failed 
+        validation_fail = True
+        action= "refresh"
+    else:
+        form = CourseManagementForm()
+    
+    #Get nessecey items to display template
     terms = get_list_or_404(Term, courses_term__code=str(code))
     terms.sort(key=lambda x: x.term)
 
-    login = "test01"
     teacher = People.objects.get(login=login).student_letter_yr == None
     
     note = list(Courses_Resource.objects.filter(code=code, course_resource_type='NOTE').order_by('release_date'))
@@ -19,10 +38,7 @@ def course_management(request, code):
     panopto = list(Courses_Resource.objects.filter(code=code, course_resource_type='PANOPTO').order_by('release_date'))
     resource = (note, exercise, url, panopto)
 
-    form = CourseManagementForm()
-
     types = Courses_Resource
-
 
     context = {
         'form' : form,
@@ -31,5 +47,7 @@ def course_management(request, code):
         'teacher': teacher,
         'resource': resource,
         'types' : types,
+        'validation_fail' : validation_fail,
+        'action': action,
     }
     return render(request, 'kateapp/course_management.html', context)

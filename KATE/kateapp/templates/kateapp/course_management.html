@@ -96,8 +96,17 @@
   </div>
 
 
+  <span  class="input-group-btn">
+    <button id="addResourceButton" type="button" class="btn btn-default btn-number" onclick="showResourceForm()">
+      <span>Add Resource</span>
+    </button>
+  </span>
 
-  <form id="form" action="{% url 'course_management' course.code %}" method="post" enctype="multipart/form-data" class = "form-horizontal">
+<br>
+<br>
+
+
+  <form  hidden="true" id="form" action="{% url 'course_management' course.code %}" method="post" enctype="multipart/form-data" class = "form-horizontal">
         {% csrf_token %}
         {{ form.non_field_errors }}
         <div class="fieldWrapper form-group">
@@ -134,36 +143,61 @@
 
         <div class="fieldWrapper form-group">
             {{ form.release_date.errors }}
-            <label for="{{ form.end_date.id_for_label }}" class="col-sm-3 control-label">Date to be released:</label>
+            <label class="col-sm-3 control-label">Date to be released:</label>
             <div class="col-sm-8">
             {{ form.release_date }}
             </div>
         </div>
 
         <div class="col-sm-offset-7 col-sm-5">
-          <input id="button" class="btn btn-primary" type="submit" value="Add Resource" name="submit"/>
+          <input id="AddButton" class="btn btn-primary" type="submit" value="Add Resource" name="submit"/>
+          <input id="CancelButton" class="btn btn-secondary" type="reset" value="Cancel" onclick="{{ action }}()"/>
         </div>
       </form>
 
 </body>
 
 <script>
-displayEntry()
+displayEntry();
+
 function displayEntry() {
   if (id_course_resource_type.value=="{{ types.NOTE }}" 
       || id_course_resource_type.value=="{{ types.PROBLEM }}") {
         FileUpload.removeAttribute("style");
+        id_file.required = true;
         URLEntry.setAttribute("style", "display:none");
+        id_link.required = false;
         id_link.value = "";
         }
   else {
     URLEntry.removeAttribute("style");
+    id_link.required = true;
     FileUpload.setAttribute("style", "display:none");
+    id_file.required = false;
     id_file.type = "";
     id_file.type = "file";
-    //form.reset() for later
   }
 }
+
+function showResourceForm() {
+  form.removeAttribute("hidden");
+  addResourceButton.setAttribute("style", "display:none");
+}
+
+function cancel() {
+  form.setAttribute("hidden", true);
+  addResourceButton.removeAttribute("style");
+}
+
+function refresh() {
+  window.location = "{% url 'course_management' course.code %}";
+}
 </script>
+
+{% if validation_fail %}
+<script>
+  showResourceForm();
+</script>
+{% endif %}
 
 </html>

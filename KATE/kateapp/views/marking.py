@@ -71,6 +71,10 @@ def generate_marking_form(exercise, course, submissions, request, code, number):
             if Marks.objects.filter(login_id=submission.leader_id, exercise_id=exercise.id).exists():
                 mark = Marks.objects.get(login_id=submission.leader_id, exercise_id=exercise.id)
                 marks_string += mark.login_id + "_" + str(mark.mark) + "@"
+                for member in submission.members.all():
+                    if Marks.objects.filter(login_id=member.login, exercise_id=exercise.id).exists():
+                        mark = Marks.objects.get(login_id=member.login, exercise_id=exercise.id)
+                        marks_string += mark.login_id + "_" + str(mark.mark) + "@"
         if marks_string != "":
             marks_string = marks_string[:-1]
         data = {

@@ -95,7 +95,7 @@ $(function() {
         </thead>
         {% for submission in submissions %}
         <tbody>
-          <tr>
+          <tr class="group_row">
             <td id="id{{forloop.counter}}_0">
               {% if submission.timestamp > exercise.deadline %}
               <font color="red">
@@ -107,8 +107,8 @@ $(function() {
             </td>
             <td><input type="number" min="0" max="100" id="mark{{forloop.counter}}_0" name="{{submission.leader_id}}"></input></td>
           </tr>
-          {% for member in members %}
-          <tr>
+          {% for member in submission.members.all %}
+          <tr class="member_row">
             <td id="id{{forloop.parentloop.counter}}_{{forloop.counter}}">
               {% if submission.timestamp > exercise.deadline %}
               <font color="red">
@@ -130,6 +130,14 @@ $(function() {
     </form>
 
     <script>
+    $('.group_row').click(function(e){
+      if($(e.target).is('input')){
+            e.preventDefault();
+            return;
+        }
+      $(this).nextUntil('tr.group_row').slideToggle(0);
+    });
+
     var num_submissions = parseInt("{{ num_submissions }}");
 
     initialize();
@@ -142,6 +150,7 @@ $(function() {
           markfield.value = marks[i].split("_")[1];
         }
       }
+      $('tr.member_row').slideToggle(0);
 
       //check if all marks are put in
       var all_marked = "{{ all_marked }}";
@@ -164,8 +173,11 @@ $(function() {
         while(document.getElementById("id" + i + "_" + j)) {
           var idfield = document.getElementById("id" + i + "_" + j);
           var markfield = document.getElementById("mark" + i + "_" + j);
+          if (markfield.value == "") {
+            markfield = document.getElementById("mark" + i + "_0");
+          }
           if (markfield.value != "") {
-            text += idfield.innerText + "_" + markfield.value + "@";
+            text += idfield.innerText.trim() + "_" + markfield.value + "@";
           }
           j++;
         }

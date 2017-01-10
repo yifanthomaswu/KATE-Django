@@ -1,11 +1,16 @@
 from django.shortcuts import get_object_or_404, get_list_or_404, render
 
 import calendar
-from datetime import timedelta
+from datetime import timedelta, datetime
+from django.utils import timezone
 
-from ..models import Period, People, Courses, Exercises
+from ..models import Period, People, Courses, Exercises, Classes
 
 def timetable(request, period_id, letter_yr, login):
+    classes = list(Classes.objects.all())
+    periods = list(Period.objects.all())
+    date_now = timezone.now()
+    period_now = get_object_or_404(Period, start_date__lte=date_now, end_date__gte=date_now)
     period = get_object_or_404(Period, pk=period_id)
     person = get_object_or_404(People, pk=login)
     term_id = 0
@@ -85,7 +90,10 @@ def timetable(request, period_id, letter_yr, login):
         weekday = True
         if 5 <= current_d.weekday() <= 6:
             weekday = False
-        days.append((current_d.day, weekday))
+        today = False
+        if current_d == datetime.today().date():
+            today = True
+        days.append((current_d.day, weekday, today))
         current_d = current_d + timedelta(1)
     context = {
         'period': period,
@@ -94,5 +102,10 @@ def timetable(request, period_id, letter_yr, login):
         'months': months,
         'weeks': weeks,
         'days': days,
+        'classes': classes,
+        'periods': periods,
+        'period_id': period_id,
+        'letter_yr': letter_yr,
+        'period_now': period_now,
     }
     return render(request, 'kateapp/timetable.html', context)

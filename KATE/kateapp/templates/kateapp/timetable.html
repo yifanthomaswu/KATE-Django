@@ -5,6 +5,8 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/style.css' %}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
     <body>
         <nav class="navbar navbar-default">
@@ -18,7 +20,7 @@
             <div>
               <ul class="nav navbar-nav navbar-right">
                 <li><a href="{% url 'personal_page' %}">Home</a></li>
-                <li><a href="{% url 'timetable' period.period person.student_letter_yr person.login %}">Timetable</a></li>
+                <li><a href="{% url 'timetable' period_now.period person.student_letter_yr person.login %}">Timetable</a></li>
                 <li><a href="{% url 'course_list' person.student_letter_yr %}">Module List</a></li>
               </ul>
             </div>
@@ -30,6 +32,22 @@
                 <h3>Timetable<br>
                 Computing {{ person.student_letter_yr }}<br>
                 {{ period.name }}</h3>
+            </div>
+
+            <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle" id="menu1" type="button" data-toggle="dropdown">Select Class
+              <span class="caret"></span></button>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                {% for class in classes %}<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'timetable' period_id class.letter_yr person.login %}">{{ class.letter_yr }}</a></li>{% endfor %}
+              </ul>
+            </div>
+
+            <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle" id="menu1" type="button" data-toggle="dropdown">Select Period
+              <span class="caret"></span></button>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                {% for p in periods %}<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'timetable' p.period letter_yr person.login %}">{{ p.name }}</a></li>{% endfor %}
+              </ul>
             </div>
 
             <div class = "col-md-6">
@@ -51,7 +69,7 @@
             </div>
 
 
-            <table border=0 class="table-responsive table-auto">
+            <table border=0 class="table-responsive table-auto" id="timetable">
                 <tr>
                     <th></th>{% for month in months %}
                     <th bgcolor="white" colspan={{ month.1 }}>{{ month.0 }}</th>{% endfor %}
@@ -62,7 +80,7 @@
                 </tr>
                 <tr>
                     <th></th>{% for day in days %}
-                    {% if day.1 %}<th bgcolor="white">{{ day.0 }}</th>{% else %}<th></th>{% endif %}{% endfor %}
+                    {% if day.1 %}<th bgcolor="white"{% if day.2 %} id="tcell"{% endif %}>{% if day.2 %}<span class="todayoverlay" id="today"></span>{% endif %}{{ day.0 }}</th>{% else %}<th{% if day.2 %} id="tcell"{% endif %}>{% if day.2 %}<span class="todayoverlay" id="today"></span>{% endif %}</th>{% endif %}{% endfor %}
                 </tr>{% for course, rows in courses %}
                 {% for row in rows %}
                 <tr>{% if forloop.first %}
@@ -77,5 +95,13 @@
                 {% endfor %}{% endfor %}
             </table>
         </div>
+        <script>
+          var height = document.getElementById("timetable").offsetHeight - 65;
+          var width = document.getElementById("tcell").offsetWidth;
+          if (width == 0) {
+              width = 1;
+          }
+          document.getElementById("today").setAttribute("style", "height: "+height+"px; width: "+width+"px;");
+        </script>
     </body>
 </html>

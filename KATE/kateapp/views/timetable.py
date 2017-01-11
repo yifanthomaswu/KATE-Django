@@ -47,10 +47,10 @@ def timetable(request, period_id, letter_yr, login):
             exercise_start = exercise.start_date.date()
             exercise_end = exercise.deadline.date()
             if period.start_date <= exercise_start <= period.end_date or period.start_date <= exercise_end <= period.end_date or (exercise_start < period.start_date and exercise_end > period.end_date):
-                if exercise.submission != "NO":
-                    subscribed[(exercise_end - period.start_date).days][1] += 1
                 if exercise.exercise_type == "T" or exercise.exercise_type == "WES":
                     subscribed[(exercise_end - period.start_date).days][2] += 1
+                elif exercise.submission != "NO":
+                    subscribed[(exercise_end - period.start_date).days][1] += 1
                 placed = False
                 if bins:
                     for bin in bins:
@@ -75,7 +75,7 @@ def timetable(request, period_id, letter_yr, login):
                 item_end = item.deadline.date()
                 row.append((None, (item_start - last_end).days))
                 row.append((item, (item_end - item_start).days + 1))
-                last_end = item_end
+                last_end = item_end + timedelta(1)
             rows.append(row)
         if not rows:
             rows.append([])

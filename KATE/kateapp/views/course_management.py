@@ -6,7 +6,7 @@ from ..forms import CourseManagementForm
 
 
 def course_management(request, code):
-    login = "test01"
+    login = request.user.get_username()
 
     course = get_object_or_404(Courses, pk=str(code))
 
@@ -22,13 +22,13 @@ def course_management(request, code):
                 cr.resource.file.delete(False)
                 cr.resource.delete()
             cr.delete()
-            return HttpResponseRedirect('/course/2016/' + course.code + '/manage/')  
+            return HttpResponseRedirect('/course/2016/' + course.code + '/manage/')
         ###### Course Resource being added #####
         form = CourseManagementForm(request.POST, request.FILES)
         if form.is_valid():
-            #create new Cource_Resource 
+            #create new Cource_Resource
             course_resource_type = form.cleaned_data["course_resource_type"]
-            if (course_resource_type == Courses_Resource.NOTE 
+            if (course_resource_type == Courses_Resource.NOTE
                 or course_resource_type == Courses_Resource.PROBLEM):
                 #we will be working with a file. Setup resource
                 r = Resource(file=request.FILES["file"])
@@ -69,19 +69,19 @@ def course_management(request, code):
                                                     course_resource_type=course_resource_type,
                                                     )
                 courses_resource.save()
-            return HttpResponseRedirect('/course/2016/' + course.code + '/manage/')  
-        #Form validation failed 
+            return HttpResponseRedirect('/course/2016/' + course.code + '/manage/')
+        #Form validation failed
         validation_fail = True
         action= "refresh"
     else:
         form = CourseManagementForm()
-    
+
     #Get nessecey items to display template
     terms = get_list_or_404(Term, courses_term__code=str(code))
     terms.sort(key=lambda x: x.term)
 
     teacher = People.objects.get(login=login).student_letter_yr == None
-    
+
     note = list(Courses_Resource.objects.filter(code=code, course_resource_type='NOTE').order_by('release_date'))
     exercise = list(Courses_Resource.objects.filter(code=code, course_resource_type='PROBLEM').order_by('release_date'))
     url = list(Courses_Resource.objects.filter(code=code, course_resource_type='URL').order_by('release_date'))

@@ -4,9 +4,9 @@ from django.utils import timezone
 from ..models import People, Courses, Exercises, Period
 
 def personal_page(request):
-    teacher = False
     login = request.user.get_username()
     person = get_object_or_404(People, login=login)
+    teacher = person.tutor == None
     if(teacher):
         context = display_teacher_personal_page(person, login)
     else:
@@ -14,7 +14,6 @@ def personal_page(request):
     return render(request, 'kateapp/personal_page.html', context)
 
 def display_teacher_personal_page(person, login):
-    login = "test01"
     current_term = 1 #TODO which term?
     courses = get_list_or_404(Courses, lecturer_id=login, courses_term__term=current_term)
     exercises = []

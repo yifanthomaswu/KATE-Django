@@ -223,7 +223,7 @@ function remove(pk) {
   output.setAttribute('style', 'display:none');
   output.value = pk;
   removeForm.append(output);
-
+}
 
 function refresh() {
   window.location = "{% url 'course_management' course.code %}";

@@ -174,10 +174,12 @@
 
 .INDIVIDUAL {
 	background-color: #ccffcc;
+	font-weight: bold;
 }
 
 .GROUP {
 	background-color: #f0ccf0;
+	font-weight: bold;
 }
 
 .NOSUBMISSION {
@@ -186,6 +188,7 @@
 
 .SUBMISSION {
 	background-color: #cdcdcd;
+	font-weight: bold;
 }
 
 .EXAM {
@@ -212,7 +215,7 @@
 
 .todayoverlay {
   position: absolute;
-  background: rgba(135,206,250,0.7);
+  background: rgba(135,206,250,0.5);
   display: block;
   pointer-events: none;
 }

@@ -9,7 +9,7 @@
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  
+
   <link rel="stylesheet" type="text/css" href="{% static 'kateapp/css/timepicker.css' %}">
   <script src="{% static 'kateapp/js/timepicker.min.js' %}"></script>
 </head>
@@ -85,8 +85,8 @@
           {% if rs %}
           <thead>
             <tr>
+              <th>Title</th>
               <th>Resource</th>
-              <th>URL</th>
             </tr>
           </thead>
           <tbody>
@@ -140,7 +140,7 @@
         {{ form.non_field_errors }}
         <div class="fieldWrapper form-group">
             {{ form.title.errors }}
-            <label class="col-sm-3 control-label">Resource Name:</label>
+            <label class="col-sm-3 control-label">Resource Title:</label>
             <div class="col-sm-8">
             {{ form.title }}
             </div>
@@ -148,7 +148,7 @@
 
         <div class="fieldWrapper form-group">
             {{ form.course_resource_type.errors }}
-            <label class="col-sm-3 control-label">Course Resource Type:</label>
+            <label class="col-sm-3 control-label">Resource Type:</label>
             <div class="col-sm-8">
             {{ form.course_resource_type }}
             </div>
@@ -191,7 +191,7 @@
 displayEntry();
 
 function displayEntry() {
-  if (id_course_resource_type.value=="{{ types.NOTE }}" 
+  if (id_course_resource_type.value=="{{ types.NOTE }}"
       || id_course_resource_type.value=="{{ types.PROBLEM }}") {
         FileUpload.removeAttribute("style");
         id_file.required = true;

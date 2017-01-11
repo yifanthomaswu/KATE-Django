@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, Http404
 from django.utils import timezone
 from datetime import datetime, time
+import zipfile
 
 from ..models import Exercises, Courses, Submissions, Marks
 from ..forms import MarkingForm
@@ -10,7 +11,6 @@ def marking(request, code, number):
     exercise = Exercises.objects.get(code=code, number=number)
     course = get_object_or_404(Courses, pk=code)
     submissions = Submissions.objects.filter(exercise_id=exercise.id).order_by('leader_id')
-    #TODO get all subscribed students and group them if group submission
     # Split, either form is being produced, or submitted
     if request.method == 'POST':
         ############ Form submitted ############
@@ -97,4 +97,9 @@ def generate_marking_form(exercise, course, submissions, request, code, number):
         'num_submissions': submissions.count(),
         'all_marked': all_marked
     }
-    return render(request, 'kateapp/marking.html', context)
+    response = render(request, 'kateapp/marking.html', context)
+    # Create .zip archive of submissions
+
+    #response['content_type'] = 'application/zip'
+    #response['Content-Disposition'] = 'attachment;filename=' + course.id + '_' + exercise.number
+    return response

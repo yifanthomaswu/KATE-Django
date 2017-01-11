@@ -111,9 +111,13 @@
 
 
         {% if elec %}
+        <div>
+          <br>
+          <br>
         <ul>
-          <li>Files to upload {{ exercise.esubmission_files_names }}</li>
+          <li>Files to upload{% for name in exercise.esubmission_files_names %} {{ name }};{% endfor %}</li>
         </ul>
+        </div>
         <div class="fieldWrapper form-group">
             {{ form.files.errors }}
             <label for="{{ form.r.id_for_label }}" class="col-sm-3 control-label">File Upload:</label>
@@ -153,7 +157,7 @@
         </div>
         {% endif %}
 
-        
+
         {% endif %}
 
 

@@ -1,8 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
 from PIL import Image
 from urllib import urlopen
 from collections import Counter
@@ -151,7 +149,7 @@ def displayElectronicSubmissionPage(request, course, exercise, resource):
                         #raise Http404("failed " + new_dir)
                     os.rename(init_path, new_path)
                     r.save()
-                    
+
                     # setup submission-resource link
                     submission.files.add(r)
 
@@ -242,50 +240,4 @@ def cover_sheet(request, code, number):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="submission.pdf"'
     # Create the PDF object, using the response object as its "file."
-    p = canvas.Canvas(response, pagesize=A4)
-    width, height = A4 #keep for later
-
-    # Draw things on the PDF. Here's where the PDF generation happens.
-    # See the ReportLab documentation for the full list of functionality.
-    name = person.firstname + " " + person.lastname
-    p.drawString(100, 685, "Name: " + name)
-    p.drawString(100, 670, "Login: " + person.login)
-    courseName = "CO" + course.code + ": " + course.title
-    p.drawString(100, 655, "Course: " + courseName)
-    p.drawString(100, 640, "Lecturer: " + course.lecturer.firstname + " " + course.lecturer.lastname)
-    p.drawString(100, 625, "Excercise number: " + str(number))
-    exercise = get_object_or_404(Exercises, code=course, number=number)
-    submission = get_object_or_404(Submissions, exercise=exercise, leader=person)
-    p.drawString(100, 610, "Submitted: " + submission.timestamp.strftime('%A, %d %B %Y %I:%M %p'))
-    p.drawString(100, 40, "Page Generated: " + datetime.now().strftime('%A, %d %B %Y %I:%M %p'))
-
-    p.setFont("Courier-BoldOblique", 25)
-    p.drawString(width/2, 750, "KATe")
-    p.setFont("Courier-BoldOblique", 13)
-    p.drawString(100, 700, "Cover Sheet")
-
-    #We draw the 2 border rectangles here
-    a = 10
-    p.rect(a, a, width-(2*a), height-(2*a))
-    a = 15
-    p.setLineWidth(2)
-    p.rect(a, a, width-(2*a), height-(2*a))
-
-    #Set the content of the QR message here
-    QRmessage = courseName + "%0A" + name + "%0A" + person.login + "%0A" + submission.timestamp.strftime('%A, %d %B %Y %I:%M %p')
-    #Set the size of the QR code on the cover sheet, in pixels
-    size = 300 #in pixels
-
-    #Use Google Charts to generate QR code
-    baseURL = "https://chart.googleapis.com/chart?cht=qr&choe=ISO-8859-1&chld=H"
-    dimensions = "&chs=" + str(size) + "x" + str(size)
-    baseURL += dimensions
-    baseURL += "&chl=" + QRmessage
-    img = Image.open(urlopen(baseURL))
-    #We draw the actaul QR code here, we can set the x and y, but width and height should be 'size'
-    p.drawInlineImage(img, width/2-(size/2), 50, size, size)
-
-    # Close the PDF object cleanly, and we're done.
-    p.showPage()
-    p.save()
     return response

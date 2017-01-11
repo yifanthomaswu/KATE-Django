@@ -24,7 +24,21 @@ def timetable(request, period_id, letter_yr, login):
     if term_id != 0:
         courses = get_list_or_404(Courses.objects.order_by(
             'code'), courses_classes__letter_yr=letter_yr, courses_term__term=term_id)
+    days = []
+    current_d = period.start_date + timedelta(0)
+    while current_d <= period.end_date:
+        weekday = True
+        if 5 <= current_d.weekday() <= 6:
+            weekday = False
+        today = False
+        if current_d == datetime.today().date():
+            today = True
+        days.append((current_d.day, weekday, today))
+        current_d = current_d + timedelta(1)
     courses_exercises = []
+    subscribed = []
+    for d in days:
+        subscribed.append([d[1], 0, 0])
     for course in courses:
         exercises = list(Exercises.objects.filter(
             code=course.code).order_by('start_date', 'deadline'))
@@ -33,6 +47,10 @@ def timetable(request, period_id, letter_yr, login):
             exercise_start = exercise.start_date.date()
             exercise_end = exercise.deadline.date()
             if period.start_date <= exercise_start <= period.end_date or period.start_date <= exercise_end <= period.end_date or (exercise_start < period.start_date and exercise_end > period.end_date):
+                if exercise.submission != "NO":
+                    subscribed[(exercise_end - period.start_date).days][1] += 1
+                if exercise.exercise_type == "T" or exercise.exercise_type == "WES":
+                    subscribed[(exercise_end - period.start_date).days][2] += 1
                 placed = False
                 if bins:
                     for bin in bins:
@@ -84,17 +102,6 @@ def timetable(request, period_id, letter_yr, login):
             weeks.append(d_count)
             d_count = 0
         current_d = current_d + timedelta(1)
-    days = []
-    current_d = period.start_date + timedelta(0)
-    while current_d <= period.end_date:
-        weekday = True
-        if 5 <= current_d.weekday() <= 6:
-            weekday = False
-        today = False
-        if current_d == datetime.today().date():
-            today = True
-        days.append((current_d.day, weekday, today))
-        current_d = current_d + timedelta(1)
     context = {
         'period': period,
         'person': person,
@@ -107,5 +114,6 @@ def timetable(request, period_id, letter_yr, login):
         'period_id': period_id,
         'letter_yr': letter_yr,
         'period_now': period_now,
+        'subscribed': subscribed,
     }
     return render(request, 'kateapp/timetable.html', context)

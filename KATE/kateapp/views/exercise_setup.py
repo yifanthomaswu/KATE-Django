@@ -88,7 +88,7 @@ def process_exercise_setup_form(newNumber, course, request, code, number):
         return process_exercise_setup_file_remove(newNumber, course, request, code, number)
 
 def process_exercise_setup_submission(newNumber, course, request, code, number):
-    form = NewExerciseForm(request.POST, request.FILES)
+    form = NewExerciseForm(request.POST)
     if form.is_valid():
         # get file names
         file_names = form.cleaned_data["file_name"]
@@ -126,23 +126,6 @@ def process_exercise_setup_submission(newNumber, course, request, code, number):
                       submission=form.cleaned_data["submission"],
                       esubmission_files_names=file_names)
             e.save()
-            # check if file given
-            if form.cleaned_data["file"]:
-                # setup resource
-                r = Resource(file=request.FILES["file"])
-                # save resource
-                r.save()
-                # setup exercise-resource link
-                er = Exercises_Resource(exercise=e, resource=r)
-                er.save()
-            if form.cleaned_data["resources"]:
-                # setup additional resources
-                for rFile in request.FILES.getlist("resources"):
-                    r = Resource(file=rFile)
-                    r.save()
-                    er = Exercises_Resource(exercise=e,
-                                        resource=r)
-                    er.save()
         return HttpResponseRedirect('/course/2016/' + code + '/')
     else:
         raise Http404("Form Validation failed")

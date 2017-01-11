@@ -47,27 +47,42 @@
     </table>
   </p>
 
-  {% for rs in resource %}{% if rs %}<p>
-    <table class="table table-striped table-responsive">
-      <caption>{% cycle 'Note' 'Exercise' 'Url' 'Panopto' %}</caption>
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in rs %}
-        <tr>
-          <td>
-            <a href="{% if r.resource is None %}{{ r.link }}{% else %}{{ MEDIA_URL }}{{ r.resource.file.url }}{% endif %}">{{ r.titel }}</a>
-          </td>
-          <td>{{r.release_date|date:"D, d M Y"}}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </p>{% endif %}{% endfor %}
+  <div class="fieldWrapper">
+    <div class="col-sm-8">
+      <table class="table table-striped table-responsive">
+        <thead>
+            <tr>
+              <th>Resource Name</th>
+              <th>URL</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+      {% for rs in resource %}
+      <p>
+          {% if rs %}
+          <tbody>
+            {% for r in rs %}
+            <tr>
+              <td>{{ r.title }}</td>
+              <td>
+                {% if r.link %}
+                <a href="{{ r.link }}">{{ r.link }}</a>
+                {% else %}
+                <a href="{{ MEDIA_URL }}{{ r.resource.file.url }}">{{ r.resource.filename }}</a>
+                {% endif %}
+              </td>
+              <td>
+                {{r.course_resource_type}}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          {% endif %}
+      </p>
+      {% endfor %}
+      </table>
+    </div>
+  </div>
 
   <p>
     <table class="table table-striped table-responsive">

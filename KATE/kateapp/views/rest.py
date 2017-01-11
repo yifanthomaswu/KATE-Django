@@ -53,7 +53,9 @@ def course(request, code):
     exercise = list(Courses_Resource.objects.filter(code=code, course_resource_type='PROBLEM').order_by('release_date'))
     url = list(Courses_Resource.objects.filter(code=code, course_resource_type='URL').order_by('release_date'))
     panopto = list(Courses_Resource.objects.filter(code=code, course_resource_type='PANOPTO').order_by('release_date'))
-    resource = (note, exercise, url, panopto)
+    piazza = list(Courses_Resource.objects.filter(code=code, course_resource_type='PIAZZA').order_by('release_date'))
+    homepage = list(Courses_Resource.objects.filter(code=code, course_resource_type='HOMEPAGE').order_by('release_date'))
+    resource = (note, exercise, url, panopto, piazza, homepage)
     context = {
         'course': course,
         'terms': terms,

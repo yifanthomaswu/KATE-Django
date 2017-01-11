@@ -47,8 +47,11 @@
     </table>
   </p>
 
-  <div class="fieldWrapper">
-    <div class="col-sm-8">
+  {% if teacher %}
+    <a class="btn btn-primary btn-sm active" href="{% url 'course_management' course.code %}" role="button">Manage Course</a>
+  {% endif %}
+
+  <div class="fieldWrapper course-page">
       <table class="table table-striped table-responsive">
         <thead>
             <tr>
@@ -88,13 +91,12 @@
       </p>
       {% endfor %}
       </table>
-    </div>
   </div>
   <div id="panopto"></div>
 
   <p>
     <table class="table table-striped table-responsive">
-      <caption>Exercises</caption>
+      <caption><h2>Exercises</h2></caption>
       <thead>
         <tr>
           <th>Title</th>
@@ -130,9 +132,6 @@
     </table>
   </p>
 
-  {% if teacher %}
-    <a class="btn btn-primary btn-sm active" href="{% url 'course_management' course.code %}" role="button">Manage Course</a>
-  {% endif %}
   <script>
     function watchPanopto(url) {
       document.getElementById("panopto").innerHTML = "<iframe src='https://imperial.cloud.panopto.eu/Panopto/Pages/Embed.aspx?id=" + url.split("=")[1] + "&v=1' width='1024' height='576' style='padding: 0px; border: 1px solid #464646;' frameborder='0'></iframe><input id='close' type='button' value='Close' onclick='closePanopto();' />";

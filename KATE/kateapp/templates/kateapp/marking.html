@@ -79,10 +79,14 @@ $(function() {
   {% if exercise.get_submission_display == "Electronic" %}
     <a href>Download all Submissions as .zip</a>
   {% endif %}
+  <div class ="col-sm-2">
     <form action="{% url 'marking' code number%}" method="post" onsubmit="finalize()" enctype="multipart/form-data" class ="form-horizontal">
+    </div>
       {% csrf_token %}
       {{ form.non_field_errors }}
-      <input type="submit" value="Save" name="save" id="save_button" class="btn btn-primary" />
+      <div class ="col-sm-2">
+      <input type="submit" value="Save" name="save" id="save_button" class="btn btn-primary btn-sm" />
+      </div>
       <div style="visibility: hidden" id="release_date" class="fieldWrapper form-group">
         {{ form.release_date }}
       </div>
@@ -157,7 +161,7 @@ $(function() {
       var all_marked = "{{ all_marked }}";
       if(all_marked == "True") {
         var button = document.createElement("input");
-        button.className = "btn btn-primary";
+        button.className = "btn btn-primary btn-sm";
         button.type = "submit";
         button.value = "Publish";
         button.name = "publish";

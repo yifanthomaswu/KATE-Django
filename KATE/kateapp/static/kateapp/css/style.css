@@ -101,6 +101,10 @@
 	padding: 20px 25% 60px 25%;
 }
 
+.submission-notification {
+	padding: 20px 20% 60px 20%;
+}
+
 .twitter-feed {
 	padding: 20px 25% 60px 25%;
 }
@@ -160,16 +164,22 @@
 	padding-bottom: 30px;
 }
 
+.course-page {
+	padding-bottom: 50px;
+}
+
 .course-container {
 	padding: 20px 15% 60px 15%;
 }
 
 .INDIVIDUAL {
 	background-color: #ccffcc;
+	font-weight: bold;
 }
 
 .GROUP {
 	background-color: #f0ccf0;
+	font-weight: bold;
 }
 
 .NOSUBMISSION {
@@ -178,6 +188,7 @@
 
 .SUBMISSION {
 	background-color: #cdcdcd;
+	font-weight: bold;
 }
 
 .EXAM {
@@ -204,7 +215,7 @@
 
 .todayoverlay {
   position: absolute;
-  background: rgba(135,206,250,0.7);
+  background: rgba(135,206,250,0.5);
   display: block;
   pointer-events: none;
 }

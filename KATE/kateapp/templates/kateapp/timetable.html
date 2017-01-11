@@ -82,15 +82,23 @@
                 <tr>
                     <th></th>{% for day in days %}
                     {% if day.1 %}<th bgcolor="white"{% if day.2 %} id="tcell"{% endif %}>{% if day.2 %}<span class="todayoverlay" id="today"></span>{% endif %}{{ day.0 }}</th>{% else %}<th{% if day.2 %} id="tcell"{% endif %}>{% if day.2 %}<span class="todayoverlay" id="today"></span>{% endif %}</th>{% endif %}{% endfor %}
-                </tr>{% for course, rows in courses %}
-                {% for row in rows %}
+                </tr>
+                <tr>
+                    <th><b><font color="blue">Deadlines</font></b></th>{% for s in subscribed %}
+                    {% if s.0 %}{% if s.1 == 0 %}<th bgcolor="white"></th>{% else %}<th bgcolor="#dddddd"><font color="blue">{{ s.1 }}</font></th>{% endif %}{% else %}<th></th>{% endif %}{% endfor %}
+                </tr>
+                <tr>
+                    <th><b><font color="red">Tests</font></b></th>{% for s in subscribed %}
+                    {% if s.0 %}{% if s.2 == 0 %}<th bgcolor="white"></th>{% else %}<th bgcolor="#dddddd"><font color="red">{{ s.2 }}</font></th>{% endif %}{% else %}<th></th>{% endif %}{% endfor %}
+                </tr>
+                {% for course, rows in courses %}{% for row in rows %}
                 <tr>{% if forloop.first %}
                     <td rowspan="{{ rows|length }}" bgcolor="white">
                         <b><a href="{% url 'course' course.code %}">{{ course.title }}</a></b><br>
                     </td>{% endif %}{% for exercise, days in row %}
-                    {% if exercise is None %}<td colspan="{{ days }}"></td>{% else %}
+                    {% if exercise is None %}{% if days != 0 %}<td colspan="{{ days }}"></td>{% endif %}{% else %}
                     <td class="{% if exercise.assessment != "NO" %}{{ exercise.assessment }}{% elif exercise.submission != "NO" %}SUBMISSION{% elif exercise.exercise_type != "EXAM" %}NOSUBMISSION{% else %}EXAM{% endif %}" colspan="{{ days }}">
-                        <b><a href="{% url 'submission' course.code exercise.number %}">{{ exercise.title }}</a></b><br>
+                        <a href="{% url 'submission' course.code exercise.number %}">{{ exercise.title }}</a><br>
                     </td>{% endif %}{% endfor %}
                 </tr>
                 {% endfor %}{% endfor %}

@@ -21,12 +21,9 @@ def grading_scheme(request):
     return render(request, 'kateapp/grading_scheme.html')
 
 def course_list(request, letter_yr):
-    courses_term1 = get_list_or_404(
-        Courses, courses_classes__letter_yr=letter_yr, courses_term__term=1)
-    courses_term2 = get_list_or_404(
-        Courses, courses_classes__letter_yr=letter_yr, courses_term__term=2)
-    courses_term3 = get_list_or_404(
-        Courses, courses_classes__letter_yr=letter_yr, courses_term__term=3)
+    courses_term1 = list(Courses.objects.filter(courses_classes__letter_yr=letter_yr, courses_term__term=1).order_by('code'))
+    courses_term2 = list(Courses.objects.filter(courses_classes__letter_yr=letter_yr, courses_term__term=2).order_by('code'))
+    courses_term3 = list(Courses.objects.filter(courses_classes__letter_yr=letter_yr, courses_term__term=3).order_by('code'))
     context = {
         'letter_yr': letter_yr,
         'courses_term1': courses_term1,

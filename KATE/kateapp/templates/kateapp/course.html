@@ -52,8 +52,8 @@
       <table class="table table-striped table-responsive">
         <thead>
             <tr>
-              <th>Resource Name</th>
-              <th>URL</th>
+              <th>Title</th>
+              <th>Date</th>
               <th>Type</th>
             </tr>
           </thead>
@@ -63,17 +63,24 @@
           <tbody>
             {% for r in rs %}
             <tr>
-              <td>{{ r.title }}</td>
               <td>
                 {% if r.link %}
-                <a href="{{ r.link }}">{{ r.link }}</a>
+                <a href="{{ r.link }}">{{ r.title }}</a>
                 {% else %}
-                <a href="{{ MEDIA_URL }}{{ r.resource.file.url }}">{{ r.resource.filename }}</a>
+                <a href="{{ MEDIA_URL }}{{ r.resource.file.url }}">{{ r.title }}</a>
                 {% endif %}
               </td>
+              <td>{{r.release_date|date:"D, d M Y"}}</td>
               <td>
                 {{r.course_resource_type}}
               </td>
+              {% if r.course_resource_type == "PANOPTO" %}
+              <td>
+                <input id="watch" type="button" value="Watch" onclick="watchPanopto('{{ r.link }}');" />
+              </td>
+              {% else %}
+              <td></td>
+              {% endif %}
             </tr>
             {% endfor %}
           </tbody>
@@ -83,6 +90,7 @@
       </table>
     </div>
   </div>
+  <div id="panopto"></div>
 
   <p>
     <table class="table table-striped table-responsive">
@@ -122,12 +130,17 @@
     </table>
   </p>
 
-  </div>
-
   {% if teacher %}
     <a class="btn btn-primary btn-sm active" href="{% url 'course_management' course.code %}" role="button">Manage Course</a>
   {% endif %}
-
+  <script>
+    function watchPanopto(url) {
+      document.getElementById("panopto").innerHTML = "<iframe src='https://imperial.cloud.panopto.eu/Panopto/Pages/Embed.aspx?id=" + url.split("=")[1] + "&v=1' width='1024' height='576' style='padding: 0px; border: 1px solid #464646;' frameborder='0'></iframe><input id='close' type='button' value='Close' onclick='closePanopto();' />";
+    }
+    function closePanopto() {
+      document.getElementById("panopto").innerHTML = "";
+    }
+  </script>
 </body>
 
 </html>

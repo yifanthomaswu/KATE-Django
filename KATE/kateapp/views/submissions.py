@@ -15,7 +15,7 @@ from ..models import Exercises, People, Resource, Courses, Submissions
 from ..forms import SubmissionForm
 
 def getUser():
-    user_login = "yw8012"
+    user_login = request.user.get_username()
     return get_object_or_404(People, login=user_login)
 
 def isStaff(user, exercises):
@@ -69,7 +69,7 @@ def displayPlainSubmissionPage(request, course, exercise, resource):
 
 def displayHardcopySubmissionPage(request, course, exercise, resource):
     ####################################################################
-    user = "yw8012"
+    user = request.user.get_username()
     ####################################################################
     if request.method == 'POST':
         ############ Form Submitted ############
@@ -107,7 +107,7 @@ def displayHardcopySubmissionPage(request, course, exercise, resource):
 
 def displayElectronicSubmissionPage(request, course, exercise, resource):
     ####################################################################
-    user = "yw8012"
+    user = request.user.get_username()
     ####################################################################
     if request.method == 'POST':
         ############ Form Submitted ############
@@ -151,7 +151,7 @@ def displayElectronicSubmissionPage(request, course, exercise, resource):
                         #raise Http404("failed " + new_dir)
                     os.rename(init_path, new_path)
                     r.save()
-                    
+
                     # setup submission-resource link
                     submission.files.add(r)
 
@@ -232,7 +232,7 @@ def displayElectronicSubmissionPage(request, course, exercise, resource):
 #This method is what generates the Cover sheet for Hardcopy submission
 def cover_sheet(request, code, number):
     ##################################################
-    user = "yw8012"
+    user = request.user.get_username()
     ##################################################
 
     person = get_object_or_404(People, login=user)

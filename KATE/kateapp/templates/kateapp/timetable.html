@@ -34,6 +34,8 @@
                 Computing {{ person.student_letter_yr }}<br>
                 {{ period.name }}</h3>
             </div>
+            <div class ="row nav-timetable">
+            <div class="col-md-2">
 
             <div class="dropdown">
               <button class="btn btn-primary dropdown-toggle" id="menu1" type="button" data-toggle="dropdown">Select Class
@@ -42,13 +44,16 @@
                 {% for class in classes %}<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'timetable' period_id class.letter_yr person.login %}">{{ class.letter_yr }}</a></li>{% endfor %}
               </ul>
             </div>
-
+            </div>
+            <div class="col-md-2">
             <div class="dropdown">
               <button class="btn btn-primary dropdown-toggle" id="menu1" type="button" data-toggle="dropdown">Select Period
               <span class="caret"></span></button>
               <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
                 {% for p in periods %}<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'timetable' p.period letter_yr person.login %}">{{ p.name }}</a></li>{% endfor %}
               </ul>
+            </div>
+            </div>
             </div>
 
             <div class = "col-md-6">

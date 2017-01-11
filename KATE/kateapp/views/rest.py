@@ -38,6 +38,7 @@ def course(request, code):
     terms = get_list_or_404(Term, courses_term__code=str(code))
     terms.sort(key=lambda x: x.term)
     login = request.user.get_username()
+    person = get_object_or_404(People, login=login)
     teacher = person.tutor == None
     exercises = Exercises.objects.filter(code=str(code))
     next_number = get_next_exercise_number(exercises)

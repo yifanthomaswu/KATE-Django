@@ -46,10 +46,14 @@
                     {% else %}
                     {% for mark in course_marks.1 %}
                     <tr>
-                        <td>{{mark.exercise.number}}</td>
-                        <td>{{mark.exercise.exercise_type}}</td>
-                        <td>{{mark.exercise.title}}</td>
-                        <td>{{mark.mark}}</td>
+                        <td>{{mark.0.exercise.number}}</td>
+                        <td>{{mark..exercise.exercise_type}}</td>
+                        <td>{{mark.0.exercise.title}}</td>
+                        {% if mark.1 %}
+                        <td>{{mark.0.mark}}</td>
+                        {% else %}
+                        <td>{{mark.0.mark}}</td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                     {% endif %}

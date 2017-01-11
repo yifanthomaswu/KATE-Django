@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
-from ..models import People, Marks, Exercises
+from ..models import People, Marks, Submissions, Exercises
 
 def individual_record(request, login):
     # get the logged in student
@@ -13,7 +13,9 @@ def individual_record(request, login):
         # get the marks for the current course
         marks = list(Marks.objects.filter(login_id=login, exercise__code=course.code, exercise__mark_release_date__lte=timezone.now()).order_by('exercise__number'))
         # convert the mark numbers to text
-        textual_marks = [convert_mark_number_text(elem) for elem in marks]
+        textual_marks = [(convert_mark_number_text(mark),
+                         (Submissions.objects.get(leader_id=login, exercise_id=mark.exercise_id).timestamp >
+                                    Exercises.objects.get(id=mark.exercise_id).deadline)) for mark in marks]
         # append the course with corresponding marks to the datastructure
         courses_marks.append((course, textual_marks))
     #set up the context for the html template

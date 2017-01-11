@@ -14,7 +14,7 @@ from datetime import datetime, date
 from ..models import Exercises, People, Resource, Courses, Submissions
 from ..forms import SubmissionForm
 
-def getUser():
+def getUser(request):
     user_login = request.user.get_username()
     return get_object_or_404(People, login=user_login)
 
@@ -28,7 +28,7 @@ def pastDeadline(exercise):
 def submission(request, code, number):
     exercise = get_object_or_404(Exercises,code=code, number=number)
 
-    user = getUser()
+    user = getUser(request)
     showMarking = isStaff(user, exercise)
 
     #Uncomment for testing purposes

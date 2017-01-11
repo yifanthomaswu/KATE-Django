@@ -77,7 +77,7 @@ $(function() {
   </p>
 
   {% if exercise.get_submission_display == "Electronic" %}
-    TODO: Download all Submissions as zip
+    <a href>Download all Submissions as .zip</a>
   {% endif %}
     <form action="{% url 'marking' code number%}" method="post" onsubmit="finalize()" enctype="multipart/form-data" class ="form-horizontal">
       {% csrf_token %}

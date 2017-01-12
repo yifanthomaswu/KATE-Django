@@ -62,5 +62,6 @@ def course(request, code):
         'next_number': next_number,
         'NO': Exercises.NO,
         'resource': resource,
+        'empty': (resource == ([], [], [], [], [], [])),
     }
     return render(request, 'kateapp/course.html', context)

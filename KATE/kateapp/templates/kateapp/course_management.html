@@ -73,6 +73,7 @@
   </p>
   </div>
 
+  {% if not empty %}
   <div class="fieldWrapper form-group container-fluid container-link">
     <label class="col-sm-3 control-label"><h3>Resources:</h3></label>
     <form id="removeForm" action="{% url 'course_management' course.code %}" method="post" enctype="multipart/form-data">
@@ -111,6 +112,7 @@
       {% endfor %}
     </form>
   </div>
+  {% endif %}
 
 
 

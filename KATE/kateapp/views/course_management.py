@@ -7,7 +7,7 @@ from ..forms import CourseManagementForm
 
 def course_management(request, code):
     login = request.user.get_username()
-
+    
     course = get_object_or_404(Courses, pk=str(code))
 
     validation_fail = False
@@ -101,5 +101,6 @@ def course_management(request, code):
         'types' : types,
         'validation_fail' : validation_fail,
         'action': action,
+        'empty' : (resource == ([], [], [], [], [], [])),
     }
     return render(request, 'kateapp/course_management.html', context)

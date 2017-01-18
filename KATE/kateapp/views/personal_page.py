@@ -14,8 +14,7 @@ def personal_page(request):
     return render(request, 'kateapp/personal_page.html', context)
 
 def display_teacher_personal_page(person, login):
-    current_term = 1 #TODO which term?
-    courses = get_list_or_404(Courses, lecturer_id=login, courses_term__term=current_term)
+    courses = list(Courses.objects.filter(lecturer_id=login))
     exercises = []
     date_now = timezone.now()
     period = get_object_or_404(Period, start_date__lte=date_now, end_date__gte=date_now)
